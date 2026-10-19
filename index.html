@@ -1082,6 +1082,7 @@ function adminRenderSelected(user){
   const total=rows.reduce((a,x)=>a+(Number(x.price)||0)*(Number(x.qty)||0),0);
   const detail=document.querySelector('#adminAccountDetail');
   detail.innerHTML='<div class="admin-detail-head"><div><strong>'+escapeHtml(user.email||'Без почты')+'</strong><div class="muted">'+escapeHtml(user.user_id)+'<br>Создан '+escapeHtml(adminFormatDate(user.created_at))+' · последний вход '+escapeHtml(adminFormatDate(user.last_sign_in_at))+'</div></div><div><strong>'+fmt(total)+'</strong><div class="muted">'+rows.length+' записей в истории</div></div></div>'+
+    '<div class="admin-tools"><input id="adminDisplayName" maxlength="32" value="'+escapeHtml(adminAccountName(user)==='Без имени'?'':adminAccountName(user))+'" placeholder="Имя пользователя" aria-label="Имя пользователя"><button class="ghost" id="adminSaveProfileBtn" type="button">Сохранить профиль</button></div>'+
     '<div class="admin-tools"><input id="adminExpenseSearch" type="search" placeholder="Найти покупку или категорию" aria-label="Поиск расхода"><button class="ghost" id="adminAddExpenseBtn" type="button">+ Запись</button></div>'+
     '<div class="admin-table-wrap"><table class="admin-expense-table"><thead><tr><th>Название</th><th>Категория</th><th>Дата</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr></thead><tbody id="adminExpenseRows"></tbody></table></div>'+
     '<div class="admin-inline-actions" style="margin-top:14px"><button class="admin-primary" id="adminSaveAccountBtn" type="button">Сохранить изменения</button><button class="ghost" id="adminReloadAccountBtn" type="button">Отменить правки</button></div>'+
@@ -1108,6 +1109,22 @@ function adminRebuildState(){
     else {if(!Array.isArray(next.history[row._bucket]))next.history[row._bucket]=[];next.history[row._bucket].push(clean);}
   }
   return next;
+}
+async function adminSaveProfile(){
+  if(!adminAllowed||!adminSelectedId)return;
+  const input=document.querySelector('#adminDisplayName');
+  const name=(input?.value||'').trim();
+  if(name.length>32){adminStatus('Имя не должно быть длиннее 32 символов.',true);return;}
+  const b=document.querySelector('#adminSaveProfileBtn');if(b)b.disabled=true;
+  adminStatus('Сохраняю профиль…');
+  try{
+    const {error}=await cloudClient.rpc('admin_update_user_profile',{target_user_id:adminSelectedId,display_name:name});
+    if(error)throw error;
+    const u=adminAccounts.find(x=>x.user_id===adminSelectedId);
+    if(u){u.display_name=name;u.user_metadata={...(u.user_metadata||{}),username:name};}
+    adminRenderAccounts();adminStatus('Профиль пользователя обновлён.');
+  }catch(e){adminStatus(e.message||'Не удалось сохранить профиль.',true);}
+  finally{const btn=document.querySelector('#adminSaveProfileBtn');if(btn)btn.disabled=false;}
 }
 async function adminSaveAccount(){
   if(!adminAllowed||!adminSelectedId)return;
@@ -1145,6 +1162,7 @@ document.querySelector('#adminAccountsList')?.addEventListener('click',e=>{const
 document.querySelector('#adminAccountDetail')?.addEventListener('input',e=>{if(e.target.id==='adminExpenseSearch')adminRenderExpenseRows();});
 document.querySelector('#adminAccountDetail')?.addEventListener('click',e=>{
   if(e.target.closest('#adminSaveAccountBtn'))adminSaveAccount();
+  else if(e.target.closest('#adminSaveProfileBtn'))adminSaveProfile();
   else if(e.target.closest('#adminReloadAccountBtn'))adminSelectAccount(adminSelectedId);
   else if(e.target.closest('#adminAddExpenseBtn'))adminAddExpense();
   else {const del=e.target.closest('[data-admin-delete-row]');if(del)adminDeleteExpense(Number(del.dataset.adminDeleteRow));}
