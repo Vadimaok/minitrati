@@ -310,9 +310,13 @@ function init(){
 }
 function productImage(name){
   const n=String(name||'').toLowerCase();
-  if(/tornado|торнадо/.test(n)) return 'https://imgproxy.kuper.ru/imgproxy/size-500-500/czM6Ly9zYi1vYnMtcHJvZC1jb250ZW50LWltYWdlczAxL3Byb2R1Y3RzLzQzNzM5NDEwL29yaWdpbmFsLzEvMjAyNi0wNC0wMyUyMDA3JTNBNTglM0E1Mi4zMDEzODErMDA6MDAvNDM3Mzk0MTBfMS5qcGc.jpg';
+  if(/tornado|торнадо/.test(n)) return 'https://napitkiopt.ru/wa-data/public/shop/products/66/13/1366/images/601/601.580%402x.jpg';
   if(/adrenaline|адреналин|адрик/.test(n)) return 'https://kalinbaza.ru/image/cache/catalog/products/energy/energy_0007-700x700.jpg';
-  if(/lit energy|лит энерджи|\bлит\b/.test(n)) return 'https://simg.marwin.kz/media/catalog/product/l/i/napitok_jenergeticheskij_lit_energy_original_045l_jb.jpg';
+  if(/lit energy|лит энерджи|\bлит\b/.test(n)) return 'https://simg.marwin.kz/media/catalog/product/l/i/napitok_energeticheskiy_lit_energy_original_045l_jb.jpg';
+  if(/coca.?cola|кока.?кола|\bcola\b/.test(n)) return 'https://ameelcandyworld.be/product/image/large/52362_1.jpg';
+  if(/sprite|спрайт/.test(n)) return 'https://www.coca-cola.com/content/dam/onexp/gr/el/sprite-2024/sprite.png';
+  if(/bonaqua|бонаква/.test(n)) return 'https://am.coca-colahellenic.com/content/dam/cch/am/media-gallery/images/corporate/403213448_R_POS_BAS_500ml_PET_VIEW2_PRO_ARM_GEO_D_R1%20%281%29.png';
+  if(/twix|твикс/.test(n)) return 'https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_fc4496c7-48be-4ec8-b627-88d989080fcf.jpg';
   return '';
 }
 function productAvatar(name, category){
@@ -355,7 +359,7 @@ function renderProductSuggestions(){
     el.innerHTML='<div class="product-suggestion"><div class="suggest-copy"><div class="suggest-name">Новый товар</div><div class="suggest-meta">Можно ввести своё название и цену вручную</div></div></div>';
     el.classList.remove('hidden');return;
   }
-  el.innerHTML=matches.map(x=>'<button type="button" class="product-suggestion" role="option" data-product-name="'+escapeHtml(x.name).replace(/"/g,'&quot;')+'" data-product-price="'+Number(x.price)||0+'" data-product-category="'+escapeHtml(x.category||'другое').replace(/"/g,'&quot;')+'">'+productAvatar(x.name,x.category)+'<span class="suggest-copy"><span class="suggest-name">'+escapeHtml(x.name)+'</span><span class="suggest-meta">'+escapeHtml(x.category||'другое')+'</span></span><span class="suggest-price">'+(Number(x.price)>0?fmt(Number(x.price)):'Цена?')+'</span></button>').join('');
+  el.innerHTML=matches.map(x=>'<button type="button" class="product-suggestion" role="option" data-product-name="'+escapeHtml(x.name).replace(/"/g,'&quot;')+'" data-product-price="'+(Number(x.price)||0)+'" data-product-category="'+escapeHtml(x.category||'другое').replace(/"/g,'&quot;')+'">'+productAvatar(x.name,x.category)+'<span class="suggest-copy"><span class="suggest-name">'+escapeHtml(x.name)+'</span><span class="suggest-meta">'+escapeHtml(x.category||'другое')+'</span></span><span class="suggest-price">'+(Number(x.price)>0?fmt(Number(x.price)):'Цена?')+'</span></button>').join('');
   el.classList.remove('hidden');
 }
 function autofill(){
