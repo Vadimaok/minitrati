@@ -980,11 +980,10 @@ function applyAppearance(appearance=readAppearance(),persist=true){
   document.body.dataset.buttonStyle=a.buttonStyle;
   const controls=[['#wallpaperSelect',a.wallpaper],['#accentSelect',a.accent],['#buttonStyleSelect',a.buttonStyle]];
   controls.forEach(([selector,value])=>{const el=document.querySelector(selector);if(el)el.value=value});
-  updateAppearancePreview();
   if(persist){try{localStorage.setItem(profileAppearanceKey(),JSON.stringify(a))}catch{}}
+  updateAppearancePreview(a);
 }
-function updateAppearancePreview(){
-  const a=readAppearance();
+function updateAppearancePreview(a=readAppearance()){
   const primary=document.querySelector('#appearancePreviewPrimary');
   const secondary=document.querySelector('#appearancePreviewSecondary');
   if(primary)primary.textContent=a.buttonStyle==='outline'?'Контурная кнопка':a.buttonStyle==='soft'?'Мягкая кнопка':'Добавить покупку';
