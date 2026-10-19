@@ -123,3 +123,28 @@ grant execute on function public.admin_save_account_data(uuid, jsonb) to authent
 
 -- Выдай себе права администратора после выполнения файла:
 -- insert into public.admin_users(user_id) values ('ВСТАВЬ-СЮДА-UUID-АККАУНТА');
+
+create or replace function public.admin_update_user_profile(target_user_id uuid, display_name text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_current_admin() then
+    raise exception 'Доступ запрещён: нужны права администратора' using errcode = '42501';
+  end if;
+  if length(trim(coalesce(display_name,''))) > 32 then
+    raise exception 'Имя не должно быть длиннее 32 символов';
+  end if;
+  update auth.users
+     set raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb)
+           || jsonb_build_object('username', trim(coalesce(display_name,''))),
+         updated_at = now()
+   where id = target_user_id;
+  if not found then raise exception 'Аккаунт не найден'; end if;
+  return true;
+end;
+$$;
+revoke all on function public.admin_update_user_profile(uuid, text) from public, anon;
+grant execute on function public.admin_update_user_profile(uuid, text) to authenticated;
