@@ -596,7 +596,7 @@ async function signOut(){
 async function initCloudAuth(){
   document.querySelector('#loginBtn').addEventListener('click',signIn);
   document.querySelector('#signupBtn').addEventListener('click',signUp);
-  document.querySelector('#logoutBtn').addEventListener('click',signOut);
+  document.querySelector('#logoutBtn')?.addEventListener('click',signOut);
   if(!cloudConfigured() || !window.supabase || !window.supabase.createClient){
     authMessage('Облако ещё не настроено. Следуй README.md: создай проект Supabase, выполни supabase/schema.sql и заполни supabase-config.js.',true);
     return;
