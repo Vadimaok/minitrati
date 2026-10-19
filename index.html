@@ -184,8 +184,8 @@ body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--
   <header class="top">
     <div class="brand"><b>Минитраты</b><span id="monthLabel">—</span></div>
     <div class="actions">
-      <button class="icon" id="importBtn" title="Загрузить JSON" aria-label="Загрузить">⇧</button>
-      <button class="icon" id="exportBtn" title="Выгрузить JSON" aria-label="Выгрузить">⇩</button>
+      <button class="icon" id="importBtn" title="Импортировать резервную копию JSON" aria-label="Импортировать резервную копию"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg></button>
+      <button class="icon" id="exportBtn" title="Скачать резервную копию JSON" aria-label="Скачать резервную копию"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M5 16v4h14v-4"/></svg></button>
       <input type="file" id="importFile" accept="application/json,.json" class="hidden">
       <button class="ghost" id="pasteBtn">Список</button>
       <button class="ghost" id="newMonthBtn">Новый месяц</button>
@@ -193,7 +193,7 @@ body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--
   </header>
   <div class="accountbar profilebar">
     <div class="profile-summary"><button class="profile-avatar" id="profileAvatarBtn" type="button" aria-label="Открыть профиль" aria-expanded="false"><span id="profileAvatarText">👤</span></button><div class="profile-copy"><strong id="profileName">Мой профиль</strong><span id="accountEmail">Аккаунт не выбран</span></div></div>
-    <button class="ghost profile-menu-trigger" id="profileMenuBtn" type="button" aria-label="Меню профиля" aria-expanded="false">⌄</button>
+    <button class="ghost profile-menu-trigger" id="profileMenuBtn" type="button" aria-label="Меню профиля" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="profile-menu hidden" id="profileMenu">
       <div class="profile-menu-head"><strong id="menuProfileName">Мой профиль</strong><span id="menuProfileEmail">Аккаунт не выбран</span></div>
       <button type="button" id="openSettingsBtn">⚙️ Настройки</button>
@@ -495,7 +495,7 @@ function productImage(name){
   if(/sprite|спрайт/.test(n)) return 'https://www.coca-cola.com/content/dam/onexp/gr/el/sprite-2024/sprite.png';
   if(/bonaqua|бонаква/.test(n)) return 'https://am.coca-colahellenic.com/content/dam/cch/am/media-gallery/images/corporate/403213448_R_POS_BAS_500ml_PET_VIEW2_PRO_ARM_GEO_D_R1%20%281%29.png';
   if(/twix|твикс/.test(n)) return 'https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_fc4496c7-48be-4ec8-b627-88d989080fcf.jpg';
-  if(/gang|isok|joy stick|moji|паровой коктейль|премиум|кальян/.test(n)) return 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=640&q=80';
+  if(/gang|isok|joy stick|moji|паровой коктейль|премиум|кальян/.test(n)) return 'https://image.made-in-china.com/2f0j00OUekqbtwLirF/Silver-65cm-Stainless-Steel-Hookah-Shisha-Cachimba-Smoking-Set-Large-Hookah.jpg';
   if(/snickers|mars|bounty|milky way|maltisers|maltesers|nuts|picnic|goodmix|чио рио/.test(n)) return 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=640&q=80';
   if(/sandwich|сэндвич|сандвич/.test(n)) return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=640&q=80';
   if(/плов|греч|котлет|пюре|гуляш|рис с рыбой|готовое блюдо/.test(n)) return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=640&q=80';
@@ -513,7 +513,7 @@ function productAvatar(name, category){
 }
 function categoryImage(category){
   const c=String(category||'').toLowerCase();
-  if(/коктейль|кальян|табак/.test(c)) return 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=640&q=80';
+  if(/коктейль|кальян|табак/.test(c)) return 'https://image.made-in-china.com/2f0j00OUekqbtwLirF/Silver-65cm-Stainless-Steel-Hookah-Shisha-Cachimba-Smoking-Set-Large-Hookah.jpg';
   if(/шоколад|десерт/.test(c)) return 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=640&q=80';
   if(/еда|сэндвич/.test(c)) return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=640&q=80';
   if(/кофе/.test(c)) return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=640&q=80';
