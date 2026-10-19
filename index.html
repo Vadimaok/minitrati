@@ -166,6 +166,19 @@ body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--
 @media(max-width:380px){.catalog-results{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.catalog-photo{height:100px}.catalog-card-info{padding:8px}.catalog-open-btn{font-size:12px;padding:8px}.sheet-heading{align-items:center}}
 @media(min-width:620px){.catalog-results{grid-template-columns:repeat(3,minmax(0,1fr));max-height:52vh}.catalog-photo{height:145px}}
 
+
+/* Restrained account menu */
+.profilebar{background:transparent;border-color:var(--line);border-radius:16px;padding:8px 10px}
+.profile-avatar{background:var(--card2);border-color:var(--line);color:var(--muted);font-size:0}
+.profile-avatar:hover{border-color:rgba(148,163,184,.42);background:var(--card)}
+.profile-menu{width:min(280px,calc(100vw - 32px));padding:7px;background:var(--card);border-color:var(--line);border-radius:14px;box-shadow:0 14px 36px rgba(0,0,0,.22)}
+.profile-menu-head{padding:11px 10px 13px}
+.profile-menu>button.profile-menu-action{display:flex;align-items:center;gap:11px;min-height:42px;padding:10px;border:1px solid transparent;border-radius:10px;font-size:13px;font-weight:550;color:var(--text)}
+.profile-menu>button.profile-menu-action svg{flex:0 0 18px;color:var(--muted)}
+.profile-menu>button.profile-menu-action:hover{background:rgba(148,163,184,.08);border-color:var(--line)}
+.profile-menu>button.profile-logout{color:var(--bad)}
+.profile-menu>button.profile-logout svg{color:currentColor}
+body.light-theme .profile-menu>button.profile-menu-action:hover{background:rgba(28,41,64,.045)}
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -197,12 +210,12 @@ body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--
     </div>
   </header>
   <div class="accountbar profilebar">
-    <div class="profile-summary"><button class="profile-avatar" id="profileAvatarBtn" type="button" aria-label="Открыть профиль" aria-expanded="false"><span id="profileAvatarText">👤</span></button><div class="profile-copy"><strong id="profileName">Мой профиль</strong><span id="accountEmail">Аккаунт не выбран</span></div></div>
+    <div class="profile-summary"><button class="profile-avatar" id="profileAvatarBtn" type="button" aria-label="Открыть профиль" aria-expanded="false"><span id="profileAvatarText"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.5 3.1-5.2 7-5.2s6.3 1.7 7 5.2"/></svg></span></button><div class="profile-copy"><strong id="profileName">Мой профиль</strong><span id="accountEmail">Аккаунт не выбран</span></div></div>
     <button class="ghost profile-menu-trigger" id="profileMenuBtn" type="button" aria-label="Меню профиля" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="profile-menu hidden" id="profileMenu">
       <div class="profile-menu-head"><strong id="menuProfileName">Мой профиль</strong><span id="menuProfileEmail">Аккаунт не выбран</span></div>
-      <button type="button" id="openSettingsBtn">⚙️ Настройки</button>
-      <button type="button" id="menuLogoutBtn" class="profile-logout">↪ Выйти из аккаунта</button>
+      <button type="button" id="openSettingsBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.6a8 8 0 0 1-1.8 1l-.2 1.5h-2.5l-.2-1.5a8 8 0 0 1-1.8-1l-1.4.6-1.2-2.1 1.2-.9a7 7 0 0 1 0-2l-1.2-.9 1.2-2.1 1.4.6a8 8 0 0 1 1.8-1l.2-1.5h2.5l.2 1.5a8 8 0 0 1 1.8 1l1.4-.6 1.2 2.1-1.2.9a7 7 0 0 1 0 2Z" transform="translate(-1 -1) scale(.96)"/></svg><span>Настройки</span></button>
+      <button type="button" id="menuLogoutBtn" class="profile-logout profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg><span>Выйти из аккаунта</span></button>
     </div>
   </div>
 
