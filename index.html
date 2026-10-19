@@ -648,7 +648,7 @@ function render(){
   $('#cats').innerHTML = cats.length ? cats.map(([c,v],i)=>`<div class="category-row" role="button" tabindex="0" data-open-category="${escapeHtml(c)}" aria-label="Открыть покупки категории ${escapeHtml(c)}"><div class="row"><div class="label"><i class="dot" style="background:${COLORS[i%COLORS.length]}"></i><div><div class="name">${escapeHtml(c)}</div><div class="muted small">${fmt(v)} · ${Math.round(v/total*100)||0}%</div></div></div><div class="amount">${fmt(v)} <span class="category-chevron" aria-hidden="true">›</span></div></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join('') : '<div class="muted">Пока пусто. Нажми «+ Добавить».</div>';
   $('#recentCount').textContent=items.length;
   $('#recent').innerHTML = renderPurchaseRows(recentExpanded?items:items.slice(0,4)) || '<div class="muted">Нет записей</div>';
-  $('#toggleRecentBtn').classList.toggle('hidden',items.length<=4);
+  $('#toggleRecentBtn').classList.toggle('hidden',items.length<=4 && !Object.keys(state.history).length);
   $('#toggleRecentBtn').setAttribute('aria-expanded',String(recentExpanded));
   $('#toggleRecentBtn').innerHTML=(recentExpanded?'Скрыть историю покупок':'Посмотреть историю покупок')+' <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   const hist=Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
