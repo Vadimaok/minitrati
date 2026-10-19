@@ -127,6 +127,40 @@ body.light-theme .product-suggestion:hover,body.light-theme .product-suggestion:
 body.light-theme .product-suggestion{border-color:rgba(28,41,64,.08)}
 @media(min-width:680px){.settings-panel{max-height:88vh;bottom:24px;border-radius:28px}}
 
+
+/* Product catalog and clearer controls */
+.sheet-heading,.catalog-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sheet-heading h2{margin-bottom:0}
+.catalog-open-btn{display:flex;align-items:center;gap:7px;white-space:nowrap;padding:9px 12px;font-size:13px;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(34,211,238,.08));border-color:rgba(124,92,255,.25)}
+.catalog-count{font-size:11px;padding:2px 6px;border-radius:99px;background:rgba(124,92,255,.2)}
+.catalog-panel{max-width:760px}
+.catalog-heading h2{margin:0 0 3px}
+.catalog-search{margin-top:8px}
+.catalog-filters{display:flex;gap:7px;overflow-x:auto;padding:3px 0 12px;scrollbar-width:thin}
+.catalog-filter{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--card2);color:var(--muted);font-size:12px;text-transform:capitalize}
+.catalog-filter.active{background:linear-gradient(135deg,var(--accent),#6f82ff);border-color:transparent;color:#fff}
+.catalog-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:min(48vh,520px);overflow-y:auto;padding:2px 3px 12px}
+.catalog-card{position:relative;display:flex;flex-direction:column;align-items:stretch;text-align:left;min-width:0;padding:0;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--card2);transition:transform .18s,border-color .18s,box-shadow .18s}
+.catalog-card:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.48);box-shadow:0 10px 25px rgba(0,0,0,.12)}
+.catalog-photo{height:126px;display:grid;place-items:center;background:rgba(148,163,184,.08);overflow:hidden}
+.catalog-photo .product-avatar{width:100%;height:100%;border-radius:0;background:transparent;font-size:35px}
+.catalog-photo .product-avatar img{width:100%;height:100%;object-fit:cover}
+.catalog-photo .fallback-emoji{font-size:34px}
+.catalog-card-info{display:flex;flex-direction:column;gap:5px;padding:10px 11px 13px;min-width:0}
+.catalog-card-info strong{font-size:12px;line-height:1.35;min-height:32px;overflow-wrap:anywhere}
+.catalog-card-info span{font-size:11px;color:var(--muted);text-transform:capitalize}
+.catalog-card-info b{font-size:14px;margin-top:2px}
+.catalog-add-icon{position:absolute;right:8px;top:8px;display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:rgba(15,20,30,.78);color:white;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.catalog-empty{grid-column:1/-1;padding:24px 12px;text-align:center;color:var(--muted)}
+.catalog-footnote{font-size:11px;color:var(--muted);padding-top:8px}
+body.light-theme .catalog-card{background:#fff;border-color:rgba(28,41,64,.1)}
+body.light-theme .catalog-photo{background:#edf1f8}
+body.light-theme .catalog-add-icon{background:rgba(255,255,255,.94);color:#1b2332}
+body.light-theme .catalog-filter{background:#f0f3fa;color:#586174}
+body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--accent),#6f82ff);color:white}
+@media(max-width:380px){.catalog-results{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.catalog-photo{height:100px}.catalog-card-info{padding:8px}.catalog-open-btn{font-size:12px;padding:8px}.sheet-heading{align-items:center}}
+@media(min-width:620px){.catalog-results{grid-template-columns:repeat(3,minmax(0,1fr));max-height:52vh}.catalog-photo{height:145px}}
+
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -193,7 +227,7 @@ body.light-theme .product-suggestion{border-color:rgba(28,41,64,.08)}
   <div class="scrim" data-close></div>
   <div class="panel" role="dialog" aria-modal="true" aria-label="Добавить покупку">
     <div class="grab"></div>
-    <h2>Добавить покупку</h2>
+    <div class="sheet-heading"><h2>Добавить покупку</h2><button class="ghost catalog-open-btn" id="openCatalogBtn" type="button"><span aria-hidden="true">▦</span> Все товары <span class="catalog-count">90</span></button></div>
     <label class="field"><span>Товар</span><input id="name" list="catalogList" placeholder="Начни вводить название товара…" autocomplete="off" aria-controls="productSuggestions" aria-autocomplete="list"><datalist id="catalogList"></datalist></label>
     <div id="productSuggestions" class="product-suggestions hidden" role="listbox" aria-label="Подходящие товары"></div>
     <div class="two">
@@ -222,6 +256,17 @@ body.light-theme .product-suggestion{border-color:rgba(28,41,64,.08)}
     <button class="save" id="pasteSave">Разнести по категориям</button>
   </div>
 </div>
+<div class="sheet" id="catalogSheet" aria-hidden="true">
+  <div class="scrim" data-close-catalog></div>
+  <div class="panel catalog-panel" role="dialog" aria-modal="true" aria-label="Каталог товаров">
+    <div class="grab"></div>
+    <div class="catalog-heading"><div><h2>Каталог товаров</h2><p class="settings-subtitle">Выбери товар — он добавится в форму расхода</p></div><button class="icon" id="closeCatalogBtn" type="button" aria-label="Закрыть каталог">×</button></div>
+    <label class="field catalog-search"><span>Поиск по товарам</span><input id="catalogSearch" type="search" placeholder="Например, Tornado, Twix, сэндвич…" autocomplete="off"></label>
+    <div class="catalog-filters" id="catalogFilters" aria-label="Фильтр категорий"></div>
+    <div class="catalog-results" id="catalogResults"></div>
+    <div class="catalog-footnote">Фото могут быть общими для категории, если точное изображение товара не найдено.</div>
+  </div>
+</div>
 <div class="sheet" id="settingsSheet" aria-hidden="true">
   <div class="scrim" data-close-settings></div>
   <div class="panel settings-panel" role="dialog" aria-modal="true" aria-label="Настройки профиля">
@@ -234,6 +279,12 @@ body.light-theme .product-suggestion{border-color:rgba(28,41,64,.08)}
         <div><strong id="settingsProfileName">Мой профиль</strong><div class="small muted">Нажми на аватар, чтобы выбрать фото</div><button type="button" class="ghost small-button" id="chooseAvatarBtn">Изменить фото</button><button type="button" class="ghost small-button hidden" id="removeAvatarBtn">Убрать фото</button></div>
       </div>
       <input type="file" id="avatarFile" accept="image/*" class="hidden">
+    </section>
+    <section class="settings-section">
+      <h3>Имя пользователя</h3>
+      <label class="field"><span>Отображаемый никнейм</span><input id="settingsUsername" type="text" maxlength="32" autocomplete="nickname" placeholder="Например, vadim"></label>
+      <button class="save" id="saveUsernameBtn" type="button">Сохранить никнейм</button>
+      <p class="settings-hint">Это имя будет отображаться в меню профиля. Оно не меняет адрес электронной почты для входа.</p>
     </section>
     <section class="settings-section">
       <h3>Внешний вид</h3>
@@ -389,28 +440,86 @@ function init(){
       if(first){e.preventDefault();first.focus();}
     }
   });
-  $('#addBtn').onclick=openSheet; $('#saveBtn').onclick=saveEntry; $('#newMonthBtn').onclick=newMonth; $('#exportBtn').onclick=exportJSON;
+  $('#addBtn').onclick=openSheet; $('#saveBtn').onclick=saveEntry;
+  $('#openCatalogBtn').onclick=openCatalog;
+  $('#closeCatalogBtn').onclick=closeCatalog;
+  document.querySelectorAll('[data-close-catalog]').forEach(el=>el.onclick=closeCatalog);
+  $('#catalogSearch').addEventListener('input',renderCatalog);
+  $('#catalogFilters').addEventListener('click',e=>{const btn=e.target.closest('[data-catalog-category]');if(!btn)return;activeCatalogCategory=btn.dataset.catalogCategory;renderCatalog()});
+  $('#catalogResults').addEventListener('click',e=>{const btn=e.target.closest('[data-catalog-product]');if(!btn)return;const idx=Number(btn.dataset.catalogProduct);const item=allCatalogProducts()[idx];if(!item)return;selectProduct(item.name,Number(item.price)||0,item.category||'другое');closeCatalog();openSheet()});
+ $('#newMonthBtn').onclick=newMonth; $('#exportBtn').onclick=exportJSON;
   $('#pasteBtn').onclick=openPaste; $('#pasteSave').onclick=savePaste; $('#clearBtn').onclick=clearCurrent; $('#importBtn').onclick=()=>$('#importFile').click(); $('#importFile').addEventListener('change', importJSON);
   document.querySelectorAll('[data-close]').forEach(el=>el.onclick=closeSheet);
   document.querySelectorAll('[data-close-paste]').forEach(el=>el.onclick=closePaste);
   render();
+}
+let activeCatalogCategory='Все';
+function allCatalogProducts(){
+  const items=CATALOG.map(x=>({...x,source:'catalog'}));
+  EXTRA_RULES.forEach(x=>{if(!items.some(y=>normLine(y.name)===normLine(x.name)))items.push({...x,source:'rules'});});
+  return items;
+}
+function openCatalog(){
+  closeSheet();
+  activeCatalogCategory='Все';
+  $('#catalogSearch').value='';
+  $('#catalogSheet').classList.add('open');
+  $('#catalogSheet').setAttribute('aria-hidden','false');
+  renderCatalog();
+  setTimeout(()=>$('#catalogSearch').focus(),80);
+}
+function closeCatalog(){
+  $('#catalogSheet').classList.remove('open');
+  $('#catalogSheet').setAttribute('aria-hidden','true');
+}
+function renderCatalog(){
+  const all=allCatalogProducts();
+  const categories=['Все',...new Set(all.map(x=>x.category||'другое'))];
+  $('#catalogFilters').innerHTML=categories.map(c=>'<button type="button" class="catalog-filter '+(c===activeCatalogCategory?'active':'')+'" data-catalog-category="'+escapeHtml(c)+'">'+escapeHtml(c==='Все'?'Все товары':c)+'</button>').join('');
+  const q=normLine($('#catalogSearch').value);
+  const visible=all.filter(x=>(activeCatalogCategory==='Все'||(x.category||'другое')===activeCatalogCategory)&&(!q||normLine(x.name).includes(q)||normLine(x.supplier||'').includes(q)));
+  $('#catalogResults').innerHTML=visible.length?visible.map(x=>{
+    const globalIndex=all.findIndex(y=>y===x);
+    return '<button type="button" class="catalog-card" data-catalog-product="'+globalIndex+'">'+
+      '<div class="catalog-photo">'+productAvatar(x.name,x.category)+'</div>'+
+      '<div class="catalog-card-info"><strong>'+escapeHtml(x.name)+'</strong><span>'+escapeHtml(x.category||'другое')+(x.volume?' · '+escapeHtml(String(x.volume))+(x.volume<10?' л.':' г.'):'')+'</span><b>'+(Number(x.price)>0?fmt(Number(x.price)):'Цена не указана')+'</b></div><span class="catalog-add-icon" aria-hidden="true">＋</span></button>';
+  }).join(''):'<div class="catalog-empty">Ничего не найдено. Попробуй другое название или категорию.</div>';
+  const counter=document.querySelector('.catalog-count');if(counter)counter.textContent=all.length;
 }
 function productImage(name){
   const n=String(name||'').toLowerCase();
   if(/tornado|торнадо/.test(n)) return 'https://napitkiopt.ru/wa-data/public/shop/products/66/13/1366/images/601/601.580%402x.jpg';
   if(/adrenaline|адреналин|адрик/.test(n)) return 'https://kalinbaza.ru/image/cache/catalog/products/energy/energy_0007-700x700.jpg';
   if(/lit energy|лит энерджи|\bлит\b/.test(n)) return 'https://simg.marwin.kz/media/catalog/product/l/i/napitok_energeticheskiy_lit_energy_original_045l_jb.jpg';
-  if(/coca.?cola|кока.?кола|\bcola\b/.test(n)) return 'https://ameelcandyworld.be/product/image/large/52362_1.jpg';
+  if(/coca.?cola|кока.?кола|\bcola\b|добрый cola/.test(n)) return 'https://ameelcandyworld.be/product/image/large/52362_1.jpg';
   if(/sprite|спрайт/.test(n)) return 'https://www.coca-cola.com/content/dam/onexp/gr/el/sprite-2024/sprite.png';
   if(/bonaqua|бонаква/.test(n)) return 'https://am.coca-colahellenic.com/content/dam/cch/am/media-gallery/images/corporate/403213448_R_POS_BAS_500ml_PET_VIEW2_PRO_ARM_GEO_D_R1%20%281%29.png';
   if(/twix|твикс/.test(n)) return 'https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_fc4496c7-48be-4ec8-b627-88d989080fcf.jpg';
+  if(/gang|isok|joy stick|moji|паровой коктейль|премиум|кальян/.test(n)) return 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=640&q=80';
+  if(/snickers|mars|bounty|milky way|maltisers|maltesers|nuts|picnic|goodmix|чио рио/.test(n)) return 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=640&q=80';
+  if(/sandwich|сэндвич|сандвич/.test(n)) return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=640&q=80';
+  if(/плов|греч|котлет|пюре|гуляш|рис с рыбой|готовое блюдо/.test(n)) return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=640&q=80';
+  if(/cappuccino|nescafe|кофе/.test(n)) return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=640&q=80';
+  if(/red bull|monster|burn|flash|энергет|energy|экофрут/.test(n)) return 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?auto=format&fit=crop&w=640&q=80';
+  if(/напит|вода|cola|fanta|7up|mountain dew|sprite|сок|чай|лимонад|pulpy|rich|rero|есентук|ессентук|обуховск|милкис|slide/.test(n)) return 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=640&q=80';
+  if(/шоколад|twix|конфет|слад/.test(n)) return 'https://images.unsplash.com/photo-1548907040-4d42f3e7b4c4?auto=format&fit=crop&w=640&q=80';
   return '';
 }
 function productAvatar(name, category){
-  const image=productImage(name);
+  const image=productImage(name) || categoryImage(category);
   const emoji=itemEmoji(name,category);
   if(!image) return '<div class="product-avatar" aria-hidden="true">'+emoji+'</div>';
   return '<div class="product-avatar" aria-hidden="true"><img src="'+image+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'grid\'"><span class="fallback-emoji">'+emoji+'</span></div>';
+}
+function categoryImage(category){
+  const c=String(category||'').toLowerCase();
+  if(/коктейль|кальян|табак/.test(c)) return 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=640&q=80';
+  if(/шоколад|десерт/.test(c)) return 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=640&q=80';
+  if(/еда|сэндвич/.test(c)) return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=640&q=80';
+  if(/кофе/.test(c)) return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=640&q=80';
+  if(/энергет/.test(c)) return 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?auto=format&fit=crop&w=640&q=80';
+  if(/напит|вода/.test(c)) return 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=640&q=80';
+  return '';
 }
 function productCandidates(query){
   const q=normLine(query||'');
@@ -638,6 +747,7 @@ function syncProfileUI(){
   const email=user?.email||'Аккаунт не выбран';
   const meta=user?.user_metadata||{};
   const name=meta.display_name||email.split('@')[0]||'Мой профиль';
+  const usernameInput=document.querySelector('#settingsUsername'); if(usernameInput && document.activeElement!==usernameInput)usernameInput.value=meta.display_name||'';
   ['#profileName','#menuProfileName','#settingsProfileName'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.textContent=name});
   ['#accountEmail','#menuProfileEmail'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.textContent=email});
   setAvatarImage(meta.avatar_data||'');
@@ -698,6 +808,17 @@ async function removeAvatar(){
   if(data?.user)cloudUser=data.user;
   syncProfileUI(); settingsStatus('Фото профиля удалено.');
 }
+async function saveUsername(){
+  if(!cloudClient||!cloudUser){settingsStatus('Сначала войди в аккаунт.',true);return}
+  const name=document.querySelector('#settingsUsername').value.trim();
+  if(name.length<2||name.length>32){settingsStatus('Никнейм должен быть от 2 до 32 символов.',true);return}
+  const btn=document.querySelector('#saveUsernameBtn');btn.disabled=true;
+  const {data,error}=await cloudClient.auth.updateUser({data:{...cloudUser.user_metadata,display_name:name}});
+  btn.disabled=false;
+  if(error){settingsStatus(error.message,true);return}
+  if(data?.user)cloudUser=data.user;
+  syncProfileUI();settingsStatus('Никнейм сохранён.');
+}
 async function changeAccountEmail(){
   if(!cloudClient||!cloudUser){settingsStatus('Сначала войди в аккаунт.',true);return}
   const email=document.querySelector('#settingsEmail').value.trim();
@@ -737,6 +858,7 @@ document.querySelector('#settingsAvatarBtn').addEventListener('click',()=>docume
 document.querySelector('#avatarFile').addEventListener('change',chooseAvatarFile);
 document.querySelector('#removeAvatarBtn').addEventListener('click',removeAvatar);
 document.querySelector('#themeSelect').addEventListener('change',e=>applyTheme(e.target.value));
+document.querySelector('#saveUsernameBtn').addEventListener('click',saveUsername);
 document.querySelector('#changeEmailBtn').addEventListener('click',changeAccountEmail);
 document.querySelector('#changePasswordBtn').addEventListener('click',changeAccountPassword);
 document.addEventListener('click',e=>{if(!e.target.closest('.profilebar'))closeProfileMenu()});
