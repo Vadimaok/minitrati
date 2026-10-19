@@ -370,6 +370,29 @@ body.light-theme .appearance-preview{background:rgba(30,50,75,.025)}
 body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-style="soft"] .save{color:var(--accent)}
 @media(max-width:420px){.appearance-preview-buttons span{flex:1}}
 
+
+/* Secure admin dashboard */
+.admin-menu-entry{display:none!important}.admin-menu-entry.admin-visible{display:flex!important;align-items:center;gap:10px}
+#adminPanelSheet{position:fixed;inset:0;z-index:500;display:none;background:rgba(5,8,13,.72);backdrop-filter:blur(12px);padding:clamp(10px,3vw,28px);overflow:auto}
+#adminPanelSheet.open{display:block}
+.admin-shell{width:min(1280px,100%);min-height:calc(100vh - 2*clamp(10px,3vw,28px));margin:0 auto;padding:clamp(16px,2.5vw,30px);border:1px solid var(--line);border-radius:28px;background:linear-gradient(155deg,var(--card),var(--bg));box-shadow:var(--shadow)}
+.admin-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:22px}.admin-top h2{font-size:clamp(24px,4vw,34px);letter-spacing:-.04em;margin:0 0 5px}.admin-top p{margin:0;color:var(--muted);font-size:13px}
+.admin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.admin-stat{padding:17px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.035);min-width:0}.admin-stat span{display:block;color:var(--muted);font-size:12px}.admin-stat strong{display:block;font-size:clamp(20px,3vw,28px);letter-spacing:-.035em;margin-top:6px;overflow-wrap:anywhere}
+.admin-layout{display:grid;grid-template-columns:minmax(260px,.75fr) minmax(0,1.6fr);gap:14px;align-items:start}.admin-card{min-width:0;padding:16px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.025)}.admin-card h3{margin:0 0 12px;font-size:15px}
+.admin-account-list{display:flex;flex-direction:column;gap:7px;max-height:62vh;overflow:auto;margin-top:12px}
+.admin-account{width:100%;text-align:left;display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025);overflow-wrap:anywhere}
+.admin-account.active{border-color:var(--accent);background:rgba(var(--accent-rgb),.1)}.admin-account strong{font-size:13px}.admin-account span{font-size:11px;color:var(--muted)}.admin-account .admin-account-total{font-size:12px;color:var(--text);font-weight:750}
+.admin-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.admin-detail-head strong{overflow-wrap:anywhere}.admin-detail-head .muted{font-size:12px;margin-top:4px}
+.admin-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.admin-tools input{flex:1;min-width:160px}
+.admin-table-wrap{overflow:auto;max-height:55vh;border:1px solid var(--line);border-radius:14px}
+.admin-expense-table{width:100%;border-collapse:collapse;min-width:650px;font-size:12px}.admin-expense-table th{position:sticky;top:0;z-index:1;text-align:left;color:var(--muted);font-weight:650;background:var(--card2);padding:10px}.admin-expense-table td{padding:7px;border-top:1px solid var(--line);vertical-align:middle}.admin-expense-table input{padding:8px;border-radius:9px;font-size:12px;min-width:72px}.admin-expense-table .admin-name-input{min-width:135px}.admin-expense-table .admin-category-input{min-width:100px}.admin-expense-table .admin-date-input{min-width:125px}.admin-expense-table .admin-number-input{min-width:72px}
+.admin-inline-actions{display:flex;gap:8px;flex-wrap:wrap}.admin-inline-actions button{padding:10px 12px;border-radius:12px;font-size:12px;font-weight:750}.admin-primary{background:linear-gradient(135deg,var(--accent),var(--accent-strong,#4f46e5));color:white}.admin-danger{background:rgba(251,113,133,.1);color:#fda4af;border:1px solid rgba(251,113,133,.22)}
+.admin-status{min-height:20px;margin-top:10px;font-size:12px;color:var(--muted)}.admin-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:13px}.admin-section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 7px}
+body.light-theme #adminPanelSheet{background:rgba(31,41,55,.3)}body.light-theme .admin-stat,body.light-theme .admin-card{background:rgba(255,255,255,.68)}body.light-theme .admin-account{background:rgba(255,255,255,.6)}
+@media(max-width:760px){.admin-layout{grid-template-columns:1fr}.admin-account-list{max-height:250px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.admin-stats{grid-template-columns:1fr}.admin-stat{padding:13px}.admin-shell{border-radius:20px}.admin-detail-head{flex-direction:column}.admin-table-wrap{max-height:48vh}}
+@media(max-width:430px){.admin-account-list{grid-template-columns:1fr}.admin-top{align-items:center}.admin-top h2{font-size:23px}}
+
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -405,6 +428,7 @@ body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-sty
     <button class="ghost profile-menu-trigger" id="profileMenuBtn" type="button" aria-label="Меню профиля" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="profile-menu hidden" id="profileMenu">
       <div class="profile-menu-head"><strong id="menuProfileName">Мой профиль</strong><span id="menuProfileEmail">Аккаунт не выбран</span></div>
+      <button type="button" id="openAdminPanelBtn" class="profile-menu-action admin-menu-entry" aria-label="Открыть панель администратора"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h3m-3 4h8M15 12h1"/></svg><span>Панель администратора</span></button>
       <button type="button" id="openSettingsBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.6a8 8 0 0 1-1.8 1l-.2 1.5h-2.5l-.2-1.5a8 8 0 0 1-1.8-1l-1.4.6-1.2-2.1 1.2-.9a7 7 0 0 1 0-2l-1.2-.9 1.2-2.1 1.4.6a8 8 0 0 1 1.8-1l.2-1.5h2.5l.2 1.5a8 8 0 0 1 1.8 1l1.4-.6 1.2 2.1-1.2.9a7 7 0 0 1 0 2Z" transform="translate(-1 -1) scale(.96)"/></svg><span>Настройки</span></button>
       <button type="button" id="menuLogoutBtn" class="profile-logout profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg><span>Выйти из аккаунта</span></button>
     </div>
@@ -481,6 +505,32 @@ body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-sty
   <div class="scrim" data-close-category></div><div class="panel catalog-panel" role="dialog" aria-modal="true" aria-label="Покупки категории"><div class="grab"></div><div class="catalog-heading"><div><h2 id="categorySheetTitle">Категория</h2><p class="settings-subtitle" id="categorySheetSubtitle"></p></div><button class="icon" id="closeCategoryBtn" type="button" aria-label="Закрыть категорию">×</button></div><div class="list category-items" id="categoryItems"></div></div>
 </div>
 <div class="sheet confirm-sheet" id="deleteConfirmSheet" aria-hidden="true"><div class="scrim" data-cancel-delete></div><div class="panel confirm-panel" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle"><div class="confirm-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></div><h2 id="deleteConfirmTitle">Удалить покупку?</h2><p id="deleteConfirmText">Вы уверены, что хотите удалить эту позицию? Это действие нельзя отменить.</p><div class="confirm-actions"><button class="ghost" id="cancelDeleteBtn" type="button">Отмена</button><button class="confirm-delete-btn" id="confirmDeleteBtn" type="button">Да, удалить</button></div></div></div>
+
+<div id="adminPanelSheet" aria-hidden="true">
+  <div class="admin-shell" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
+    <header class="admin-top">
+      <div><h2 id="adminPanelTitle">Админ-панель</h2><p>Управление аккаунтами и расходами · защищённый доступ</p></div>
+      <button class="icon" id="closeAdminPanelBtn" type="button" aria-label="Закрыть админ-панель">×</button>
+    </header>
+    <section class="admin-stats">
+      <div class="admin-stat"><span>Всего аккаунтов</span><strong id="adminUsersCount">—</strong></div>
+      <div class="admin-stat"><span>Общие расходы</span><strong id="adminGlobalTotal">—</strong></div>
+      <div class="admin-stat"><span>Записей о расходах</span><strong id="adminGlobalCount">—</strong></div>
+    </section>
+    <div class="admin-layout">
+      <section class="admin-card">
+        <h3>Аккаунты</h3>
+        <input id="adminUserSearch" type="search" placeholder="Поиск по почте или имени" aria-label="Поиск пользователей">
+        <div id="adminAccountsList" class="admin-account-list"><div class="admin-empty">Загрузка списка аккаунтов…</div></div>
+      </section>
+      <section class="admin-card">
+        <div id="adminAccountDetail"><div class="admin-empty">Выбери аккаунт слева, чтобы посмотреть и изменить его расходы.</div></div>
+        <div id="adminStatus" class="admin-status" role="status" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
 <div class="sheet" id="settingsSheet" aria-hidden="true">
   <div class="scrim" data-close-settings></div>
   <div class="panel settings-panel" role="dialog" aria-modal="true" aria-label="Настройки профиля">
@@ -898,12 +948,14 @@ async function activateCloudUser(user){
     document.querySelector('#accountEmail').textContent=user.email || 'Аккаунт';
     document.querySelector('#authGate').classList.add('hidden');
     if(typeof syncProfileUI==='function')syncProfileUI();
+    refreshAdminAccess();
     authMessage('Вход выполнен.');
     render();
   })().finally(()=>{activationInProgress=null;});
   return activationInProgress;
 }
 function deactivateCloudUser(){
+  adminSetVisible(false); closeAdminPanel(); adminAccounts=[]; adminSelectedId=null; adminSelectedState=null;
   cloudUser=null;
   state={current:[],history:{}};
   document.querySelector('#accountEmail').textContent='Аккаунт не выбран';
@@ -959,6 +1011,144 @@ async function initCloudAuth(){
   if(data.session) await activateCloudUser(data.session.user);
   else authMessage('Войди или создай отдельный аккаунт для своих расходов.');
 }
+
+
+/* Admin panel uses server-checked Supabase RPCs; UI visibility is not the security boundary. */
+let adminAllowed=false, adminAccounts=[], adminSelectedId=null, adminSelectedState=null, adminEditRows=[];
+function adminStatus(message,isError=false){const el=document.querySelector('#adminStatus');if(el){el.textContent=message;el.style.color=isError?'var(--bad)':'var(--muted)';}}
+function adminSetVisible(yes){const b=document.querySelector('#openAdminPanelBtn');if(b)b.classList.toggle('admin-visible',!!yes);adminAllowed=!!yes;}
+async function refreshAdminAccess(){
+  if(!cloudClient||!cloudUser){adminSetVisible(false);return false;}
+  try{
+    const {data,error}=await cloudClient.rpc('is_current_admin');
+    if(error)throw error;
+    adminSetVisible(data===true);
+    return data===true;
+  }catch(e){adminSetVisible(false);console.info('Admin access is not configured yet.');return false;}
+}
+function adminFormatDate(value){if(!value)return '—';try{return new Date(value).toLocaleDateString('ru-RU',{day:'2-digit',month:'short',year:'numeric'});}catch{return '—';}}
+function adminAccountName(u){return u?.display_name||u?.user_metadata?.username||u?.user_metadata?.name||'Без имени';}
+function adminTotalForAccount(u){return Number(u?.total_spent||0);}
+function adminRenderAccounts(){
+  const q=(document.querySelector('#adminUserSearch')?.value||'').trim().toLowerCase();
+  const visible=adminAccounts.filter(u=>String(u.email||'').toLowerCase().includes(q)||adminAccountName(u).toLowerCase().includes(q)||String(u.user_id||'').toLowerCase().includes(q));
+  const list=document.querySelector('#adminAccountsList');
+  list.innerHTML=visible.length?visible.map(u=>'<button type="button" class="admin-account '+(u.user_id===adminSelectedId?'active':'')+'" data-admin-user="'+escapeHtml(u.user_id)+'"><strong>'+escapeHtml(u.email||'Без почты')+'</strong><span>'+escapeHtml(adminAccountName(u))+' · создан '+escapeHtml(adminFormatDate(u.created_at))+'</span><span class="admin-account-total">'+fmt(adminTotalForAccount(u))+' · '+Number(u.expense_count||0)+' записей</span></button>').join(''):'<div class="admin-empty">Пользователи не найдены.</div>';
+  document.querySelector('#adminUsersCount').textContent=String(adminAccounts.length);
+  document.querySelector('#adminGlobalTotal').textContent=fmt(adminAccounts.reduce((a,u)=>a+adminTotalForAccount(u),0));
+  document.querySelector('#adminGlobalCount').textContent=String(adminAccounts.reduce((a,u)=>a+Number(u.expense_count||0),0));
+}
+async function openAdminPanel(){
+  closeProfileMenu();closeSettings();
+  if(!cloudClient||!cloudUser){toast('Сначала войди в аккаунт');return;}
+  document.querySelector('#adminPanelSheet').classList.add('open');
+  document.querySelector('#adminPanelSheet').setAttribute('aria-hidden','false');
+  document.querySelector('#adminAccountsList').innerHTML='<div class="admin-empty">Проверяю права и загружаю аккаунты…</div>';
+  document.querySelector('#adminAccountDetail').innerHTML='<div class="admin-empty">Выбери аккаунт слева, чтобы посмотреть и изменить его расходы.</div>';
+  adminStatus('');
+  const allowed=await refreshAdminAccess();
+  if(!allowed){closeAdminPanel();toast('У этого аккаунта нет прав администратора');return;}
+  try{
+    const {data,error}=await cloudClient.rpc('admin_list_accounts');
+    if(error)throw error;
+    adminAccounts=Array.isArray(data)?data:(data?.accounts||[]);
+    adminRenderAccounts();
+    if(adminSelectedId&&adminAccounts.some(u=>u.user_id===adminSelectedId))await adminSelectAccount(adminSelectedId);
+  }catch(e){document.querySelector('#adminAccountsList').innerHTML='<div class="admin-empty">Не удалось загрузить аккаунты. Проверь, что выполнил supabase/admin.sql.</div>';adminStatus(e.message||'Ошибка загрузки',true);}
+}
+function closeAdminPanel(){document.querySelector('#adminPanelSheet').classList.remove('open');document.querySelector('#adminPanelSheet').setAttribute('aria-hidden','true');}
+function adminFlattenState(data){
+  const out=[];
+  (Array.isArray(data?.current)?data.current:[]).forEach((x,i)=>out.push({...x,_bucket:'current',_index:i}));
+  Object.entries(data?.history||{}).forEach(([month,items])=>{if(Array.isArray(items))items.forEach((x,i)=>out.push({...x,_bucket:month,_index:i}));});
+  return out.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+}
+async function adminSelectAccount(userId){
+  adminSelectedId=userId;adminRenderAccounts();
+  const user=adminAccounts.find(u=>u.user_id===userId);if(!user)return;
+  document.querySelector('#adminAccountDetail').innerHTML='<div class="admin-empty">Загружаю расходы '+escapeHtml(user.email||'аккаунта')+'…</div>';
+  try{
+    const {data,error}=await cloudClient.rpc('admin_get_account_data',{target_user_id:userId});
+    if(error)throw error;
+    adminSelectedState=(data&&typeof data==='object'&&data.data)?data.data:data;
+    if(!adminSelectedState||!Array.isArray(adminSelectedState.current))adminSelectedState={current:[],history:{}};
+    adminSelectedState.history=adminSelectedState.history&&typeof adminSelectedState.history==='object'?adminSelectedState.history:{};
+    adminEditRows=adminFlattenState(adminSelectedState).map(x=>({...x}));
+    adminRenderSelected(user);
+  }catch(e){document.querySelector('#adminAccountDetail').innerHTML='<div class="admin-empty">Не удалось открыть данные пользователя.</div>';adminStatus(e.message||'Ошибка загрузки',true);}
+}
+function adminRenderSelected(user){
+  const rows=adminEditRows;
+  const total=rows.reduce((a,x)=>a+(Number(x.price)||0)*(Number(x.qty)||0),0);
+  const detail=document.querySelector('#adminAccountDetail');
+  detail.innerHTML='<div class="admin-detail-head"><div><strong>'+escapeHtml(user.email||'Без почты')+'</strong><div class="muted">'+escapeHtml(user.user_id)+'<br>Создан '+escapeHtml(adminFormatDate(user.created_at))+' · последний вход '+escapeHtml(adminFormatDate(user.last_sign_in_at))+'</div></div><div><strong>'+fmt(total)+'</strong><div class="muted">'+rows.length+' записей в истории</div></div></div>'+
+    '<div class="admin-tools"><input id="adminExpenseSearch" type="search" placeholder="Найти покупку или категорию" aria-label="Поиск расхода"><button class="ghost" id="adminAddExpenseBtn" type="button">+ Запись</button></div>'+
+    '<div class="admin-table-wrap"><table class="admin-expense-table"><thead><tr><th>Название</th><th>Категория</th><th>Дата</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr></thead><tbody id="adminExpenseRows"></tbody></table></div>'+
+    '<div class="admin-inline-actions" style="margin-top:14px"><button class="admin-primary" id="adminSaveAccountBtn" type="button">Сохранить изменения</button><button class="ghost" id="adminReloadAccountBtn" type="button">Отменить правки</button></div>'+
+    '<p class="settings-hint">Изменения расходов пользователя сохраняются в облако. Проверяй записи перед сохранением.</p>';
+  adminRenderExpenseRows();
+}
+function adminRenderExpenseRows(){
+  const q=(document.querySelector('#adminExpenseSearch')?.value||'').trim().toLowerCase();
+  const visible=adminEditRows.map((x,i)=>({...x,_row:i})).filter(x=>!q||(String(x.name||'').toLowerCase().includes(q)||String(x.category||'').toLowerCase().includes(q)));
+  const tbody=document.querySelector('#adminExpenseRows');if(!tbody)return;
+  tbody.innerHTML=visible.length?visible.map(x=>'<tr data-admin-row="'+x._row+'"><td><input class="admin-name-input" data-admin-field="name" value="'+escapeHtml(x.name||'')+'" aria-label="Название"></td><td><input class="admin-category-input" data-admin-field="category" value="'+escapeHtml(x.category||'другое')+'" aria-label="Категория"></td><td><input class="admin-date-input" data-admin-field="date" type="date" value="'+escapeHtml(x.date||'')+'" aria-label="Дата"></td><td><input class="admin-number-input" data-admin-field="price" type="number" min="0" step="0.01" value="'+Number(x.price||0)+'" aria-label="Цена"></td><td><input class="admin-number-input" data-admin-field="qty" type="number" min="0.01" step="0.01" value="'+Number(x.qty||1)+'" aria-label="Количество"></td><td>'+fmt((Number(x.price)||0)*(Number(x.qty)||0))+'</td><td><button type="button" class="del" data-admin-delete-row="'+x._row+'" aria-label="Удалить запись">×</button></td></tr>').join(''):'<tr><td colspan="7"><div class="admin-empty">Записей не найдено.</div></td></tr>';
+}
+function adminCaptureRows(){
+  document.querySelectorAll('#adminExpenseRows tr[data-admin-row]').forEach(tr=>{
+    const i=Number(tr.dataset.adminRow);const row=adminEditRows[i];if(!row)return;
+    tr.querySelectorAll('[data-admin-field]').forEach(el=>{const k=el.dataset.adminField;row[k]=k==='price'||k==='qty'?Number(el.value):el.value;});
+  });
+}
+function adminRebuildState(){
+  const next={current:[],history:{}};
+  for(const row of adminEditRows){
+    const clean={...row};delete clean._bucket;delete clean._index;delete clean._row;
+    if(row._bucket==='current')next.current.push(clean);
+    else {if(!Array.isArray(next.history[row._bucket]))next.history[row._bucket]=[];next.history[row._bucket].push(clean);}
+  }
+  return next;
+}
+async function adminSaveAccount(){
+  if(!adminAllowed||!adminSelectedId)return;
+  adminCaptureRows();
+  if(adminEditRows.some(x=>!String(x.name||'').trim()||!String(x.category||'').trim()||!x.date||!Number.isFinite(Number(x.price))||Number(x.price)<0||!Number.isFinite(Number(x.qty))||Number(x.qty)<=0)){
+    adminStatus('Проверь названия, категории, даты, цены и количество. Цена не может быть отрицательной.',true);return;
+  }
+  const button=document.querySelector('#adminSaveAccountBtn');if(button)button.disabled=true;
+  adminStatus('Сохраняю изменения…');
+  try{
+    const {error}=await cloudClient.rpc('admin_save_account_data',{target_user_id:adminSelectedId,new_data:adminRebuildState()});
+    if(error)throw error;
+    adminStatus('Изменения сохранены.');toast('Расходы пользователя обновлены');
+    const {data:accountsError,error:reloadError}=await cloudClient.rpc('admin_list_accounts');
+    if(!reloadError){adminAccounts=Array.isArray(accountsError)?accountsError:(accountsError?.accounts||[]);adminRenderAccounts();const u=adminAccounts.find(x=>x.user_id===adminSelectedId);if(u)adminRenderSelected(u);}
+  }catch(e){adminStatus(e.message||'Не удалось сохранить изменения.',true);}
+  finally{const b=document.querySelector('#adminSaveAccountBtn');if(b)b.disabled=false;}
+}
+function adminAddExpense(){
+  adminCaptureRows();
+  const id='admin-'+Date.now().toString(36);
+  adminEditRows.unshift({id,name:'Новая запись',category:'другое',date:today(),price:0,qty:1,createdAt:Date.now(),_bucket:'current',_index:0});
+  adminRenderExpenseRows();
+}
+function adminDeleteExpense(index){
+  const row=adminEditRows[index];if(!row)return;
+  if(!confirm('Удалить запись «'+String(row.name||'без названия')+'»?'))return;
+  adminCaptureRows();adminEditRows.splice(index,1);adminRenderExpenseRows();
+}
+document.querySelector('#openAdminPanelBtn')?.addEventListener('click',openAdminPanel);
+document.querySelector('#closeAdminPanelBtn')?.addEventListener('click',closeAdminPanel);
+document.querySelector('#adminPanelSheet')?.addEventListener('click',e=>{if(e.target.id==='adminPanelSheet')closeAdminPanel();});
+document.querySelector('#adminUserSearch')?.addEventListener('input',adminRenderAccounts);
+document.querySelector('#adminAccountsList')?.addEventListener('click',e=>{const b=e.target.closest('[data-admin-user]');if(b)adminSelectAccount(b.dataset.adminUser);});
+document.querySelector('#adminAccountDetail')?.addEventListener('input',e=>{if(e.target.id==='adminExpenseSearch')adminRenderExpenseRows();});
+document.querySelector('#adminAccountDetail')?.addEventListener('click',e=>{
+  if(e.target.closest('#adminSaveAccountBtn'))adminSaveAccount();
+  else if(e.target.closest('#adminReloadAccountBtn'))adminSelectAccount(adminSelectedId);
+  else if(e.target.closest('#adminAddExpenseBtn'))adminAddExpense();
+  else {const del=e.target.closest('[data-admin-delete-row]');if(del)adminDeleteExpense(Number(del.dataset.adminDeleteRow));}
+});
 
 initCloudAuth();
 
