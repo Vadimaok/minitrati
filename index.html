@@ -36,7 +36,12 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-
 .card h2{margin:0 0 12px;font-size:15px;letter-spacing:.01em}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0}
 .label{display:flex;align-items:center;gap:10px;min-width:0}.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 4px rgba(255,255,255,.04)}.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.muted{color:var(--muted)}
 .amount{font-variant-numeric:tabular-nums;font-weight:700}.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
-.list{display:flex;flex-direction:column}.item{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item .meta{color:var(--muted);font-size:12px}.item .price{text-align:right;font-weight:700;white-space:nowrap}.item-name{overflow-wrap:anywhere}.product-avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;font-size:21px;background:linear-gradient(145deg,rgba(124,92,255,.22),rgba(34,211,238,.14));border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}.clear-action{display:flex;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.clear-action button{font-size:12px;padding:8px 11px;border-radius:12px;background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.18);color:#fda4af}.del{color:var(--muted);font-size:18px;padding:6px}
+.list{display:flex;flex-direction:column}.item{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item .meta{color:var(--muted);font-size:12px}.item .price{text-align:right;font-weight:700;white-space:nowrap}.item-name{overflow-wrap:anywhere}.product-avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;font-size:21px;background:linear-gradient(145deg,rgba(124,92,255,.22),rgba(34,211,238,.14));border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}.clear-action{display:flex;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.clear-action button{font-size:12px;padding:8px 11px;border-radius:12px;background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.18);color:#fda4af}.del{width:32px;height:32px;display:inline-grid;place-items:center;color:#fda4af;background:rgba(251,113,133,.09);border:1px solid rgba(251,113,133,.2);border-radius:11px;padding:0;vertical-align:middle}.del:hover{background:rgba(251,113,133,.18);border-color:rgba(251,113,133,.42);transform:scale(1.04)}
+.recent-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.recent-heading h2{margin-bottom:0}.recent-count{font-size:11px;font-weight:750;padding:4px 8px;border-radius:99px;background:rgba(124,92,255,.15);color:var(--muted)}
+.history-toggle{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;margin-top:8px;border:1px solid var(--line);border-radius:14px;background:rgba(124,92,255,.08);font-size:13px;font-weight:750;color:var(--text)}.history-toggle svg{transition:transform .2s}.history-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.category-row{cursor:pointer;border-radius:13px;padding:12px 9px;margin:0 -9px;transition:background .16s}.category-row:hover,.category-row:focus-visible{background:rgba(124,92,255,.09);outline:0}.category-row .row{border:0;padding:0}.category-row .category-chevron{color:var(--muted);font-size:20px;margin-left:10px}.category-items .item{grid-template-columns:42px minmax(0,1fr) auto}
+.confirm-sheet{z-index:50}.confirm-panel{top:50%;bottom:auto;left:50%;right:auto;transform:translate(-50%,-50%);width:calc(100% - 32px);max-width:420px;border-radius:26px;padding:24px;max-height:80vh}.confirm-panel h2{margin:14px 0 8px;font-size:21px}.confirm-panel p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}.confirm-icon{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;color:#fda4af;background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.2)}.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}.confirm-actions button{padding:13px 12px;border-radius:14px;font-weight:750}.confirm-delete-btn{background:linear-gradient(135deg,#fb7185,#e11d48);color:white;box-shadow:0 8px 20px rgba(225,29,72,.2)}
+body.light-theme .category-row:hover,body.light-theme .category-row:focus-visible{background:rgba(124,92,255,.08)}body.light-theme .confirm-panel{background:linear-gradient(180deg,#fff,#f7f9fd)}body.light-theme .history-toggle{background:rgba(124,92,255,.07)}
 .fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:10;border-radius:22px;padding:15px 18px;background:linear-gradient(135deg,var(--accent),#4f46e5);box-shadow:0 18px 38px rgba(79,70,229,.38);font-weight:800}.fab:active{transform:translateY(1px) scale(.99)}
 .sheet{position:fixed;inset:0;z-index:20;display:none}.sheet.open{display:block}.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}.panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:#10161f;border:1px solid var(--line);border-radius:28px 28px 0 0;padding:12px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--shadow)}.grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);margin:2px auto 14px}.panel h2{margin:0 0 14px;font-size:20px;letter-spacing:-.02em}
 .field{display:flex;flex-direction:column;gap:7px;margin:12px 0}.field span{font-size:12px;color:var(--muted)}input,select{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.055);color:var(--text);border-radius:16px;padding:14px 14px;outline:0;font:inherit}textarea:focus,input:focus,select:focus{border-color:rgba(124,92,255,.75);box-shadow:0 0 0 4px rgba(124,92,255,.15)}select option{color:#111}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.save{width:100%;margin-top:8px;padding:15px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#4f46e5);font-weight:800}.danger{color:#fecdd3}.danger-text{color:#fecdd3}.history{margin-top:8px}.hidden{display:none!important}
@@ -213,9 +218,10 @@ body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--
       <div id="cats"></div>
     </section>
     <section class="card">
-      <h2>Последние покупки</h2>
+      <div class="recent-heading"><h2>Последние покупки</h2><span class="recent-count" id="recentCount">0</span></div>
       <div class="list" id="recent"></div>
-      <div class="history" id="historyBox"></div>
+      <button class="history-toggle" id="toggleRecentBtn" type="button" aria-expanded="false">Посмотреть историю покупок <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      <div class="history hidden" id="historyBox"></div>
       <div class="clear-action"><button id="clearBtn" type="button" title="Удалить все покупки текущего списка">Очистить текущий список</button></div>
     </section>
   </main>
@@ -267,6 +273,10 @@ body.light-theme .catalog-filter.active{background:linear-gradient(135deg,var(--
     <div class="catalog-footnote">Фото могут быть общими для категории, если точное изображение товара не найдено.</div>
   </div>
 </div>
+<div class="sheet" id="categorySheet" aria-hidden="true">
+  <div class="scrim" data-close-category></div><div class="panel catalog-panel" role="dialog" aria-modal="true" aria-label="Покупки категории"><div class="grab"></div><div class="catalog-heading"><div><h2 id="categorySheetTitle">Категория</h2><p class="settings-subtitle" id="categorySheetSubtitle"></p></div><button class="icon" id="closeCategoryBtn" type="button" aria-label="Закрыть категорию">×</button></div><div class="list category-items" id="categoryItems"></div></div>
+</div>
+<div class="sheet confirm-sheet" id="deleteConfirmSheet" aria-hidden="true"><div class="scrim" data-cancel-delete></div><div class="panel confirm-panel" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle"><div class="confirm-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></div><h2 id="deleteConfirmTitle">Удалить покупку?</h2><p id="deleteConfirmText">Вы уверены, что хотите удалить эту позицию? Это действие нельзя отменить.</p><div class="confirm-actions"><button class="ghost" id="cancelDeleteBtn" type="button">Отмена</button><button class="confirm-delete-btn" id="confirmDeleteBtn" type="button">Да, удалить</button></div></div></div>
 <div class="sheet" id="settingsSheet" aria-hidden="true">
   <div class="scrim" data-close-settings></div>
   <div class="panel settings-panel" role="dialog" aria-modal="true" aria-label="Настройки профиля">
@@ -441,6 +451,12 @@ function init(){
     }
   });
   $('#addBtn').onclick=openSheet; $('#saveBtn').onclick=saveEntry;
+  $('#toggleRecentBtn').onclick=toggleRecentHistory;
+  $('#confirmDeleteBtn').onclick=confirmDelete;$('#cancelDeleteBtn').onclick=closeDeleteConfirm;document.querySelectorAll('[data-cancel-delete]').forEach(el=>el.onclick=closeDeleteConfirm);
+  $('#closeCategoryBtn').onclick=closeCategory;document.querySelectorAll('[data-close-category]').forEach(el=>el.onclick=closeCategory);
+  $('#categoryItems').addEventListener('click',e=>{const b=e.target.closest('[data-delete-id]');if(b)del(b.dataset.deleteId)});$('#recent').addEventListener('click',e=>{const b=e.target.closest('[data-delete-id]');if(b)del(b.dataset.deleteId)});
+  $('#cats').addEventListener('click',e=>{const row=e.target.closest('[data-open-category]');if(row)openCategory(row.dataset.openCategory)});
+  $('#cats').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-open-category]')){e.preventDefault();openCategory(e.target.dataset.openCategory)}});
   $('#openCatalogBtn').onclick=openCatalog;
   $('#closeCatalogBtn').onclick=closeCatalog;
   document.querySelectorAll('[data-close-catalog]').forEach(el=>el.onclick=closeCatalog);
@@ -589,7 +605,15 @@ function exportJSON(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='minitrati.json'; a.click(); URL.revokeObjectURL(a.href); toast('JSON выгружен');
 }
-function del(id){ if(!confirm('Удалить запись?')) return; state.current=state.current.filter(x=>x.id!==id); save(); }
+let pendingDeleteId=null;
+function del(id){const item=state.current.find(x=>String(x.id)===String(id));if(!item)return;pendingDeleteId=item.id;$('#deleteConfirmText').textContent='Вы уверены, что хотите удалить «'+item.name+'»? Это действие нельзя отменить.';$('#deleteConfirmSheet').classList.add('open');$('#deleteConfirmSheet').setAttribute('aria-hidden','false');}
+function closeDeleteConfirm(){$('#deleteConfirmSheet').classList.remove('open');$('#deleteConfirmSheet').setAttribute('aria-hidden','true');pendingDeleteId=null;}
+function confirmDelete(){if(pendingDeleteId===null)return;state.current=state.current.filter(x=>String(x.id)!==String(pendingDeleteId));closeDeleteConfirm();save();toast('Покупка удалена');}
+function renderPurchaseRows(items){return items.map(x=>'<div class="item">'+productAvatar(x.name,x.category)+'<div class="item-name"><div>'+escapeHtml(x.name)+'</div><div class="meta">'+escapeHtml(x.category)+' · '+x.qty+' шт · '+new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</div></div><div class="price">'+fmt(x.price*x.qty)+'<br><button class="del" type="button" data-delete-id="'+escapeHtml(String(x.id))+'" aria-label="Удалить '+escapeHtml(x.name)+'" title="Удалить покупку"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></button></div></div>').join('');}
+let recentExpanded=false;
+function toggleRecentHistory(){recentExpanded=!recentExpanded;render();}
+function openCategory(category){const items=[...state.current].filter(x=>(x.category||'другое')===category).sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);$('#categorySheetTitle').textContent=category;$('#categorySheetSubtitle').textContent=items.length+' покупок · всего '+fmt(sum(items));$('#categoryItems').innerHTML=items.length?renderPurchaseRows(items):'<div class="muted">В этой категории пока нет покупок.</div>';$('#categorySheet').classList.add('open');$('#categorySheet').setAttribute('aria-hidden','false');}
+function closeCategory(){$('#categorySheet').classList.remove('open');$('#categorySheet').setAttribute('aria-hidden','true');}
 function itemEmoji(name, category){
   const value=(String(name||'')+' '+String(category||'')).toLowerCase();
   if(/кофе|капуч|латте|эспрессо/.test(value)) return '☕';
@@ -621,10 +645,15 @@ function render(){
     `<span class="pill">${fmt(total/Math.max(1,items.length))} / покупку</span>`
   ].join('');
   const max=Math.max(1,...cats.map(x=>x[1]));
-  $('#cats').innerHTML = cats.length ? cats.map(([c,v],i)=>`<div><div class="row"><div class="label"><i class="dot" style="background:${COLORS[i%COLORS.length]}"></i><div><div class="name">${escapeHtml(c)}</div><div class="muted small">${fmt(v)} · ${Math.round(v/total*100)||0}%</div></div></div><div class="amount">${fmt(v)}</div></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join('') : '<div class="muted">Пока пусто. Нажми «+ Добавить».</div>';
-  $('#recent').innerHTML = items.slice(0,12).map(x=>`<div class="item">${productAvatar(x.name,x.category)}<div class="item-name"><div>${escapeHtml(x.name)}</div><div class="meta">${escapeHtml(x.category)} · ${x.qty} шт · ${new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</div></div><div class="price">${fmt(x.price*x.qty)}<br><button class="del" onclick="del('${x.id}')" aria-label="Удалить">×</button></div></div>`).join('') || '<div class="muted">Нет записей</div>';
+  $('#cats').innerHTML = cats.length ? cats.map(([c,v],i)=>`<div class="category-row" role="button" tabindex="0" data-open-category="${escapeHtml(c)}" aria-label="Открыть покупки категории ${escapeHtml(c)}"><div class="row"><div class="label"><i class="dot" style="background:${COLORS[i%COLORS.length]}"></i><div><div class="name">${escapeHtml(c)}</div><div class="muted small">${fmt(v)} · ${Math.round(v/total*100)||0}%</div></div></div><div class="amount">${fmt(v)} <span class="category-chevron" aria-hidden="true">›</span></div></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join('') : '<div class="muted">Пока пусто. Нажми «+ Добавить».</div>';
+  $('#recentCount').textContent=items.length;
+  $('#recent').innerHTML = renderPurchaseRows(recentExpanded?items:items.slice(0,4)) || '<div class="muted">Нет записей</div>';
+  $('#toggleRecentBtn').classList.toggle('hidden',items.length<=4);
+  $('#toggleRecentBtn').setAttribute('aria-expanded',String(recentExpanded));
+  $('#toggleRecentBtn').innerHTML=(recentExpanded?'Скрыть историю покупок':'Посмотреть историю покупок')+' <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   const hist=Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
   $('#historyBox').innerHTML = hist.length ? `<h2 style="margin-top:16px">Архив месяцев</h2>`+hist.map(([k,arr])=>`<div class="row"><div class="label"><div><div class="name">${new Date(k+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div><div class="muted small">${arr.length} покупок</div></div></div><div class="amount">${fmt(sum(arr))}</div></div>`).join('') : '';
+  $('#historyBox').classList.toggle('hidden',!recentExpanded);
 }
 init();
 
@@ -862,7 +891,7 @@ document.querySelector('#saveUsernameBtn').addEventListener('click',saveUsername
 document.querySelector('#changeEmailBtn').addEventListener('click',changeAccountEmail);
 document.querySelector('#changePasswordBtn').addEventListener('click',changeAccountPassword);
 document.addEventListener('click',e=>{if(!e.target.closest('.profilebar'))closeProfileMenu()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProfileMenu();closeSettings()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProfileMenu();closeSettings();closeCategory();closeDeleteConfirm()}});
 window.matchMedia?.('(prefers-color-scheme: light)').addEventListener?.('change',()=>{
   let theme='dark';try{theme=localStorage.getItem(profileThemeKey())||'dark'}catch{}
   if(theme==='system')applyTheme('system',false);
