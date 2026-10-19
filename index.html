@@ -320,6 +320,56 @@ body.light-theme .product-avatar{background:linear-gradient(145deg,rgba(40,105,2
   *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
+
+
+
+/* Personalizable wallpapers, accent palettes and button styles */
+:root{--accent-end:#326edb;--button-text:#fff;--accent-rgb:79,140,255}
+body[data-wallpaper="grid"]{background-image:radial-gradient(ellipse at 50% -18%,rgba(var(--accent-rgb),.15),transparent 58%),radial-gradient(ellipse at 100% 55%,rgba(53,198,176,.055),transparent 44%),linear-gradient(180deg,#0b1017 0%,#0c121a 55%,#0a0f15 100%)}
+body[data-wallpaper="aurora"]{background-image:radial-gradient(ellipse at 12% 0%,rgba(44,212,175,.2),transparent 38%),radial-gradient(ellipse at 88% 10%,rgba(var(--accent-rgb),.2),transparent 42%),radial-gradient(ellipse at 50% 100%,rgba(125,92,255,.08),transparent 45%),linear-gradient(145deg,#0a1419,#0d1420 55%,#10101b)}
+body[data-wallpaper="plain"]{background-image:linear-gradient(180deg,#0d131b,#0b1017)}
+body[data-wallpaper="midnight"]{background-image:radial-gradient(ellipse at 50% -20%,rgba(var(--accent-rgb),.23),transparent 62%),linear-gradient(145deg,#09111f,#0b1424 50%,#080e18)}
+body.light-theme[data-wallpaper="grid"]{background-image:radial-gradient(ellipse at 50% -18%,rgba(var(--accent-rgb),.12),transparent 58%),linear-gradient(180deg,#f7f9fc,#eef2f7)}
+body.light-theme[data-wallpaper="aurora"]{background-image:radial-gradient(ellipse at 12% 0%,rgba(44,180,150,.12),transparent 38%),radial-gradient(ellipse at 88% 10%,rgba(var(--accent-rgb),.13),transparent 42%),linear-gradient(145deg,#f7fbfa,#f0f3fa 60%,#f6f1fb)}
+body.light-theme[data-wallpaper="plain"]{background-image:linear-gradient(180deg,#f7f9fc,#eff2f7)}
+body.light-theme[data-wallpaper="midnight"]{background-image:radial-gradient(ellipse at 50% -20%,rgba(var(--accent-rgb),.13),transparent 62%),linear-gradient(145deg,#f4f7fc,#eaf0f9)}
+body[data-accent="blue"]{--accent:#4f8cff;--accent-end:#326edb;--accent-rgb:79,140,255}
+body[data-accent="violet"]{--accent:#9472f5;--accent-end:#7048d8;--accent-rgb:148,114,245}
+body[data-accent="emerald"]{--accent:#25b99a;--accent-end:#12846f;--accent-rgb:37,185,154}
+body[data-accent="amber"]{--accent:#e5a63c;--accent-end:#bb771b;--accent-rgb:229,166,60}
+body[data-accent="rose"]{--accent:#e16d86;--accent-end:#b94360;--accent-rgb:225,109,134}
+body.light-theme[data-accent="blue"]{--accent:#2869d8;--accent-end:#1f54b1}
+body.light-theme[data-accent="violet"]{--accent:#7048d8;--accent-end:#5634ad}
+body.light-theme[data-accent="emerald"]{--accent:#12846f;--accent-end:#0d6958}
+body.light-theme[data-accent="amber"]{--accent:#a96b0e;--accent-end:#84520a}
+body.light-theme[data-accent="rose"]{--accent:#b94360;--accent-end:#96334b}
+.fab,.save{background:linear-gradient(135deg,var(--accent),var(--accent-end));border-color:rgba(var(--accent-rgb),.38)}
+.bar i{background:linear-gradient(90deg,var(--accent),var(--accent-end))}
+.catalog-filter.active{background:linear-gradient(135deg,var(--accent),var(--accent-end))}
+.catalog-open-btn{background:rgba(var(--accent-rgb),.09);border-color:rgba(var(--accent-rgb),.23)}
+.history-toggle{background:rgba(var(--accent-rgb),.07);border-color:rgba(var(--accent-rgb),.2)}
+.history-toggle:hover{background:rgba(var(--accent-rgb),.13);border-color:rgba(var(--accent-rgb),.34)}
+.category-row:hover,.category-row:focus-visible{background:rgba(var(--accent-rgb),.075)}
+input:focus,select:focus,textarea:focus{border-color:rgba(var(--accent-rgb),.72);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.13)}
+.profile-menu>button.profile-menu-action:hover{background:rgba(var(--accent-rgb),.09);border-color:rgba(var(--accent-rgb),.13)}
+.appearance-preview{padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(128,145,166,.045);margin-top:8px}
+.appearance-preview-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.appearance-preview-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.appearance-preview-buttons span{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:9px 13px;border-radius:11px;font-size:12px;font-weight:700}
+.preview-primary{background:linear-gradient(135deg,var(--accent),var(--accent-end));color:white;border:1px solid rgba(var(--accent-rgb),.4);box-shadow:0 5px 14px rgba(var(--accent-rgb),.15)}
+.preview-secondary{color:var(--text);border:1px solid var(--line);background:rgba(128,145,166,.06)}
+.appearance-reset{width:100%;margin-top:12px}
+body[data-button-style="soft"] .fab,body[data-button-style="soft"] .save{background:rgba(var(--accent-rgb),.15);border:1px solid rgba(var(--accent-rgb),.36);color:var(--text);box-shadow:none}
+body[data-button-style="soft"] .fab:hover,body[data-button-style="soft"] .save:hover{background:rgba(var(--accent-rgb),.23);box-shadow:0 6px 18px rgba(var(--accent-rgb),.12)}
+body[data-button-style="outline"] .fab,body[data-button-style="outline"] .save{background:transparent;border:1px solid var(--accent);color:var(--accent);box-shadow:none}
+body[data-button-style="outline"] .fab:hover,body[data-button-style="outline"] .save:hover{background:rgba(var(--accent-rgb),.1);box-shadow:none}
+body[data-button-style="soft"] .catalog-filter.active{background:rgba(var(--accent-rgb),.17);color:var(--accent);border-color:rgba(var(--accent-rgb),.32)}
+body[data-button-style="outline"] .catalog-filter.active{background:transparent;color:var(--accent);border-color:var(--accent)}
+body[data-button-style="soft"] .history-toggle,body[data-button-style="outline"] .history-toggle{background:rgba(var(--accent-rgb),.05)}
+body.light-theme .appearance-preview{background:rgba(30,50,75,.025)}
+body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-style="soft"] .save{color:var(--accent)}
+@media(max-width:420px){.appearance-preview-buttons span{flex:1}}
+
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -452,8 +502,13 @@ body.light-theme .product-avatar{background:linear-gradient(145deg,rgba(40,105,2
     </section>
     <section class="settings-section">
       <h3>Внешний вид</h3>
-      <label class="field"><span>Тема приложения</span><select id="themeSelect"><option value="dark">🌙 Тёмная</option><option value="light">☀️ Светлая</option><option value="system">🖥️ Как в системе</option></select></label>
-      <p class="settings-hint">Тема сохранится в этом браузере для твоего аккаунта.</p>
+      <label class="field"><span>Тема приложения</span><select id="themeSelect"><option value="dark">Тёмная</option><option value="light">Светлая</option><option value="system">Как в системе</option></select></label>
+      <label class="field"><span>Обои и фон</span><select id="wallpaperSelect"><option value="grid">Графитовая сетка</option><option value="aurora">Северное сияние</option><option value="plain">Чистый минимализм</option><option value="midnight">Полночный синий</option></select></label>
+      <label class="field"><span>Акцентный цвет</span><select id="accentSelect"><option value="blue">Холодный синий</option><option value="violet">Фиолетовый</option><option value="emerald">Изумрудный</option><option value="amber">Янтарный</option><option value="rose">Бордовый</option></select></label>
+      <label class="field"><span>Стиль кнопок</span><select id="buttonStyleSelect"><option value="solid">Заливка — выразительно</option><option value="soft">Мягкий — сдержанно</option><option value="outline">Контур — минимализм</option></select></label>
+      <div class="appearance-preview" aria-live="polite"><span class="appearance-preview-label">Предпросмотр</span><div class="appearance-preview-buttons"><span class="preview-primary" id="appearancePreviewPrimary">Добавить покупку</span><span class="preview-secondary" id="appearancePreviewSecondary">Отмена</span></div><span class="settings-hint">Цвет кнопок автоматически подстроится под выбранный акцент и фон.</span></div>
+      <p class="settings-hint">Настройки внешнего вида сохраняются отдельно для твоего аккаунта в этом браузере.</p>
+      <button type="button" class="ghost appearance-reset" id="resetAppearanceBtn">Сбросить оформление</button>
     </section>
     <section class="settings-section">
       <h3>Электронная почта</h3>
@@ -908,15 +963,49 @@ async function initCloudAuth(){
 initCloudAuth();
 
 const PROFILE_THEME_KEY='minitrati.theme.v1';
+const PROFILE_APPEARANCE_KEY='minitrati.appearance.v1';
+const DEFAULT_APPEARANCE={wallpaper:'grid',accent:'blue',buttonStyle:'solid'};
 function profileThemeKey(){ return PROFILE_THEME_KEY+'.'+(cloudUser?.id||'guest'); }
-function applyTheme(theme, persist=true){
-  let chosen=theme||'dark';
-  if(chosen==='system') chosen=window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark';
-  document.body.classList.toggle('light-theme',chosen==='light');
-  const sel=document.querySelector('#themeSelect'); if(sel) sel.value=theme||'dark';
-  if(persist){ try{localStorage.setItem(profileThemeKey(),theme||'dark')}catch{} }
+function profileAppearanceKey(){ return PROFILE_APPEARANCE_KEY+'.'+(cloudUser?.id||'guest'); }
+function readAppearance(){
+  try{return {...DEFAULT_APPEARANCE,...JSON.parse(localStorage.getItem(profileAppearanceKey())||'{}')}}catch{return {...DEFAULT_APPEARANCE}}
 }
-function loadTheme(){ let theme='dark'; try{theme=localStorage.getItem(profileThemeKey())||'dark'}catch{} applyTheme(theme,false); }
+function applyAppearance(appearance=readAppearance(),persist=true){
+  const a={...DEFAULT_APPEARANCE,...appearance};
+  if(!['grid','aurora','plain','midnight'].includes(a.wallpaper))a.wallpaper='grid';
+  if(!['blue','violet','emerald','amber','rose'].includes(a.accent))a.accent='blue';
+  if(!['solid','soft','outline'].includes(a.buttonStyle))a.buttonStyle='solid';
+  document.body.dataset.wallpaper=a.wallpaper;
+  document.body.dataset.accent=a.accent;
+  document.body.dataset.buttonStyle=a.buttonStyle;
+  const controls=[['#wallpaperSelect',a.wallpaper],['#accentSelect',a.accent],['#buttonStyleSelect',a.buttonStyle]];
+  controls.forEach(([selector,value])=>{const el=document.querySelector(selector);if(el)el.value=value});
+  updateAppearancePreview();
+  if(persist){try{localStorage.setItem(profileAppearanceKey(),JSON.stringify(a))}catch{}}
+}
+function updateAppearancePreview(){
+  const a=readAppearance();
+  const primary=document.querySelector('#appearancePreviewPrimary');
+  const secondary=document.querySelector('#appearancePreviewSecondary');
+  if(primary)primary.textContent=a.buttonStyle==='outline'?'Контурная кнопка':a.buttonStyle==='soft'?'Мягкая кнопка':'Добавить покупку';
+  if(secondary)secondary.textContent=a.wallpaper==='plain'?'Минимализм':a.wallpaper==='aurora'?'Северное сияние':a.wallpaper==='midnight'?'Полночный синий':'Отмена';
+}
+function applyTheme(theme,persist=true){
+  let chosen=theme||'dark';
+  if(chosen==='system') chosen=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  document.body.classList.toggle('light-theme',chosen==='light');
+  const sel=document.querySelector('#themeSelect');if(sel)sel.value=theme||'dark';
+  if(persist){try{localStorage.setItem(profileThemeKey(),theme||'dark')}catch{}}
+}
+function loadTheme(){
+  let theme='dark';try{theme=localStorage.getItem(profileThemeKey())||'dark'}catch{}
+  applyTheme(theme,false);
+  applyAppearance(readAppearance(),false);
+}
+function resetAppearance(){
+  applyAppearance(DEFAULT_APPEARANCE,true);
+  settingsStatus('Оформление сброшено к стандартному.');
+}
 function setAvatarImage(data){
   ['#profileAvatarText','#settingsAvatarText'].forEach(sel=>{
     const el=document.querySelector(sel); if(!el)return;
@@ -1041,6 +1130,10 @@ document.querySelector('#settingsAvatarBtn').addEventListener('click',()=>docume
 document.querySelector('#avatarFile').addEventListener('change',chooseAvatarFile);
 document.querySelector('#removeAvatarBtn').addEventListener('click',removeAvatar);
 document.querySelector('#themeSelect').addEventListener('change',e=>applyTheme(e.target.value));
+document.querySelector('#wallpaperSelect').addEventListener('change',e=>applyAppearance({...readAppearance(),wallpaper:e.target.value}));
+document.querySelector('#accentSelect').addEventListener('change',e=>applyAppearance({...readAppearance(),accent:e.target.value}));
+document.querySelector('#buttonStyleSelect').addEventListener('change',e=>applyAppearance({...readAppearance(),buttonStyle:e.target.value}));
+document.querySelector('#resetAppearanceBtn').addEventListener('click',resetAppearance);
 document.querySelector('#saveUsernameBtn').addEventListener('click',saveUsername);
 document.querySelector('#changeEmailBtn').addEventListener('click',changeAccountEmail);
 document.querySelector('#changePasswordBtn').addEventListener('click',changeAccountPassword);
