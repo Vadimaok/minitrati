@@ -81,6 +81,52 @@ button{transition:filter .16s ease,transform .16s ease}
 .auth-card{border-color:rgba(148,163,184,.22);background:linear-gradient(160deg,#151e2b,#10151e)}
 .accountbar{padding:10px 12px;border:1px solid rgba(148,163,184,.12);border-radius:14px;background:rgba(255,255,255,.025)}
 @media(max-width:520px){.product-suggestion{padding:10px}.product-suggestion .suggest-name{font-size:13px}.panel{max-height:91vh}}
+
+/* Account menu, profile settings and light theme */
+.profilebar{position:relative;min-height:64px;margin:0 0 14px;padding:9px 10px;background:rgba(255,255,255,.035)}
+.profile-summary{display:flex;align-items:center;gap:11px;min-width:0}
+.profile-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+.profile-copy strong{font-size:14px;color:var(--text)}
+.profile-copy span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.profile-avatar{width:44px;height:44px;flex:0 0 44px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,rgba(124,92,255,.32),rgba(34,211,238,.22));border:1px solid rgba(148,163,184,.3);font-size:21px;padding:0}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-avatar-large{width:66px;height:66px;flex-basis:66px;font-size:28px}
+.profile-menu-trigger{margin-left:auto;min-width:40px}
+.profile-menu{position:absolute;right:8px;top:calc(100% + 7px);z-index:80;width:min(290px,calc(100vw - 40px));padding:8px;border-radius:18px;background:#151d2a;border:1px solid rgba(148,163,184,.22);box-shadow:0 20px 55px rgba(0,0,0,.4)}
+.profile-menu-head{display:flex;flex-direction:column;gap:3px;padding:12px;border-bottom:1px solid var(--line);margin-bottom:5px;overflow-wrap:anywhere}
+.profile-menu-head span{font-size:12px;color:var(--muted)}
+.profile-menu>button{display:block;width:100%;text-align:left;padding:12px;border-radius:12px;background:transparent}
+.profile-menu>button:hover{background:rgba(124,92,255,.14)}
+.profile-menu .profile-logout{color:var(--bad)}
+.settings-panel{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.settings-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.settings-title-row h2{margin-bottom:3px}
+.settings-subtitle{font-size:13px;color:var(--muted);margin:0 0 12px}
+.settings-section{padding:16px 0;border-top:1px solid var(--line)}
+.settings-section h3{font-size:14px;margin:0 0 10px}
+.avatar-editor{display:flex;align-items:center;gap:14px}
+.avatar-editor>div{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.small-button{padding:7px 10px;font-size:12px;margin-top:3px}
+.settings-hint{font-size:12px;line-height:1.5;color:var(--muted);margin:8px 0 0}
+.settings-status{font-size:13px;line-height:1.5;min-height:20px;margin-top:12px;overflow-wrap:anywhere}
+body.light-theme{--bg:#f3f6fc;--card:#fff;--card2:#f7f9fd;--text:#172033;--muted:#667085;--line:rgba(28,41,64,.12);--shadow:0 18px 45px rgba(31,45,71,.12);background:radial-gradient(900px 500px at 80% -10%,rgba(124,92,255,.13),transparent 60%),radial-gradient(700px 500px at -10% 10%,rgba(34,211,238,.12),transparent 55%),linear-gradient(180deg,#f7f9ff,#eef2f8 70%);color:var(--text)}
+body.light-theme .card{background:rgba(255,255,255,.82);backdrop-filter:blur(14px)}
+body.light-theme .hero{background:linear-gradient(145deg,rgba(124,92,255,.13),rgba(34,211,238,.10)),#fff}
+body.light-theme .panel{background:linear-gradient(180deg,#fff 0%,#f7f9fd 100%);border-color:rgba(28,41,64,.12)}
+body.light-theme .profile-menu{background:#fff;border-color:rgba(28,41,64,.14);box-shadow:0 20px 55px rgba(31,45,71,.16)}
+body.light-theme .product-suggestions{background:#fff;border-color:rgba(28,41,64,.14);box-shadow:0 16px 34px rgba(31,45,71,.14)}
+body.light-theme input,body.light-theme select,body.light-theme textarea{background:rgba(255,255,255,.92);border-color:rgba(28,41,64,.16);color:var(--text)}
+body.light-theme input:hover,body.light-theme select:hover{background:#fff}
+body.light-theme .ghost,body.light-theme .icon{background:rgba(28,41,64,.045);border-color:var(--line);color:var(--text)}
+body.light-theme .pill{background:rgba(28,41,64,.04)}
+body.light-theme .bar{background:rgba(28,41,64,.08)}
+body.light-theme .accountbar{background:rgba(255,255,255,.72)}
+body.light-theme #authGate{background:#f3f6fc}
+body.light-theme .auth-card{background:linear-gradient(160deg,#fff,#f7f9fd);border-color:rgba(28,41,64,.14)}
+body.light-theme .product-suggestion:hover,body.light-theme .product-suggestion:focus-visible{background:rgba(124,92,255,.10)}
+body.light-theme .product-suggestion{border-color:rgba(28,41,64,.08)}
+@media(min-width:680px){.settings-panel{max-height:88vh;bottom:24px;border-radius:28px}}
+
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -111,7 +157,15 @@ button{transition:filter .16s ease,transform .16s ease}
       <button class="ghost" id="newMonthBtn">Новый месяц</button>
     </div>
   </header>
-  <div class="accountbar"><span id="accountEmail">Аккаунт не выбран</span><button class="ghost" id="logoutBtn" type="button">Выйти</button></div>
+  <div class="accountbar profilebar">
+    <div class="profile-summary"><button class="profile-avatar" id="profileAvatarBtn" type="button" aria-label="Открыть профиль" aria-expanded="false"><span id="profileAvatarText">👤</span></button><div class="profile-copy"><strong id="profileName">Мой профиль</strong><span id="accountEmail">Аккаунт не выбран</span></div></div>
+    <button class="ghost profile-menu-trigger" id="profileMenuBtn" type="button" aria-label="Меню профиля" aria-expanded="false">⌄</button>
+    <div class="profile-menu hidden" id="profileMenu">
+      <div class="profile-menu-head"><strong id="menuProfileName">Мой профиль</strong><span id="menuProfileEmail">Аккаунт не выбран</span></div>
+      <button type="button" id="openSettingsBtn">⚙️ Настройки</button>
+      <button type="button" id="menuLogoutBtn" class="profile-logout">↪ Выйти из аккаунта</button>
+    </div>
+  </div>
 
   <section class="hero">
     <div class="small">Потрачено в этом месяце</div>
@@ -166,6 +220,39 @@ button{transition:filter .16s ease,transform .16s ease}
       <label class="field"><span>Неизвестные ценой</span><select id="unknownPrice"><option value="0">0 ₽</option><option value="ask">спросить позже</option></select></label>
     </div>
     <button class="save" id="pasteSave">Разнести по категориям</button>
+  </div>
+</div>
+<div class="sheet" id="settingsSheet" aria-hidden="true">
+  <div class="scrim" data-close-settings></div>
+  <div class="panel settings-panel" role="dialog" aria-modal="true" aria-label="Настройки профиля">
+    <div class="grab"></div>
+    <div class="settings-title-row"><div><h2>Настройки</h2><p class="settings-subtitle">Управляй своим профилем и внешним видом</p></div><button class="icon" id="closeSettingsBtn" type="button" aria-label="Закрыть настройки">×</button></div>
+    <section class="settings-section">
+      <h3>Профиль</h3>
+      <div class="avatar-editor">
+        <button class="profile-avatar profile-avatar-large" id="settingsAvatarBtn" type="button" aria-label="Выбрать аватар"><span id="settingsAvatarText">👤</span></button>
+        <div><strong id="settingsProfileName">Мой профиль</strong><div class="small muted">Нажми на аватар, чтобы выбрать фото</div><button type="button" class="ghost small-button" id="chooseAvatarBtn">Изменить фото</button><button type="button" class="ghost small-button hidden" id="removeAvatarBtn">Убрать фото</button></div>
+      </div>
+      <input type="file" id="avatarFile" accept="image/*" class="hidden">
+    </section>
+    <section class="settings-section">
+      <h3>Внешний вид</h3>
+      <label class="field"><span>Тема приложения</span><select id="themeSelect"><option value="dark">🌙 Тёмная</option><option value="light">☀️ Светлая</option><option value="system">🖥️ Как в системе</option></select></label>
+      <p class="settings-hint">Тема сохранится в этом браузере для твоего аккаунта.</p>
+    </section>
+    <section class="settings-section">
+      <h3>Электронная почта</h3>
+      <label class="field"><span>Новая почта</span><input id="settingsEmail" type="email" autocomplete="email" placeholder="new@example.com"></label>
+      <button class="save" id="changeEmailBtn" type="button">Изменить почту</button>
+      <p class="settings-hint">Supabase может попросить подтвердить новый адрес письмом.</p>
+    </section>
+    <section class="settings-section">
+      <h3>Пароль</h3>
+      <label class="field"><span>Новый пароль</span><input id="settingsPassword" type="password" minlength="6" autocomplete="new-password" placeholder="Минимум 6 символов"></label>
+      <label class="field"><span>Повтори новый пароль</span><input id="settingsPasswordRepeat" type="password" minlength="6" autocomplete="new-password" placeholder="Повтори пароль"></label>
+      <button class="save" id="changePasswordBtn" type="button">Обновить пароль</button>
+    </section>
+    <div id="settingsStatus" class="settings-status" role="status" aria-live="polite"></div>
   </div>
 </div>
 <div class="toast" id="toast2"></div>
@@ -463,6 +550,7 @@ async function activateCloudUser(user){
     try{ localStorage.setItem(LS+'.'+user.id,JSON.stringify(state)); }catch{}
     document.querySelector('#accountEmail').textContent=user.email || 'Аккаунт';
     document.querySelector('#authGate').classList.add('hidden');
+    if(typeof syncProfileUI==='function')syncProfileUI();
     authMessage('Вход выполнен.');
     render();
   })().finally(()=>{activationInProgress=null;});
@@ -472,6 +560,7 @@ function deactivateCloudUser(){
   cloudUser=null;
   state={current:[],history:{}};
   document.querySelector('#accountEmail').textContent='Аккаунт не выбран';
+  if(typeof syncProfileUI==='function')syncProfileUI();
   document.querySelector('#authGate').classList.remove('hidden');
   render();
 }
@@ -500,6 +589,7 @@ async function signUp(){
 }
 async function signOut(){
   if(!cloudClient) return;
+  closeProfileMenu(); closeSettings();
   const {error}=await cloudClient.auth.signOut();
   if(error) authMessage(error.message,true);
 }
@@ -524,6 +614,137 @@ async function initCloudAuth(){
 }
 
 initCloudAuth();
+
+const PROFILE_THEME_KEY='minitrati.theme.v1';
+function profileThemeKey(){ return PROFILE_THEME_KEY+'.'+(cloudUser?.id||'guest'); }
+function applyTheme(theme, persist=true){
+  let chosen=theme||'dark';
+  if(chosen==='system') chosen=window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark';
+  document.body.classList.toggle('light-theme',chosen==='light');
+  const sel=document.querySelector('#themeSelect'); if(sel) sel.value=theme||'dark';
+  if(persist){ try{localStorage.setItem(profileThemeKey(),theme||'dark')}catch{} }
+}
+function loadTheme(){ let theme='dark'; try{theme=localStorage.getItem(profileThemeKey())||'dark'}catch{} applyTheme(theme,false); }
+function setAvatarImage(data){
+  ['#profileAvatarText','#settingsAvatarText'].forEach(sel=>{
+    const el=document.querySelector(sel); if(!el)return;
+    if(data){el.innerHTML='<img alt="" src="'+data.replace(/"/g,'&quot;')+'">';}
+    else el.textContent='👤';
+  });
+  const remove=document.querySelector('#removeAvatarBtn'); if(remove) remove.classList.toggle('hidden',!data);
+}
+function syncProfileUI(){
+  const user=cloudUser;
+  const email=user?.email||'Аккаунт не выбран';
+  const meta=user?.user_metadata||{};
+  const name=meta.display_name||email.split('@')[0]||'Мой профиль';
+  ['#profileName','#menuProfileName','#settingsProfileName'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.textContent=name});
+  ['#accountEmail','#menuProfileEmail'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.textContent=email});
+  setAvatarImage(meta.avatar_data||'');
+  const se=document.querySelector('#settingsEmail'); if(se && !se.value)se.value=user?.email||'';
+  loadTheme();
+}
+function openProfileMenu(){
+  const menu=document.querySelector('#profileMenu'); menu.classList.toggle('hidden');
+  const expanded=!menu.classList.contains('hidden');
+  ['#profileAvatarBtn','#profileMenuBtn'].forEach(sel=>document.querySelector(sel).setAttribute('aria-expanded',String(expanded)));
+}
+function closeProfileMenu(){
+  document.querySelector('#profileMenu').classList.add('hidden');
+  ['#profileAvatarBtn','#profileMenuBtn'].forEach(sel=>document.querySelector(sel).setAttribute('aria-expanded','false'));
+}
+function openSettings(){
+  closeProfileMenu();
+  document.querySelector('#settingsSheet').classList.add('open');
+  document.querySelector('#settingsSheet').setAttribute('aria-hidden','false');
+  document.querySelector('#settingsStatus').textContent='';
+  syncProfileUI();
+}
+function closeSettings(){
+  document.querySelector('#settingsSheet').classList.remove('open');
+  document.querySelector('#settingsSheet').setAttribute('aria-hidden','true');
+}
+function settingsStatus(message,isError=false){
+  const el=document.querySelector('#settingsStatus'); el.textContent=message; el.style.color=isError?'var(--bad)':'var(--good)';
+}
+async function chooseAvatarFile(){
+  const file=document.querySelector('#avatarFile').files[0]; if(!file)return;
+  if(!file.type.startsWith('image/')){settingsStatus('Выбери файл изображения.',true);return}
+  if(file.size>8*1024*1024){settingsStatus('Фото слишком большое. Выбери изображение до 8 МБ.',true);return}
+  try{
+    const data=await new Promise((resolve,reject)=>{
+      const img=new Image(), reader=new FileReader();
+      reader.onload=()=>{img.onload=()=>{
+        const canvas=document.createElement('canvas'); const size=256;
+        const scale=Math.min(size/img.width,size/img.height,1);
+        canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale);
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg',.78));
+      };img.onerror=reject;img.src=reader.result}; reader.onerror=reject; reader.readAsDataURL(file);
+    });
+    if(!cloudClient||!cloudUser){settingsStatus('Сначала войди в аккаунт.',true);return}
+    settingsStatus('Сохраняю аватар…');
+    const {data:updated,error}=await cloudClient.auth.updateUser({data:{...cloudUser.user_metadata,avatar_data:data}});
+    if(error)throw error;
+    if(updated?.user)cloudUser=updated.user;
+    syncProfileUI(); settingsStatus('Аватар обновлён и сохранён в профиле.');
+  }catch(err){settingsStatus(err.message||'Не удалось сохранить фото.',true)}
+  finally{document.querySelector('#avatarFile').value=''}
+}
+async function removeAvatar(){
+  if(!cloudClient||!cloudUser)return;
+  const {data,error}=await cloudClient.auth.updateUser({data:{...cloudUser.user_metadata,avatar_data:null}});
+  if(error){settingsStatus(error.message,true);return}
+  if(data?.user)cloudUser=data.user;
+  syncProfileUI(); settingsStatus('Фото профиля удалено.');
+}
+async function changeAccountEmail(){
+  if(!cloudClient||!cloudUser){settingsStatus('Сначала войди в аккаунт.',true);return}
+  const email=document.querySelector('#settingsEmail').value.trim();
+  if(!email){settingsStatus('Введи новый адрес почты.',true);return}
+  if(email.toLowerCase()===String(cloudUser.email||'').toLowerCase()){settingsStatus('Это уже текущая почта.',true);return}
+  const btn=document.querySelector('#changeEmailBtn');btn.disabled=true;
+  const {data,error}=await cloudClient.auth.updateUser({email});
+  btn.disabled=false;
+  if(error){settingsStatus(error.message,true);return}
+  if(data?.user)cloudUser=data.user;
+  settingsStatus('Запрос отправлен. Проверь почту: может потребоваться подтверждение нового адреса.');
+  syncProfileUI();
+}
+async function changeAccountPassword(){
+  if(!cloudClient||!cloudUser){settingsStatus('Сначала войди в аккаунт.',true);return}
+  const password=document.querySelector('#settingsPassword').value;
+  const repeat=document.querySelector('#settingsPasswordRepeat').value;
+  if(password.length<6){settingsStatus('Пароль должен содержать минимум 6 символов.',true);return}
+  if(password!==repeat){settingsStatus('Пароли не совпадают.',true);return}
+  const btn=document.querySelector('#changePasswordBtn');btn.disabled=true;
+  const {error}=await cloudClient.auth.updateUser({password});
+  btn.disabled=false;
+  if(error){settingsStatus(error.message,true);return}
+  document.querySelector('#settingsPassword').value='';
+  document.querySelector('#settingsPasswordRepeat').value='';
+  settingsStatus('Пароль успешно обновлён.');
+}
+document.querySelector('#profileAvatarBtn').addEventListener('click',openProfileMenu);
+document.querySelector('#profileMenuBtn').addEventListener('click',openProfileMenu);
+document.querySelector('#openSettingsBtn').addEventListener('click',openSettings);
+document.querySelector('#menuLogoutBtn').addEventListener('click',signOut);
+document.querySelector('#logoutBtn')?.addEventListener('click',signOut);
+document.querySelector('#closeSettingsBtn').addEventListener('click',closeSettings);
+document.querySelectorAll('[data-close-settings]').forEach(el=>el.addEventListener('click',closeSettings));
+document.querySelector('#chooseAvatarBtn').addEventListener('click',()=>document.querySelector('#avatarFile').click());
+document.querySelector('#settingsAvatarBtn').addEventListener('click',()=>document.querySelector('#avatarFile').click());
+document.querySelector('#avatarFile').addEventListener('change',chooseAvatarFile);
+document.querySelector('#removeAvatarBtn').addEventListener('click',removeAvatar);
+document.querySelector('#themeSelect').addEventListener('change',e=>applyTheme(e.target.value));
+document.querySelector('#changeEmailBtn').addEventListener('click',changeAccountEmail);
+document.querySelector('#changePasswordBtn').addEventListener('click',changeAccountPassword);
+document.addEventListener('click',e=>{if(!e.target.closest('.profilebar'))closeProfileMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProfileMenu();closeSettings()}});
+window.matchMedia?.('(prefers-color-scheme: light)').addEventListener?.('change',()=>{
+  let theme='dark';try{theme=localStorage.getItem(profileThemeKey())||'dark'}catch{}
+  if(theme==='system')applyTheme('system',false);
+});
 </script>
 </body>
 </html>
