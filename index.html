@@ -36,7 +36,7 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-
 .card h2{margin:0 0 12px;font-size:15px;letter-spacing:.01em}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0}
 .label{display:flex;align-items:center;gap:10px;min-width:0}.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 4px rgba(255,255,255,.04)}.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.muted{color:var(--muted)}
 .amount{font-variant-numeric:tabular-nums;font-weight:700}.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
-.list{display:flex;flex-direction:column}.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item .meta{color:var(--muted);font-size:12px}.item .price{text-align:right;font-weight:700}.del{color:var(--muted);font-size:18px;padding:6px}
+.list{display:flex;flex-direction:column}.item{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item .meta{color:var(--muted);font-size:12px}.item .price{text-align:right;font-weight:700;white-space:nowrap}.item-name{overflow-wrap:anywhere}.product-avatar{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;font-size:21px;background:linear-gradient(145deg,rgba(124,92,255,.22),rgba(34,211,238,.14));border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}.clear-action{display:flex;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.clear-action button{font-size:12px;padding:8px 11px;border-radius:12px;background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.18);color:#fda4af}.del{color:var(--muted);font-size:18px;padding:6px}
 .fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:10;border-radius:22px;padding:15px 18px;background:linear-gradient(135deg,var(--accent),#4f46e5);box-shadow:0 18px 38px rgba(79,70,229,.38);font-weight:800}.fab:active{transform:translateY(1px) scale(.99)}
 .sheet{position:fixed;inset:0;z-index:20;display:none}.sheet.open{display:block}.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}.panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:#10161f;border:1px solid var(--line);border-radius:28px 28px 0 0;padding:12px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--shadow)}.grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);margin:2px auto 14px}.panel h2{margin:0 0 14px;font-size:20px;letter-spacing:-.02em}
 .field{display:flex;flex-direction:column;gap:7px;margin:12px 0}.field span{font-size:12px;color:var(--muted)}input,select{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.055);color:var(--text);border-radius:16px;padding:14px 14px;outline:0;font:inherit}textarea:focus,input:focus,select:focus{border-color:rgba(124,92,255,.75);box-shadow:0 0 0 4px rgba(124,92,255,.15)}select option{color:#111}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.save{width:100%;margin-top:8px;padding:15px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#4f46e5);font-weight:800}.danger{color:#fecdd3}.danger-text{color:#fecdd3}.history{margin-top:8px}.hidden{display:none!important}
@@ -80,7 +80,6 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-
       <input type="file" id="importFile" accept="application/json,.json" class="hidden">
       <button class="ghost" id="pasteBtn">Список</button>
       <button class="ghost" id="newMonthBtn">Новый месяц</button>
-      <button class="ghost" id="clearBtn">Очистить</button>
     </div>
   </header>
   <div class="accountbar"><span id="accountEmail">Аккаунт не выбран</span><button class="ghost" id="logoutBtn" type="button">Выйти</button></div>
@@ -100,6 +99,7 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-
       <h2>Последние покупки</h2>
       <div class="list" id="recent"></div>
       <div class="history" id="historyBox"></div>
+      <div class="clear-action"><button id="clearBtn" type="button" title="Удалить все покупки текущего списка">Очистить текущий список</button></div>
     </section>
   </main>
 </div>
@@ -290,6 +290,24 @@ function exportJSON(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='minitrati.json'; a.click(); URL.revokeObjectURL(a.href); toast('JSON выгружен');
 }
 function del(id){ if(!confirm('Удалить запись?')) return; state.current=state.current.filter(x=>x.id!==id); save(); }
+function itemEmoji(name, category){
+  const value=(String(name||'')+' '+String(category||'')).toLowerCase();
+  if(/кофе|капуч|латте|эспрессо/.test(value)) return '☕';
+  if(/вода|аква|ессентук|обуховск/.test(value)) return '💧';
+  if(/энергет|energy|red bull|monster|burn|flash|tornado|adrenaline|лит energy|gang|isok|joy stick|moji/.test(value)) return '⚡';
+  if(/cola|кола|coca|кока|7up|sprite|спрайт|fanta|фанта|лимонад|газиров/.test(value)) return '🥤';
+  if(/сок|pulpy|rich|чай|tea|rero/.test(value)) return '🧃';
+  if(/шоколад|twix|mars|snickers|bounty|milky way|picnic|nuts|чио рио|goodmix|maltiser/.test(value)) return '🍫';
+  if(/сэндвич|сандвич|бутерброд|клаб/.test(value)) return '🥪';
+  if(/плов|гуляш|котлет|пюре|греч|рис|блюдо|еда|куриц|рыб/.test(value)) return '🍽️';
+  if(/фрукт|яблок|банан|манго|ягод|персик|апельсин|лимон/.test(value)) return '🍊';
+  if(/десерт|торт|печень|конфет|морожен/.test(value)) return '🧁';
+  if(/табак|коктейль|кальян/.test(value)) return '🫧';
+  if(/напит/.test(value)) return '🥤';
+  if(/еда|завтрак|обед|ужин/.test(value)) return '🍴';
+  return '🛍️';
+}
+
 function render(){
   const items=[...state.current].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
   const total=sum(items); const days=Math.max(1,new Date(monthKey(today())+'-01T12:00:00').getDate());
@@ -304,7 +322,7 @@ function render(){
   ].join('');
   const max=Math.max(1,...cats.map(x=>x[1]));
   $('#cats').innerHTML = cats.length ? cats.map(([c,v],i)=>`<div><div class="row"><div class="label"><i class="dot" style="background:${COLORS[i%COLORS.length]}"></i><div><div class="name">${escapeHtml(c)}</div><div class="muted small">${fmt(v)} · ${Math.round(v/total*100)||0}%</div></div></div><div class="amount">${fmt(v)}</div></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join('') : '<div class="muted">Пока пусто. Нажми «+ Добавить».</div>';
-  $('#recent').innerHTML = items.slice(0,12).map(x=>`<div class="item"><div><div>${escapeHtml(x.name)}</div><div class="meta">${escapeHtml(x.category)} · ${x.qty} шт · ${new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</div></div><div class="price">${fmt(x.price*x.qty)}<br><button class="del" onclick="del('${x.id}')" aria-label="Удалить">×</button></div></div>`).join('') || '<div class="muted">Нет записей</div>';
+  $('#recent').innerHTML = items.slice(0,12).map(x=>`<div class="item"><div class="product-avatar" aria-hidden="true">${itemEmoji(x.name,x.category)}</div><div class="item-name"><div>${escapeHtml(x.name)}</div><div class="meta">${escapeHtml(x.category)} · ${x.qty} шт · ${new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</div></div><div class="price">${fmt(x.price*x.qty)}<br><button class="del" onclick="del('${x.id}')" aria-label="Удалить">×</button></div></div>`).join('') || '<div class="muted">Нет записей</div>';
   const hist=Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
   $('#historyBox').innerHTML = hist.length ? `<h2 style="margin-top:16px">Архив месяцев</h2>`+hist.map(([k,arr])=>`<div class="row"><div class="label"><div><div class="name">${new Date(k+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div><div class="muted small">${arr.length} покупок</div></div></div><div class="amount">${fmt(sum(arr))}</div></div>`).join('') : '';
 }
