@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Минитраты</title>
+<style>
+:root{
+  --bg:#0b0f14; --card:#121822; --card2:#171f2b; --text:#eef4ff; --muted:#8a96a8;
+  --line:rgba(255,255,255,.08); --accent:#7c5cff; --accent2:#22d3ee; --good:#34d399; --bad:#fb7185;
+  --shadow:0 18px 50px rgba(0,0,0,.35); --radius:24px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0; min-height:100vh; color:var(--text); background:
+ radial-gradient(900px 500px at 80% -10%, rgba(124,92,255,.28), transparent 60%),
+ radial-gradient(700px 500px at -10% 10%, rgba(34,211,238,.16), transparent 55%),
+ linear-gradient(180deg,#0b0f14,#0a0d12 70%);
+ font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,Segoe UI,Roboto,Arial,sans-serif;
+ padding:calc(14px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:760px;margin:0 auto}
+.top{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:4px 0 14px}
+.brand{display:flex;flex-direction:column;gap:2px}.brand b{font-size:20px;letter-spacing:-.02em}.brand span{color:var(--muted);font-size:13px}
+.actions{display:flex;gap:8px}
+button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:10px 12px;border-radius:999px;color:var(--text)}
+.icon{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--line);display:grid;place-items:center}
+.hero{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(124,92,255,.28),rgba(34,211,238,.12)),var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.hero:after{content:"";position:absolute;inset:auto -70px -110px auto;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.08);filter:blur(2px)}
+.small{color:var(--muted);font-size:13px}.sum{font-size:clamp(38px,10vw,64px);font-weight:800;letter-spacing:-.055em;margin:6px 0 2px}.sub{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:13px}.pill{border:1px solid var(--line);background:rgba(255,255,255,.05);padding:6px 10px;border-radius:999px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+.card{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:22px;padding:16px;backdrop-filter:blur(14px)}
+.card h2{margin:0 0 12px;font-size:15px;letter-spacing:.01em}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0}
+.label{display:flex;align-items:center;gap:10px;min-width:0}.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 4px rgba(255,255,255,.04)}.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.muted{color:var(--muted)}
+.amount{font-variant-numeric:tabular-nums;font-weight:700}.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
+.list{display:flex;flex-direction:column}.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item .meta{color:var(--muted);font-size:12px}.item .price{text-align:right;font-weight:700}.del{color:var(--muted);font-size:18px;padding:6px}
+.fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:10;border-radius:22px;padding:15px 18px;background:linear-gradient(135deg,var(--accent),#4f46e5);box-shadow:0 18px 38px rgba(79,70,229,.38);font-weight:800}.fab:active{transform:translateY(1px) scale(.99)}
+.sheet{position:fixed;inset:0;z-index:20;display:none}.sheet.open{display:block}.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}.panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:#10161f;border:1px solid var(--line);border-radius:28px 28px 0 0;padding:12px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--shadow)}.grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);margin:2px auto 14px}.panel h2{margin:0 0 14px;font-size:20px;letter-spacing:-.02em}
+.field{display:flex;flex-direction:column;gap:7px;margin:12px 0}.field span{font-size:12px;color:var(--muted)}input,select{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.055);color:var(--text);border-radius:16px;padding:14px 14px;outline:0;font:inherit}textarea:focus,input:focus,select:focus{border-color:rgba(124,92,255,.75);box-shadow:0 0 0 4px rgba(124,92,255,.15)}select option{color:#111}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.save{width:100%;margin-top:8px;padding:15px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#4f46e5);font-weight:800}.danger{color:#fecdd3}.danger-text{color:#fecdd3}.history{margin-top:8px}.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);opacity:0;background:#e5e7eb;color:#111;border-radius:999px;padding:10px 14px;font-weight:700;transition:.25s;z-index:30}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:680px){.grid{grid-template-columns:1.05fr .95fr}.panel{max-width:620px;margin:0 auto;border-radius:28px;bottom:24px}}
+
+/* Cloud accounts */
+#authGate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:#0b0f14;overflow:auto}
+#authGate.hidden{display:none!important}
+.auth-card{width:min(100%,440px);padding:24px;border:1px solid var(--line);border-radius:24px;background:var(--card);box-shadow:var(--shadow)}
+.auth-card h1{margin:0 0 8px;font-size:26px}.auth-card p{color:var(--muted);margin:0 0 16px}
+.auth-card .save{margin-top:10px}.auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#authStatus{min-height:22px;margin-top:12px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.accountbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 12px;color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+@media(max-width:420px){.auth-card{padding:18px}.auth-buttons{grid-template-columns:1fr}}
+</style>
+<base target="_blank">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+</head>
+<body>
+<div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-card">
+    <h1 id="authTitle">Минитраты</h1>
+    <p>Войди или создай аккаунт. Расходы будут храниться отдельно для каждого пользователя и синхронизироваться между устройствами.</p>
+    <label class="field"><span>Электронная почта</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+    <label class="field"><span>Пароль (не менее 6 символов)</span><input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Пароль" required></label>
+    <div class="auth-buttons">
+      <button class="save" id="loginBtn">Войти</button>
+      <button class="ghost" id="signupBtn">Создать аккаунт</button>
+    </div>
+    <div id="authStatus" role="status" aria-live="polite">Подключение к облаку…</div>
+  </div>
+</div>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b>Минитраты</b><span id="monthLabel">—</span></div>
+    <div class="actions">
+      <button class="icon" id="importBtn" title="Загрузить JSON" aria-label="Загрузить">⇧</button>
+      <button class="icon" id="exportBtn" title="Выгрузить JSON" aria-label="Выгрузить">⇩</button>
+      <input type="file" id="importFile" accept="application/json,.json" class="hidden">
+      <button class="ghost" id="pasteBtn">Список</button>
+      <button class="ghost" id="newMonthBtn">Новый месяц</button>
+      <button class="ghost" id="clearBtn">Очистить</button>
+    </div>
+  </header>
+  <div class="accountbar"><span id="accountEmail">Аккаунт не выбран</span><button class="ghost" id="logoutBtn" type="button">Выйти</button></div>
+
+  <section class="hero">
+    <div class="small">Потрачено в этом месяце</div>
+    <div class="sum" id="total">0 ₽</div>
+    <div class="sub" id="stats"></div>
+  </section>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Категории</h2>
+      <div id="cats"></div>
+    </section>
+    <section class="card">
+      <h2>Последние покупки</h2>
+      <div class="list" id="recent"></div>
+      <div class="history" id="historyBox"></div>
+    </section>
+  </main>
+</div>
+
+<button class="fab" id="addBtn">+ Добавить</button>
+
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="scrim" data-close></div>
+  <div class="panel" role="dialog" aria-modal="true" aria-label="Добавить покупку">
+    <div class="grab"></div>
+    <h2>Добавить покупку</h2>
+    <label class="field"><span>Товар</span><input id="name" list="catalogList" placeholder="Начни вводить или выбери из списка" autocomplete="off"><datalist id="catalogList"></datalist></label>
+    <div class="two">
+      <label class="field"><span>Категория</span><select id="category"></select></label>
+      <label class="field"><span>Дата</span><input id="date" type="date"></label>
+    </div>
+    <div class="two">
+      <label class="field"><span>Цена, ₽</span><input id="price" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></label>
+      <label class="field"><span>Кол-во</span><input id="qty" type="number" inputmode="decimal" step="0.01" min="0" value="1"></label>
+    </div>
+    <button class="save" id="saveBtn">Сохранить</button>
+  </div>
+</div>
+
+<div class="sheet" id="pasteSheet" aria-hidden="true">
+  <div class="scrim" data-close-paste></div>
+  <div class="panel" role="dialog" aria-modal="true" aria-label="Добавить списком">
+    <div class="grab"></div>
+    <h2>Добавить списком</h2>
+    <div class="small muted" style="margin:-8px 0 10px">Вставь строки из переписки. Понимает: «х2», «x2», «кофе с молоком», «кальян», «пицца», названия из твоего прайса.</div>
+    <label class="field"><span>Список</span><textarea id="pasteText" rows="9" style="width:100%;border:1px solid var(--line);background:rgba(255,255,255,.055);color:var(--text);border-radius:16px;padding:14px;outline:0;font:inherit;resize:vertical" placeholder="Пример:\nЛит классик х2\nКофе с молоком\nТвикс"></textarea></label>
+    <div class="two">
+      <label class="field"><span>Дата</span><input id="pasteDate" type="date"></label>
+      <label class="field"><span>Неизвестные ценой</span><select id="unknownPrice"><option value="0">0 ₽</option><option value="ask">спросить позже</option></select></label>
+    </div>
+    <button class="save" id="pasteSave">Разнести по категориям</button>
+  </div>
+</div>
+<div class="toast" id="toast2"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATALOG = [{"name": "Готовое блюдо Гуляш из свинины с гречневой кашей", "supplier": "ФудЭкспрес", "category": "еда", "volume": 250.0, "price": 130.0}, {"name": "Готовое блюдо Картофельное пюре с куриной котлетой", "supplier": "ФудЭкспрес", "category": "еда", "volume": 250.0, "price": 140.0}, {"name": "Готовое блюдо Плов с курицей", "supplier": "ФудЭкспрес", "category": "еда", "volume": 250.0, "price": 200.0}, {"name": "Готовое блюдо Рис с рыбой", "supplier": "ФудЭкспрес", "category": "еда", "volume": 250.0, "price": 165.0}, {"name": "Сэндвич Атлантический", "supplier": "ФудЭкспрес", "category": "еда", "volume": 140.0, "price": 138.0}, {"name": "Сэндвич Ветчина и сыр", "supplier": "ФудЭкспрес", "category": "еда", "volume": 140.0, "price": 120.0}, {"name": "Сэндвич Куриный Цезарь", "supplier": "ФудЭкспрес", "category": "еда", "volume": 140.0, "price": 120.0}, {"name": "Сэндвич Суперклаб", "supplier": "ФудЭкспрес", "category": "еда", "volume": 140.0, "price": 115.0}, {"name": "Gang 10000", "supplier": "табак", "category": "коктейль", "volume": 1.0, "price": 650.0}, {"name": "Gang 20000", "supplier": "табак", "category": "коктейль", "volume": 1.0, "price": 1300.0}, {"name": "ISOK", "supplier": "табак", "category": "коктейль", "volume": 1.0, "price": 400.0}, {"name": "Joy Stick 17000", "supplier": "табак", "category": "коктейль", "volume": 1.0, "price": 800.0}, {"name": "Moji 2200", "supplier": "табак", "category": "коктейль", "volume": 1.0, "price": 330.0}, {"name": "Паровой коктейль Electro", "supplier": "табак", "category": "коктейль", "volume": 20.0, "price": 200.0}, {"name": "Премиум", "supplier": "табак", "category": "коктейль", "volume": 20.0, "price": 200.0}, {"name": "BonAqua негазированная 0.5 л.", "supplier": "Мултон", "category": "напит", "volume": 0.5, "price": 39.82}, {"name": "CN 7UP 0.33 л.", "supplier": "другие", "category": "напит", "volume": 0.33, "price": 65.0}, {"name": "CN Coca-Cola 0.33 л.", "supplier": "другие", "category": "напит", "volume": 0.33, "price": 65.0}, {"name": "CN Fanta 0.33 л.", "supplier": "другие", "category": "напит", "volume": 0.33, "price": 65.0}, {"name": "CN Mountain Dew 0.33 л.", "supplier": "другие", "category": "напит", "volume": 0.33, "price": 65.0}, {"name": "CN Sprite 0.33 л.", "supplier": "другие", "category": "напит", "volume": 0.33, "price": 65.0}, {"name": "LIT Energy Blueberry Donut 0.33л", "supplier": "бобоев", "category": "напит", "volume": 0.33, "price": 57.8}, {"name": "LIT Energy Feijoa 0.33л", "supplier": "бобоев", "category": "напит", "volume": 0.33, "price": 57.8}, {"name": "Nescafe Cappuccino 0.18 л.", "supplier": "другие", "category": "напит", "volume": 0.18, "price": 77.0}, {"name": "Rich Сок 0.2л", "supplier": "Мултон", "category": "напит", "volume": 0.2, "price": 65.18}, {"name": "Slide 0.33 л.", "supplier": "другие", "category": "напит", "volume": 0.33, "price": 64.1}, {"name": "Добрый Cola 0.33 л.", "supplier": "Мултон", "category": "напит", "volume": 0.33, "price": 56.75}, {"name": "Добрый Cola Vanilla 0.33 л.", "supplier": "Мултон", "category": "напит", "volume": 0.33, "price": 56.75}, {"name": "Добрый Cola Zero 0.33 л.", "supplier": "Мултон", "category": "напит", "volume": 0.33, "price": 56.75}, {"name": "Добрый апельсин 0.33 л.", "supplier": "Мултон", "category": "напит", "volume": 0.33, "price": 56.75}, {"name": "Добрый лимон-лайм 0.33 л.", "supplier": "Мултон", "category": "напит", "volume": 0.33, "price": 56.75}, {"name": "Добрый манго-маракуйя 0.33 л.", "supplier": "Мултон", "category": "напит", "volume": 0.33, "price": 56.75}, {"name": "Ессентуки 4", "supplier": "ПродОпт", "category": "напит", "volume": 0.5, "price": 51.16}, {"name": "Лимонад OLD Garden", "supplier": "ПродОпт", "category": "напит", "volume": 0.5, "price": 65.64}, {"name": "Обуховская-11 0.6 л.", "supplier": "ПродОпт", "category": "напит", "volume": 0.5, "price": 29.67}, {"name": "Сок Pulpy 0.45 л.", "supplier": "Мултон", "category": "напит", "volume": 0.45, "price": 58.26}, {"name": "Холодный чай / лимонад Rero 0.45л", "supplier": "пепси", "category": "напит", "volume": 0.45, "price": 70.0}, {"name": "Холодный чай Rich 0.5л", "supplier": "Мултон", "category": "напит", "volume": 0.5, "price": 72.0}, {"name": "Холодный чай Rich 1.0л", "supplier": "Мултон", "category": "напит", "volume": 1.0, "price": 114.13}, {"name": "Bounty 55гр.", "supplier": "другие", "category": "шоколад", "volume": 55.0, "price": 60.0}, {"name": "Goodmix 40гр.", "supplier": "другие", "category": "шоколад", "volume": 40.0, "price": 60.0}, {"name": "Maltisers 38гр.", "supplier": "другие", "category": "шоколад", "volume": 38.0, "price": 90.0}, {"name": "Mars 50гр.", "supplier": "другие", "category": "шоколад", "volume": 50.0, "price": 60.0}, {"name": "Milky Way 26гр.", "supplier": "другие", "category": "шоколад", "volume": 30.0, "price": 28.23}, {"name": "Nuts 50г", "supplier": "другие", "category": "шоколад", "volume": 50.0, "price": 60.0}, {"name": "Picnic 40гр.", "supplier": "другие", "category": "шоколад", "volume": 40.0, "price": 65.0}, {"name": "Snickers 50гр", "supplier": "другие", "category": "шоколад", "volume": 50.5, "price": 65.0}, {"name": "Twix 55г", "supplier": "другие", "category": "шоколад", "volume": 55.0, "price": 65.0}, {"name": "Чио Рио 30гр.", "supplier": "ПродОпт", "category": "шоколад", "volume": 30.0, "price": 14.14}, {"name": "Adrenaline Rush Breeze Energy 0.449 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.449, "price": 105.52}, {"name": "Adrenaline Rush Game Fuel Blue 0.449 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.449, "price": 105.52}, {"name": "Adrenaline Rush Game fuel Mango 0.449 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.449, "price": 105.52}, {"name": "Adrenaline Rush Juicy 0.449 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.449, "price": 105.52}, {"name": "Adrenaline Rush Original 0.25 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.25, "price": 64.02}, {"name": "Adrenaline Rush Original 0.449 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.449, "price": 105.52}, {"name": "Adrenaline Rush Zero Sugar 0.449 л.", "supplier": "пепси", "category": "энергетик", "volume": 0.449, "price": 105.52}, {"name": "Black Monster USA 0.449 л.", "supplier": "другие", "category": "энергетик", "volume": 0.5, "price": 315.0}, {"name": "Black Monster в ассортименте 0.449 л.", "supplier": "другие", "category": "энергетик", "volume": 0.5, "price": 178.0}, {"name": "Burn Energy Apple kiwi 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Burn Energy Dark 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Burn Energy Fruit Punch 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Burn Energy Guava 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Burn Energy Original 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Burn Energy Tropical 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Burn Energy Zero Sugar 0.449 л.", "supplier": "Мултон", "category": "энергетик", "volume": 0.449, "price": 103.87}, {"name": "Flash Up Energy 0.45 л.", "supplier": "ПродОпт", "category": "энергетик", "volume": 0.45, "price": 70.07}, {"name": "LIT Energy Berry Coconut 0.45л", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Blueberry 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Citrus Punch 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Classic 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Cola 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Granat 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Malina Crush 0.45л", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Mango Coconut 0.45л", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Peach 0.45л", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Strawberry Bubblegum 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "LIT Energy Turbo 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.25, "price": 78.4}, {"name": "LIT Energy Zero Sugar 0.45л.", "supplier": "бобоев", "category": "энергетик", "volume": 0.45, "price": 78.4}, {"name": "Red Bull 0.473 л.", "supplier": "другие", "category": "энергетик", "volume": 0.473, "price": 209.0}, {"name": "Red Bull Blue Edition 0.25", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull Original 0.25 л.", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull Red Edition 0.25 л.", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull Sea Blue 0.25 л.", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull Summer Edition 0.25", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull Tropic Edition 0.25", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull White Edition 0.25 л.", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Red Bull Zero Sugar 0.25 л.", "supplier": "ФриДринк", "category": "энергетик", "volume": 0.25, "price": 107.97}, {"name": "Tornado Energy 0.450 л.", "supplier": "ПродОпт", "category": "энергетик", "volume": 0.45, "price": 61.78}, {"name": "МИЛКИС 0.25 л.", "supplier": "ПродОпт", "category": "энергетик", "volume": 0.25, "price": 68.88}, {"name": "Энергетик Экофрут", "supplier": "другие", "category": "энергетик", "volume": 0.25, "price": 94.1}];
+const COLORS = ['#7c5cff','#22d3ee','#34d399','#fbbf24','#fb7185','#a78bfa','#60a5fa','#f472b6'];
+const LS = 'minitrati.cloud.v1';
+const $ = s => document.querySelector(s);
+const fmt = n => new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(n||0);
+const monthKey = d => d.slice(0,7);
+const today = () => new Date().toISOString().slice(0,10);
+let state = {current:[], history:{}};
+let cloudUser = null;
+let cloudClient = null;
+let cloudSaveChain = Promise.resolve();
+let activationInProgress = null;
+
+function validState(data){
+  return data && Array.isArray(data.current) && data.history && typeof data.history === 'object'
+    ? {current:data.current, history:data.history}
+    : {current:[], history:{}};
+}
+function save(){
+  render();
+  if(!cloudUser || !cloudClient) return;
+  const snapshot = JSON.parse(JSON.stringify(state));
+  try { localStorage.setItem(LS + '.' + cloudUser.id, JSON.stringify(snapshot)); } catch {}
+  const userId = cloudUser.id;
+  cloudSaveChain = cloudSaveChain.then(async () => {
+    if(!cloudClient || !cloudUser || cloudUser.id !== userId) return;
+    const {error} = await cloudClient.from('user_data').upsert({
+      user_id:userId, data:snapshot, updated_at:new Date().toISOString()
+    }, {onConflict:'user_id'});
+    if(error) throw error;
+  }).catch(error => {
+    console.error('Cloud save failed:', error);
+    toast('Не удалось синхронизировать. Проверь интернет');
+    authMessage('Ошибка сохранения в облако. Данные останутся в этом браузере до восстановления связи.', true);
+  });
+}
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1600); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function sum(a){ return a.reduce((s,x)=>s+x.price*x.qty,0); }
+function byCat(a){ const m={}; for(const x of a){ m[x.category]= (m[x.category]||0)+x.price*x.qty } return m; }
+function currentMonth(){ const keys=Object.keys(state.history).sort(); const cur=monthKey(today()); return keys.includes(cur)?cur:(state.current.length?monthKey(state.current[0].date):cur); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+
+function toast2(t){ const el=$('#toast2'); if(!el) return; el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
+const EXTRA_RULES = [
+  {re:/кофе\s*(с\s*молоком|молоко)|cofee\s*milk|coffee\s*milk/i, name:'Кофе с молоком', category:'кофе', price:35},
+  {re:/пицца|пеперони|pepperoni/i, name:'Пицца пеперони', category:'еда', price:200},
+  {re:/кальян|паровой\s*коктейль/i, name:'Кальян / паровой коктейль', category:'коктейль', price:200},
+  {re:/^js\s*slim$/i, name:'JS SLIM', category:'другое', price:0},
+  {re:/адриналин|адреналин|адрик|adrenaline/i, name:'Adrenaline Rush Original 0.449 л.', category:'энергетик', price:105.52},
+  {re:/breeze|бриз/i, name:'Adrenaline Rush Breeze Energy 0.449 л.', category:'энергетик', price:105.52},
+  {re:/торнадо|tornado/i, name:'Tornado Energy 0.450 л.', category:'энергетик', price:61.78},
+  {re:/лит|lit/i, name:'LIT Energy Classic 0.45л.', category:'энергетик', price:78.40},
+  {re:/мальтизерс|maltisers/i, name:'Maltisers 38гр.', category:'шоколад', price:90},
+  {re:/милки\s*вей|milky\s*way/i, name:'Milky Way 26гр.', category:'шоколад', price:28.23},
+  {re:/твикс|twix/i, name:'Twix 55г', category:'шоколад', price:65},
+  {re:/цезарь|caesar/i, name:'Сэндвич Куриный Цезарь', category:'еда', price:120},
+  {re:/суперклаб|superclub/i, name:'Сэндвич Суперклаб', category:'еда', price:115},
+  {re:/ветчин[а-я]*\s*и\s*сыр|ветчина/i, name:'Сэндвич Ветчина и сыр', category:'еда', price:120},
+  {re:/вода\s*не\s*газ|бонаква|bonaqua/i, name:'BonAqua негазированная 0.5 л.', category:'напит', price:39.82},
+  {re:/сендвич|сэндвич|sandwich/i, name:'Сэндвич', category:'еда', price:120}
+];
+function normLine(line){ return line.toLowerCase().replace(/[.,!?]/g,' ').replace(/\s+/g,' ').trim(); }
+function findRule(line){ const n=normLine(line); return EXTRA_RULES.find(r=>r.re.test(n)); }
+function findCatalog(line){ const n=normLine(line); return CATALOG.find(x=>normLine(x.name)===n) || CATALOG.find(x=>{ const cn=normLine(x.name); return n.length>3 && (cn.includes(n) || n.includes(cn.replace(/[.\dлг ]+$/,''))) }); }
+function parseList(text, date){
+  const lines = String(text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  const out=[]; let unknown=0;
+  for(let raw of lines){
+    raw = raw.replace(/\[(.*?)\]/g,' ').replace(/Владимир:/gi,' ').trim();
+    if(!raw) continue;
+    let qty=1;
+    const qm = raw.match(/(?:х|x)\s*(\d+(?:[.,]\d+)?)/i);
+    if(qm){ qty=parseFloat(qm[1].replace(',','.'))||1; raw=raw.replace(qm[0],' ').trim(); }
+    const rule=findRule(raw); const cat=findCatalog(raw);
+    let name, category, price;
+    if(rule){ name=rule.name; category=rule.category; price=rule.price; }
+    else if(cat){ name=cat.name; category=cat.category; price=cat.price; }
+    else { name=raw; category='другое'; price=0; unknown++; }
+    out.push({id:uid(), name, category, price, qty, date, createdAt:Date.now()+Math.random()});
+  }
+  return {items:out, unknown};
+}
+function openPaste(){ $('#pasteSheet').classList.add('open'); $('#pasteSheet').setAttribute('aria-hidden','false'); $('#pasteDate').value=today(); $('#pasteDate').max=today(); setTimeout(()=>$('#pasteText').focus(),80); }
+function closePaste(){ $('#pasteSheet').classList.remove('open'); $('#pasteSheet').setAttribute('aria-hidden','true'); }
+function savePaste(){
+  const date=$('#pasteDate').value||today();
+  const parsed=parseList($('#pasteText').value, date);
+  if(!parsed.items.length){ toast2('Пустой список'); return; }
+  state.current = parsed.items.concat(state.current);
+  closePaste(); save(); toast(`Добавлено: ${parsed.items.length}` + (parsed.unknown?`, не распознано: ${parsed.unknown}`:''));
+}
+
+function clearCurrent(){
+  const count=state.current.length;
+  if(!count){ toast('Список уже пуст'); return; }
+  if(!confirm(`Очистить текущий список? Удалится ${count} записей на ${fmt(sum(state.current))}.`)) return;
+  state.current=[]; save(); toast('Список очищен');
+}
+
+function importJSON(){
+  const f=$('#importFile').files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!data || (!Array.isArray(data.current) && typeof data.history!=='object')) throw 0; if(!confirm('Заменить текущие данные на данные из файла?')) return; state={current:data.current||[], history:data.history||{}}; save(); toast('Данные загружены'); }catch{ toast('Не похоже на JSON бэкап'); } finally{ $('#importFile').value=''; } };
+  r.readAsText(f);
+}
+function init(){
+  const dl=$('#catalogList'); dl.innerHTML = CATALOG.map(x=>`<option value="${escapeHtml(x.name)}"></option>`).join('');
+  const cats=[...new Set(CATALOG.map(x=>x.category).concat(['кофе','другое']))].sort();
+  $('#category').innerHTML = cats.map(c=>`<option>${escapeHtml(c)}</option>`).join('');
+  $('#date').value=today(); $('#date').max=today();
+  $('#name').addEventListener('input', autofill);
+  $('#name').addEventListener('change', autofill);
+  $('#addBtn').onclick=openSheet; $('#saveBtn').onclick=saveEntry; $('#newMonthBtn').onclick=newMonth; $('#exportBtn').onclick=exportJSON;
+  $('#pasteBtn').onclick=openPaste; $('#pasteSave').onclick=savePaste; $('#clearBtn').onclick=clearCurrent; $('#importBtn').onclick=()=>$('#importFile').click(); $('#importFile').addEventListener('change', importJSON);
+  document.querySelectorAll('[data-close]').forEach(el=>el.onclick=closeSheet);
+  document.querySelectorAll('[data-close-paste]').forEach(el=>el.onclick=closePaste);
+  render();
+}
+function autofill(){
+  const v=$('#name').value.trim().toLowerCase();
+  const hit=CATALOG.find(x=>x.name.toLowerCase()===v) || CATALOG.find(x=>x.name.toLowerCase().includes(v) && v.length>2);
+  if(hit){ $('#price').value=hit.price; if([...$('#category').options].some(o=>o.value===hit.category)) $('#category').value=hit.category; }
+}
+function openSheet(){ $('#sheet').classList.add('open'); $('#sheet').setAttribute('aria-hidden','false'); setTimeout(()=>$('#name').focus(),80); }
+function closeSheet(){ $('#sheet').classList.remove('open'); $('#sheet').setAttribute('aria-hidden','true'); }
+function saveEntry(){
+  const name=$('#name').value.trim(); const price=parseFloat(String($('#price').value).replace(',','.')); const qty=parseFloat(String($('#qty').value).replace(',','.'))||1; const date=$('#date').value||today(); const category=$('#category').value||'другое';
+  if(!name){ toast('Введи товар'); return $('#name').focus(); }
+  if(!(price>0)){ toast('Укажи цену'); return $('#price').focus(); }
+  state.current.unshift({id:uid(), name, category, price, qty, date, createdAt:Date.now()});
+  $('#name').value=''; $('#price').value=''; $('#qty').value=1; closeSheet(); save(); toast('Добавлено');
+}
+function newMonth(){
+  const total=sum(state.current);
+  if(!state.current.length){ toast('В текущем месяце пусто'); return; }
+  if(!confirm(`Закрыть месяц и начать новый? Потрачено: ${fmt(total)}`)) return;
+  const key=monthKey(state.current[0].date);
+  state.history[key]=(state.history[key]||[]).concat(state.current);
+  state.current=[]; save(); toast('Новый месяц начат');
+}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='minitrati.json'; a.click(); URL.revokeObjectURL(a.href); toast('JSON выгружен');
+}
+function del(id){ if(!confirm('Удалить запись?')) return; state.current=state.current.filter(x=>x.id!==id); save(); }
+function render(){
+  const items=[...state.current].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
+  const total=sum(items); const days=Math.max(1,new Date(monthKey(today())+'-01T12:00:00').getDate());
+  $('#monthLabel').textContent=new Date(monthKey(today())+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+  $('#total').textContent=fmt(total);
+  const cats=Object.entries(byCat(items)).sort((a,b)=>b[1]-a[1]);
+  const top=cats[0]; $('#stats').innerHTML = [
+    `<span class="pill">${items.length} покупок</span>`,
+    `<span class="pill">в день ${fmt(total/days)}</span>`,
+    top?`<span class="pill">лидер: ${escapeHtml(top[0])} ${fmt(top[1])}</span>`:'',
+    `<span class="pill">${fmt(total/Math.max(1,items.length))} / покупку</span>`
+  ].join('');
+  const max=Math.max(1,...cats.map(x=>x[1]));
+  $('#cats').innerHTML = cats.length ? cats.map(([c,v],i)=>`<div><div class="row"><div class="label"><i class="dot" style="background:${COLORS[i%COLORS.length]}"></i><div><div class="name">${escapeHtml(c)}</div><div class="muted small">${fmt(v)} · ${Math.round(v/total*100)||0}%</div></div></div><div class="amount">${fmt(v)}</div></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join('') : '<div class="muted">Пока пусто. Нажми «+ Добавить».</div>';
+  $('#recent').innerHTML = items.slice(0,12).map(x=>`<div class="item"><div><div>${escapeHtml(x.name)}</div><div class="meta">${escapeHtml(x.category)} · ${x.qty} шт · ${new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</div></div><div class="price">${fmt(x.price*x.qty)}<br><button class="del" onclick="del('${x.id}')" aria-label="Удалить">×</button></div></div>`).join('') || '<div class="muted">Нет записей</div>';
+  const hist=Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
+  $('#historyBox').innerHTML = hist.length ? `<h2 style="margin-top:16px">Архив месяцев</h2>`+hist.map(([k,arr])=>`<div class="row"><div class="label"><div><div class="name">${new Date(k+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div><div class="muted small">${arr.length} покупок</div></div></div><div class="amount">${fmt(sum(arr))}</div></div>`).join('') : '';
+}
+init();
+
+function authMessage(message, isError=false){
+  const el = document.querySelector('#authStatus');
+  if(el){ el.textContent=message; el.style.color=isError ? 'var(--bad)' : 'var(--muted)'; }
+}
+function authBusy(busy){
+  ['#loginBtn','#signupBtn'].forEach(sel=>{ const el=document.querySelector(sel); if(el) el.disabled=busy; });
+}
+function cloudConfigured(){
+  const url=window.MINITRATI_SUPABASE_URL || '';
+  const key=window.MINITRATI_SUPABASE_ANON_KEY || '';
+  return /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(url) &&
+    key.length>20 && !key.includes('PASTE_');
+}
+async function activateCloudUser(user){
+  if(!user || !cloudClient) return;
+  if(cloudUser && cloudUser.id===user.id){ document.querySelector('#authGate').classList.add('hidden'); return; }
+  if(activationInProgress) return activationInProgress;
+  activationInProgress=(async()=>{
+    authMessage('Загружаю твои расходы из облака…');
+    const {data,error}=await cloudClient.from('user_data').select('data').eq('user_id',user.id).maybeSingle();
+    if(error){
+      console.error(error);
+      authMessage('Не удалось прочитать базу. Проверь, что выполнил supabase/schema.sql и включил политики доступа.',true);
+      return;
+    }
+    cloudUser=user;
+    // Never reuse another account's local data. Cloud data is the source of truth.
+    state=validState(data ? data.data : null);
+    try{ localStorage.setItem(LS+'.'+user.id,JSON.stringify(state)); }catch{}
+    document.querySelector('#accountEmail').textContent=user.email || 'Аккаунт';
+    document.querySelector('#authGate').classList.add('hidden');
+    authMessage('Вход выполнен.');
+    render();
+  })().finally(()=>{activationInProgress=null;});
+  return activationInProgress;
+}
+function deactivateCloudUser(){
+  cloudUser=null;
+  state={current:[],history:{}};
+  document.querySelector('#accountEmail').textContent='Аккаунт не выбран';
+  document.querySelector('#authGate').classList.remove('hidden');
+  render();
+}
+async function signIn(){
+  if(!cloudClient){authMessage('Сначала настрой Supabase в supabase-config.js.',true);return;}
+  const email=document.querySelector('#authEmail').value.trim();
+  const password=document.querySelector('#authPassword').value;
+  if(!email || !password){authMessage('Введи почту и пароль.',true);return;}
+  authBusy(true); authMessage('Выполняю вход…');
+  const {error}=await cloudClient.auth.signInWithPassword({email,password});
+  authBusy(false);
+  if(error) authMessage(error.message,true);
+}
+async function signUp(){
+  if(!cloudClient){authMessage('Сначала настрой Supabase в supabase-config.js.',true);return;}
+  const email=document.querySelector('#authEmail').value.trim();
+  const password=document.querySelector('#authPassword').value;
+  if(!email || !password){authMessage('Введи почту и пароль.',true);return;}
+  if(password.length<6){authMessage('Пароль должен содержать минимум 6 символов.',true);return;}
+  authBusy(true); authMessage('Создаю аккаунт…');
+  const {data,error}=await cloudClient.auth.signUp({email,password});
+  authBusy(false);
+  if(error){authMessage(error.message,true);return;}
+  if(!data.session) authMessage('Аккаунт создан. Проверь почту и подтверди адрес, затем войди.');
+  else authMessage('Аккаунт создан. Загружаю данные…');
+}
+async function signOut(){
+  if(!cloudClient) return;
+  const {error}=await cloudClient.auth.signOut();
+  if(error) authMessage(error.message,true);
+}
+async function initCloudAuth(){
+  document.querySelector('#loginBtn').addEventListener('click',signIn);
+  document.querySelector('#signupBtn').addEventListener('click',signUp);
+  document.querySelector('#logoutBtn').addEventListener('click',signOut);
+  if(!cloudConfigured() || !window.supabase || !window.supabase.createClient){
+    authMessage('Облако ещё не настроено. Следуй README.md: создай проект Supabase, выполни supabase/schema.sql и заполни supabase-config.js.',true);
+    return;
+  }
+  cloudClient=window.supabase.createClient(window.MINITRATI_SUPABASE_URL,window.MINITRATI_SUPABASE_ANON_KEY,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+  cloudClient.auth.onAuthStateChange((_event,session)=>{
+    queueMicrotask(()=>{ if(session && session.user) activateCloudUser(session.user); else deactivateCloudUser(); });
+  });
+  const {data,error}=await cloudClient.auth.getSession();
+  if(error){authMessage(error.message,true);return;}
+  if(data.session) await activateCloudUser(data.session.user);
+  else authMessage('Войди или создай отдельный аккаунт для своих расходов.');
+}
+
+initCloudAuth();
+</script>
+</body>
+</html>
