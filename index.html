@@ -486,6 +486,59 @@ body.light-theme #settingsStatus{background:#fff}
   .settings-panel{left:50%;right:auto;transform:translateX(-50%);width:min(680px,calc(100% - 40px));max-height:88vh;bottom:24px;border-radius:26px}
 }
 
+
+/* Personal finance tools: budget, analytics, goals, favorites and backups */
+.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px auto 0;max-width:760px}
+.feature-card{min-width:0;padding:18px}
+.feature-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:16px}
+.feature-heading h2{margin:3px 0 0;font-size:17px;letter-spacing:-.035em}
+.feature-kicker{font-size:9px;letter-spacing:.12em;font-weight:850;color:var(--accent)}
+.feature-icon{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:13px;background:rgba(var(--accent-rgb),.12);color:var(--accent);font-size:21px}
+.budget-total{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.budget-total strong{font-size:25px;letter-spacing:-.05em}
+.budget-total span{font-size:11px;color:var(--muted)}
+.budget-track{height:9px;border-radius:99px;overflow:hidden;background:rgba(145,170,205,.14);margin:13px 0 16px}
+.budget-track i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s}
+.feature-field{display:flex;flex-direction:column;gap:6px;min-width:0;margin:8px 0}
+.feature-field>span{font-size:11px;font-weight:750;color:var(--muted)}
+.feature-field input{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card2);color:var(--text);font:inherit;font-size:14px}
+.feature-save{width:100%;min-height:42px;margin-top:5px;border-radius:12px}
+.feature-note{font-size:11px;line-height:1.5;color:var(--muted);margin:11px 0 0}
+.analytics-summary{font-size:12px;color:var(--muted);margin:-4px 0 13px}
+.analytics-summary strong{color:var(--text);font-size:19px;display:block;margin-top:3px}
+.analytics-bars{display:flex;flex-direction:column;gap:12px}
+.analytics-row{display:grid;grid-template-columns:minmax(60px,1fr) auto;gap:5px 10px;font-size:11px}
+.analytics-row .analytics-value{font-weight:750;text-align:right}
+.analytics-track{grid-column:1/-1;height:6px;border-radius:99px;background:rgba(145,170,205,.12);overflow:hidden}
+.analytics-track i{display:block;height:100%;border-radius:inherit;background:var(--accent)}
+.feature-list{display:flex;flex-direction:column;gap:9px}
+.feature-empty{font-size:12px;color:var(--muted);line-height:1.5}
+.favorite-row,.goal-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:13px;background:rgba(145,170,205,.035);min-width:0}
+.favorite-copy,.goal-copy{flex:1;min-width:0}
+.favorite-copy strong,.goal-copy strong{display:block;font-size:12px;overflow-wrap:anywhere}
+.favorite-copy span,.goal-copy span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.favorite-row button,.goal-row button{flex:0 0 auto;padding:7px 9px;border-radius:10px;font-size:11px}
+.goal-form{padding-bottom:13px;margin-bottom:13px;border-bottom:1px solid var(--line)}
+.goal-form-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.goal-progress{height:6px;border-radius:99px;overflow:hidden;background:rgba(145,170,205,.14);margin-top:9px}
+.goal-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.goal-progress-input{width:100%;margin-top:7px;padding:8px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--text);font:inherit;font-size:11px}
+.achievement-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.achievement{padding:10px;border-radius:12px;background:rgba(var(--accent-rgb),.07);border:1px solid rgba(var(--accent-rgb),.15);font-size:10px;line-height:1.4}
+.achievement b{display:block;font-size:11px;margin-bottom:3px}
+.achievement.locked{opacity:.45;filter:grayscale(1)}
+.feature-actions{display:grid;grid-template-columns:1fr;gap:8px}
+.feature-actions button{min-height:40px;border-radius:11px;font-size:12px}
+.notification-box{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:15px;margin-top:15px;border-top:1px solid var(--line)}
+.notification-box strong{font-size:12px}
+.notification-box .feature-note{margin-top:4px}
+.notification-box button{flex:0 0 auto;font-size:11px;padding:9px 10px;border-radius:10px}
+.catalog-card{position:relative}
+.catalog-favorite{position:absolute;right:7px;top:7px;z-index:2;display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:rgba(7,12,19,.78);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:18px}
+.catalog-favorite.active{color:#ffd166;background:rgba(7,12,19,.9)}
+@media(max-width:600px){.feature-grid{grid-template-columns:1fr;gap:11px;margin-top:12px}.feature-card{padding:16px}.feature-heading{margin-bottom:13px}.budget-total strong{font-size:23px}}
+@media(prefers-reduced-motion:reduce){.budget-track i{transition:none}}
+
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -546,6 +599,43 @@ body.light-theme #settingsStatus{background:#fff}
       <div class="clear-action"><button id="clearBtn" type="button" title="Удалить все покупки текущего списка">Очистить текущий список</button></div>
     </section>
   </main>
+  <section class="feature-grid" aria-label="Инструменты Минитрат">
+    <section class="card feature-card budget-card">
+      <div class="feature-heading"><div><span class="feature-kicker">КОНТРОЛЬ РАСХОДОВ</span><h2>Бюджет на месяц</h2></div><span class="feature-icon">◉</span></div>
+      <div class="budget-total"><strong id="budgetSpent">0 ₽</strong><span id="budgetRemaining">Лимит не задан</span></div>
+      <div class="budget-track"><i id="budgetProgress"></i></div>
+      <label class="feature-field"><span>Мой лимит, ₽</span><input id="budgetInput" type="number" min="1" step="100" inputmode="decimal" placeholder="Например, 15000"></label>
+      <button class="save feature-save" id="saveBudgetBtn" type="button">Сохранить бюджет</button>
+      <p class="feature-note" id="budgetMessage">Установи лимит, чтобы следить за расходами.</p>
+    </section>
+    <section class="card feature-card">
+      <div class="feature-heading"><div><span class="feature-kicker">КУДА УХОДЯТ ДЕНЬГИ</span><h2>Аналитика</h2></div><span class="feature-icon">▥</span></div>
+      <div id="analyticsSummary" class="analytics-summary"></div>
+      <div id="analyticsBars" class="analytics-bars"></div>
+      <p class="feature-note">Распределение покупок текущего месяца по категориям.</p>
+    </section>
+    <section class="card feature-card">
+      <div class="feature-heading"><div><span class="feature-kicker">БЫСТРЫЙ ДОСТУП</span><h2>Избранное</h2></div><span class="feature-icon">♡</span></div>
+      <div id="favoritesList" class="feature-list"><p class="muted">Добавляй товары в избранное значком ☆ рядом с покупкой.</p></div>
+    </section>
+    <section class="card feature-card">
+      <div class="feature-heading"><div><span class="feature-kicker">МАЛЕНЬКИЕ ПОБЕДЫ</span><h2>Цели и достижения</h2></div><span class="feature-icon">✦</span></div>
+      <form id="goalForm" class="goal-form">
+        <label class="feature-field"><span>Название цели</span><input id="goalName" maxlength="48" required placeholder="Например, новый телефон"></label>
+        <div class="goal-form-row"><label class="feature-field"><span>Цель, ₽</span><input id="goalTarget" type="number" min="1" required inputmode="decimal" placeholder="30000"></label><label class="feature-field"><span>Уже накоплено, ₽</span><input id="goalSaved" type="number" min="0" inputmode="decimal" value="0" placeholder="0"></label></div>
+        <button class="save feature-save" type="submit">＋ Добавить цель</button>
+      </form>
+      <div id="goalsList" class="feature-list"></div>
+      <div id="achievementsList" class="achievement-list"></div>
+    </section>
+    <section class="card feature-card">
+      <div class="feature-heading"><div><span class="feature-kicker">ТВОИ ДАННЫЕ</span><h2>Экспорт и уведомления</h2></div><span class="feature-icon">↗</span></div>
+      <div class="feature-actions"><button class="ghost" id="exportCsvBtn" type="button">Скачать CSV</button><button class="ghost" id="exportBackupBtn" type="button">Резервная копия JSON</button><button class="ghost" id="restoreBackupBtn" type="button">Восстановить копию</button></div>
+      <input id="restoreBackupFile" type="file" accept="application/json,.json" class="hidden">
+      <div class="notification-box"><div><strong>Напоминания</strong><p class="feature-note">Разрешение на уведомления браузера. Сайт не отправляет уведомления, когда полностью закрыт.</p></div><button class="ghost" id="notificationsBtn" type="button">Включить</button></div>
+      <p id="notificationsStatus" class="feature-note" role="status"></p>
+    </section>
+  </section>
 </div>
 
 <button class="fab" id="addBtn">+ Добавить</button>
@@ -680,16 +770,26 @@ const $ = s => document.querySelector(s);
 const fmt = n => new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(n||0);
 const monthKey = d => d.slice(0,7);
 const today = () => new Date().toISOString().slice(0,10);
-let state = {current:[], history:{}};
+let state = {current:[], history:{}, budgetMonthly:15000, goals:[], favorites:[], notifications:false, achievements:{}};
 let cloudUser = null;
 let cloudClient = null;
 let cloudSaveChain = Promise.resolve();
 let activationInProgress = null;
 
 function validState(data){
-  return data && Array.isArray(data.current) && data.history && typeof data.history === 'object'
-    ? {current:data.current, history:data.history}
-    : {current:[], history:{}};
+  if(!data || !Array.isArray(data.current) || !data.history || typeof data.history!=='object') {
+    return {current:[],history:{},budgetMonthly:15000,goals:[],favorites:[],notifications:false,achievements:{}};
+  }
+  return {
+    ...data,
+    current:data.current,
+    history:data.history,
+    budgetMonthly:Number(data.budgetMonthly)>0?Number(data.budgetMonthly):15000,
+    goals:Array.isArray(data.goals)?data.goals.filter(g=>g&&g.id&&g.name).map(g=>({...g,target:Math.max(1,Number(g.target)||1),saved:Math.max(0,Number(g.saved)||0)})):[],
+    favorites:Array.isArray(data.favorites)?[...new Set(data.favorites.map(String))]:[],
+    notifications:!!data.notifications,
+    achievements:data.achievements&&typeof data.achievements==='object'?data.achievements:{}
+  };
 }
 function save(){
   render();
@@ -803,6 +903,7 @@ function init(){
     }
   });
   $('#addBtn').onclick=openSheet; $('#saveBtn').onclick=saveEntry;
+  bindFinanceFeatures();
   $('#toggleRecentBtn').onclick=toggleRecentHistory;
   $('#confirmDeleteBtn').onclick=confirmDelete;$('#cancelDeleteBtn').onclick=closeDeleteConfirm;document.querySelectorAll('[data-cancel-delete]').forEach(el=>el.onclick=closeDeleteConfirm);
   $('#closeCategoryBtn').onclick=closeCategory;document.querySelectorAll('[data-close-category]').forEach(el=>el.onclick=closeCategory);
@@ -850,7 +951,7 @@ function renderCatalog(){
     const globalIndex=all.findIndex(y=>y===x);
     return '<button type="button" class="catalog-card" data-catalog-product="'+globalIndex+'">'+
       '<div class="catalog-photo">'+productAvatar(x.name,x.category)+'</div>'+
-      '<div class="catalog-card-info"><strong>'+escapeHtml(x.name)+'</strong><span>'+escapeHtml(x.category||'другое')+(x.volume?' · '+escapeHtml(String(x.volume))+(x.volume<10?' л.':' г.'):'')+'</span><b>'+(Number(x.price)>0?fmt(Number(x.price)):'Цена не указана')+'</b></div><span class="catalog-add-icon" aria-hidden="true">＋</span></button>';
+      '<div class="catalog-card-info"><strong>'+escapeHtml(x.name)+'</strong><span>'+escapeHtml(x.category||'другое')+(x.volume?' · '+escapeHtml(String(x.volume))+(x.volume<10?' л.':' г.'):'')+'</span><b>'+(Number(x.price)>0?fmt(Number(x.price)):'Цена не указана')+'</b></div><span class="catalog-add-icon" aria-hidden="true">＋</span><span class="catalog-favorite '+(state.favorites.some(f=>normLine(f)===normLine(x.name))?'active':'')+'" role="button" tabindex="0" data-catalog-favorite="'+escapeHtml(x.name).replace(/"/g,'&quot;')+'" aria-label="Избранное">'+(state.favorites.some(f=>normLine(f)===normLine(x.name))?'★':'☆')+'</span></button>';
   }).join(''):'<div class="catalog-empty">Ничего не найдено. Попробуй другое название или категорию.</div>';
   const counter=document.querySelector('.catalog-count');if(counter)counter.textContent=all.length;
 }
@@ -961,7 +1062,7 @@ let pendingDeleteId=null;
 function del(id){const item=state.current.find(x=>String(x.id)===String(id));if(!item)return;pendingDeleteId=item.id;$('#deleteConfirmText').textContent='Вы уверены, что хотите удалить «'+item.name+'»? Это действие нельзя отменить.';$('#deleteConfirmSheet').classList.add('open');$('#deleteConfirmSheet').setAttribute('aria-hidden','false');}
 function closeDeleteConfirm(){$('#deleteConfirmSheet').classList.remove('open');$('#deleteConfirmSheet').setAttribute('aria-hidden','true');pendingDeleteId=null;}
 function confirmDelete(){if(pendingDeleteId===null)return;state.current=state.current.filter(x=>String(x.id)!==String(pendingDeleteId));closeDeleteConfirm();save();toast('Покупка удалена');}
-function renderPurchaseRows(items){return items.map(x=>'<div class="item">'+productAvatar(x.name,x.category)+'<div class="item-name"><div>'+escapeHtml(x.name)+'</div><div class="meta">'+escapeHtml(x.category)+' · '+x.qty+' шт · '+new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</div></div><div class="price">'+fmt(x.price*x.qty)+'<br><button class="del" type="button" data-delete-id="'+escapeHtml(String(x.id))+'" aria-label="Удалить '+escapeHtml(x.name)+'" title="Удалить покупку"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></button></div></div>').join('');}
+function renderPurchaseRows(items){return items.map(x=>'<div class="item">'+productAvatar(x.name,x.category)+'<div class="item-name"><div>'+escapeHtml(x.name)+'</div><div class="meta">'+escapeHtml(x.category)+' · '+x.qty+' шт · '+new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</div></div><div class="price">'+fmt(x.price*x.qty)+'<br><button class="del" type="button" data-favorite-toggle="'+escapeHtml(x.name).replace(/"/g,'&quot;')+'" aria-label="Добавить в избранное" title="Добавить в избранное">'+(state.favorites.some(f=>normLine(f)===normLine(x.name))?'★':'☆')+'</button><button class="del" type="button" data-delete-id="'+escapeHtml(String(x.id))+'" aria-label="Удалить '+escapeHtml(x.name)+'" title="Удалить покупку"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></button></div></div>').join('');}
 let recentExpanded=false;
 function toggleRecentHistory(){recentExpanded=!recentExpanded;render();}
 function openCategory(category){const items=[...state.current].filter(x=>(x.category||'другое')===category).sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);$('#categorySheetTitle').textContent=category;$('#categorySheetSubtitle').textContent=items.length+' покупок · всего '+fmt(sum(items));$('#categoryItems').innerHTML=items.length?renderPurchaseRows(items):'<div class="muted">В этой категории пока нет покупок.</div>';$('#categorySheet').classList.add('open');$('#categorySheet').setAttribute('aria-hidden','false');}
@@ -984,7 +1085,130 @@ function itemEmoji(name, category){
   return '🛍️';
 }
 
+
+function renderFinanceFeatures(items=state.current,total=sum(state.current),cats=Object.entries(byCat(state.current)).sort((a,b)=>b[1]-a[1])){
+  const budget=Math.max(0,Number(state.budgetMonthly)||0), percent=budget?Math.min(100,total/budget*100):0;
+  const spent=$('#budgetSpent'),remaining=$('#budgetRemaining'),progress=$('#budgetProgress'),budgetInput=$('#budgetInput');
+  if(spent)spent.textContent=fmt(total);
+  if(remaining)remaining.textContent=budget?(total>budget?'Превышение '+fmt(total-budget):'Осталось '+fmt(budget-total)):'Лимит не задан';
+  if(progress){progress.style.width=percent+'%';progress.style.background=total>budget&&budget?'var(--bad)':'linear-gradient(90deg,var(--accent),var(--accent2))'}
+  if(budgetInput&&document.activeElement!==budgetInput)budgetInput.value=budget||'';
+  const bm=$('#budgetMessage');if(bm)bm.textContent=budget?(percent>=100?'Лимит исчерпан. Проверь расходы и скорректируй план.':percent>=80?'Внимание: использовано больше 80% бюджета.':'Использовано '+Math.round(percent)+'% месячного бюджета.'):'Установи лимит, чтобы следить за расходами.';
+  const as=$('#analyticsSummary');if(as)as.innerHTML='Всего за текущий месяц<strong>'+fmt(total)+'</strong><span>'+items.length+' покупок · средний чек '+fmt(total/Math.max(1,items.length))+'</span>';
+  const ab=$('#analyticsBars'),max=Math.max(1,...cats.map(x=>x[1]));
+  if(ab)ab.innerHTML=cats.length?cats.slice(0,6).map(([cat,value])=>'<div class="analytics-row"><span>'+escapeHtml(cat)+'</span><span class="analytics-value">'+fmt(value)+' · '+Math.round(value/Math.max(1,total)*100)+'%</span><div class="analytics-track"><i style="width:'+value/max*100+'%"></i></div></div>').join(''):'<p class="feature-empty">Добавь покупки — здесь появится аналитика.</p>';
+  const fav=$('#favoritesList'),favorites=state.favorites||[];
+  if(fav)fav.innerHTML=favorites.length?favorites.map(name=>{
+    const last=[...state.current,...Object.values(state.history).flat()].find(x=>normLine(x.name)===normLine(name));
+    return '<div class="favorite-row"><div class="favorite-copy"><strong>'+escapeHtml(name)+'</strong><span>'+(last?escapeHtml(last.category)+' · обычно '+fmt(last.price):'Избранный товар')+'</span></div><button type="button" data-fav-add="'+escapeHtml(name).replace(/"/g,'&quot;')+'">＋ Добавить</button><button type="button" data-fav-remove="'+escapeHtml(name).replace(/"/g,'&quot;')+'" aria-label="Убрать из избранного">×</button></div>';
+  }).join(''):'<p class="feature-empty">Нажми ☆ рядом с товаром в каталоге или в списке покупок, чтобы быстро добавить его сюда.</p>';
+  const gl=$('#goalsList');
+  if(gl)gl.innerHTML=state.goals.length?state.goals.map(g=>{
+    const p=Math.min(100,Math.round((Number(g.saved)||0)/Math.max(1,Number(g.target)||1)*100));
+    return '<div class="goal-row"><div class="goal-copy"><strong>'+escapeHtml(g.name)+'</strong><span>'+fmt(g.saved||0)+' из '+fmt(g.target)+' · '+p+'%</span><div class="goal-progress"><i style="width:'+p+'%"></i></div><input class="goal-progress-input" type="number" min="0" step="100" inputmode="decimal" aria-label="Накоплено для '+escapeHtml(g.name)+'" value="'+Math.max(0,Number(g.saved)||0)+'" data-goal-saved="'+escapeHtml(String(g.id))+'"></div><button type="button" data-goal-save="'+escapeHtml(String(g.id))+'">Сохранить</button><button type="button" data-goal-delete="'+escapeHtml(String(g.id))+'" aria-label="Удалить цель">×</button></div>';
+  }).join(''):'<p class="feature-empty">Добавь цель накопления — например, на поездку или новую покупку.</p>';
+  const ach=$('#achievementsList');
+  if(ach){
+    const goalsDone=state.goals.filter(g=>Number(g.saved)>=Number(g.target)).length;
+    const records=state.current.length>=1;
+    const categories=new Set(state.current.map(x=>x.category)).size>=3;
+    const checks=[['Первый шаг','Добавлена первая покупка',records],['Исследователь','Покупки в 3 категориях',categories],['Накопитель','Достигнута цель накопления',goalsDone>0],['Планировщик','Установлен бюджет',budget>0]];
+    ach.innerHTML=checks.map(([title,desc,ok])=>'<div class="achievement '+(ok?'':'locked')+'"><b>'+(ok?'✦ ':'◇ ')+title+'</b>'+desc+'</div>').join('');
+  }
+  const nb=$('#notificationsBtn'),ns=$('#notificationsStatus');
+  if(nb)nb.textContent=state.notifications?'Уведомления включены':'Включить';
+  if(ns && !ns.textContent)ns.textContent=state.notifications?'Разрешение сохранено для этого браузера.':'Напоминания работают, пока страница открыта.';
+}
+function toggleFavorite(name){
+  name=String(name||'').trim();if(!name)return;
+  state.favorites=state.favorites||[];
+  const idx=state.favorites.findIndex(x=>normLine(x)===normLine(name));
+  if(idx>=0){state.favorites.splice(idx,1);toast('Убрано из избранного')}
+  else{state.favorites.unshift(name);toast('Добавлено в избранное')}
+  save();renderCatalog();
+}
+function addFavoritePurchase(name){
+  const old=[...state.current,...Object.values(state.history).flat()].find(x=>normLine(x.name)===normLine(name));
+  if(!old){toast('Сначала добавь этот товар как покупку');return}
+  $('#name').value=old.name;$('#price').value=old.price;$('#qty').value=1;$('#category').value=old.category||'другое';$('#date').value=today();openSheet();
+}
+function saveBudget(){
+  const n=Number($('#budgetInput').value);
+  if(!Number.isFinite(n)||n<=0){toast('Введи бюджет больше нуля');return}
+  state.budgetMonthly=n;save();toast('Бюджет сохранён');
+}
+function addGoal(e){
+  e.preventDefault();
+  const name=$('#goalName').value.trim(),target=Number($('#goalTarget').value),saved=Math.max(0,Number($('#goalSaved').value)||0);
+  if(!name||!Number.isFinite(target)||target<=0){toast('Укажи название и сумму цели');return}
+  state.goals.push({id:uid(),name,target,saved,createdAt:Date.now()});
+  $('#goalForm').reset();$('#goalSaved').value='0';save();toast('Цель добавлена');
+}
+function exportCSV(){
+  const rows=[['Дата','Товар','Категория','Цена','Количество','Сумма'],...state.current.map(x=>[x.date,x.name,x.category,x.price,x.qty,Number(x.price)*Number(x.qty)])];
+  const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  downloadFile(new Blob([csv],{type:'text/csv;charset=utf-8'}),'minitrati-pokupki.csv');toast('CSV подготовлен');
+}
+function downloadFile(blob,name){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportBackup(){
+  const backup={...state,exportedAt:new Date().toISOString(),format:'minitrati-backup-v1'};
+  downloadFile(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),'minitrati-backup.json');toast('Резервная копия готова');
+}
+function restoreBackup(){
+  const file=$('#restoreBackupFile').files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{try{
+    const raw=JSON.parse(reader.result);
+    if(!raw||!Array.isArray(raw.current)||!raw.history||typeof raw.history!=='object')throw new Error('bad format');
+    if(!confirm('Заменить текущие данные Минитрат данными из резервной копии?'))return;
+    state=validState(raw);save();toast('Резервная копия восстановлена');
+  }catch{toast('Файл не похож на резервную копию Минитрат')}finally{$('#restoreBackupFile').value=''}};
+  reader.readAsText(file);
+}
+async function enableNotifications(){
+  const status=$('#notificationsStatus');
+  if(!('Notification' in window)){if(status)status.textContent='Этот браузер не поддерживает уведомления.';return}
+  try{
+    const permission=Notification.permission==='default'?await Notification.requestPermission():Notification.permission;
+    if(permission!=='granted'){if(status)status.textContent='Разрешение не выдано. Проверь настройки Safari.';return}
+    state.notifications=true;save();
+    if(status)status.textContent='Готово! Можно показывать напоминания, пока Минитраты открыты.';
+    try{new Notification('Минитраты',{body:'Уведомления включены. Не забудь записывать покупки!'})}catch{}
+  }catch{if(status)status.textContent='Не удалось включить уведомления в этом браузере.'}
+}
+function bindFinanceFeatures(){
+  $('#saveBudgetBtn').addEventListener('click',saveBudget);
+  $('#goalForm').addEventListener('submit',addGoal);
+  $('#exportCsvBtn').addEventListener('click',exportCSV);
+  $('#exportBackupBtn').addEventListener('click',exportBackup);
+  $('#restoreBackupBtn').addEventListener('click',()=>$('#restoreBackupFile').click());
+  $('#restoreBackupFile').addEventListener('change',restoreBackup);
+  $('#notificationsBtn').addEventListener('click',enableNotifications);
+  $('#favoritesList').addEventListener('click',e=>{
+    const add=e.target.closest('[data-fav-add]'),remove=e.target.closest('[data-fav-remove]');
+    if(add)addFavoritePurchase(add.dataset.favAdd);
+    if(remove){state.favorites=state.favorites.filter(x=>normLine(x)!==normLine(remove.dataset.favRemove));save();toast('Убрано из избранного')}
+  });
+  $('#goalsList').addEventListener('click',e=>{
+    const saveBtn=e.target.closest('[data-goal-save]'),delBtn=e.target.closest('[data-goal-delete]');
+    if(saveBtn){const id=saveBtn.dataset.goalSave,input=$('#goalsList [data-goal-saved="'+CSS.escape(id)+'"]');const goal=state.goals.find(g=>String(g.id)===id);if(goal&&input){goal.saved=Math.max(0,Number(input.value)||0);save();toast(Number(goal.saved)>=Number(goal.target)?'Цель достигнута! ✨':'Прогресс сохранён')}}
+    if(delBtn){state.goals=state.goals.filter(g=>String(g.id)!==delBtn.dataset.goalDelete);save();toast('Цель удалена')}
+  });
+  $('#catalogResults').addEventListener('click',e=>{
+    const fav=e.target.closest('[data-catalog-favorite]');if(fav){e.preventDefault();e.stopPropagation();toggleFavorite(fav.dataset.catalogFavorite)}
+  });
+  $('#recent').addEventListener('click',e=>{
+    const fav=e.target.closest('[data-favorite-toggle]');if(fav){e.preventDefault();e.stopPropagation();toggleFavorite(fav.dataset.favoriteToggle)}
+  });
+  $('#categoryItems').addEventListener('click',e=>{
+    const fav=e.target.closest('[data-favorite-toggle]');if(fav){e.preventDefault();e.stopPropagation();toggleFavorite(fav.dataset.favoriteToggle)}
+  });
+}
+
 function render(){
+  state=validState(state);
   const items=[...state.current].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
   const total=sum(items); const days=Math.max(1,new Date(monthKey(today())+'-01T12:00:00').getDate());
   $('#monthLabel').textContent=new Date(monthKey(today())+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
@@ -1006,6 +1230,7 @@ function render(){
   const hist=Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
   $('#historyBox').innerHTML = hist.length ? `<h2 style="margin-top:16px">Архив месяцев</h2>`+hist.map(([k,arr])=>`<div class="row"><div class="label"><div><div class="name">${new Date(k+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div><div class="muted small">${arr.length} покупок</div></div></div><div class="amount">${fmt(sum(arr))}</div></div>`).join('') : '';
   $('#historyBox').classList.toggle('hidden',!recentExpanded);
+  renderFinanceFeatures(items,total,cats);
 }
 init();
 
