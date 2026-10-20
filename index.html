@@ -917,7 +917,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
       <div class="settings-account-summary"><span class="profile-avatar profile-avatar-large" id="settingsAvatarDisplay"><span id="settingsAvatarText">👤</span></span><div class="settings-account-copy"><strong id="settingsProfileName">Мой профиль</strong><span id="settingsAccountEmail">Аккаунт не выбран</span><span class="settings-sync"><i></i><span id="settingsSyncStatus">Проверка подключения…</span></span></div><button type="button" class="ghost small-button" id="settingsLogoutBtn">Выйти</button></div>
       <section class="settings-subsection">
         <h4>Фото профиля</h4>
-        <div class="avatar-editor"><button class="profile-avatar profile-avatar-large" id="settingsAvatarBtn" type="button" aria-label="Выбрать аватар"><span id="settingsAvatarTextMirror" class="hidden">👤</span><span id="settingsAvatarActionText">Изменить</span></button><div><strong>Твой аватар</strong><div class="small muted">Нажми, чтобы выбрать изображение</div><button type="button" class="ghost small-button" id="chooseAvatarBtn">Выбрать фото</button><button type="button" class="ghost small-button hidden" id="removeAvatarBtn">Убрать фото</button></div></div>
+        <div class="avatar-editor"><button class="profile-avatar profile-avatar-large" id="settingsAvatarBtn" type="button" aria-label="Выбрать аватар"><span id="settingsAvatarButtonImage">👤</span></button><div><strong>Твой аватар</strong><div class="small muted">Нажми, чтобы выбрать изображение</div><button type="button" class="ghost small-button" id="chooseAvatarBtn">Выбрать фото</button><button type="button" class="ghost small-button hidden" id="removeAvatarBtn">Убрать фото</button></div></div>
         <input type="file" id="avatarFile" accept="image/*" class="hidden">
       </section>
       <section class="settings-subsection">
@@ -1788,7 +1788,7 @@ function resetAppearance(){
   settingsStatus('Оформление сброшено к стандартному.');
 }
 function setAvatarImage(data){
-  ['#profileAvatarText','#settingsAvatarText'].forEach(sel=>{
+  ['#profileAvatarText','#settingsAvatarText','#settingsAvatarButtonImage'].forEach(sel=>{
     const el=document.querySelector(sel); if(!el)return;
     if(data){el.innerHTML='<img alt="" src="'+data.replace(/"/g,'&quot;')+'">';}
     else el.textContent='👤';
@@ -1913,7 +1913,7 @@ document.querySelector('#settingsLogoutBtn').addEventListener('click',signOut);
 document.querySelector('#settingsCsvBtn').addEventListener('click',exportCSV);
 document.querySelector('#settingsBackupBtn').addEventListener('click',exportBackup);
 document.querySelector('#settingsRestoreBtn').addEventListener('click',()=>document.querySelector('#restoreBackupFile').click());
-document.querySelector('#settingsNotificationsBtn').addEventListener('click',enableNotifications);
+document.querySelector('#settingsNotificationsBtn').addEventListener('click',async()=>{await enableNotifications();const el=document.querySelector('#settingsNotificationsStatus');if(el)el.textContent=state.notifications?'Уведомления включены':'Можно включить уведомления браузера';});
 document.querySelector('#clearExpenseDataBtn').addEventListener('click',()=>{
   if(!cloudUser||!cloudClient){settingsStatus('Сначала войди в аккаунт.',true);return}
   const totalCount=state.current.length+Object.values(state.history||{}).reduce((n,items)=>n+(Array.isArray(items)?items.length:0),0);
