@@ -647,6 +647,39 @@ input,select,textarea{min-width:0}
  .settings-panel{max-height:94dvh}
 }
 
+
+/* Settings fixes: balanced heading, clean status, reliable touch scrolling */
+#settingsSheet{overscroll-behavior:contain;}
+#settingsSheet .settings-panel{display:block;min-width:0;}
+#settingsSheet .settings-title-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:100%;min-width:0;box-sizing:border-box;
+  border:0!important;outline:0;box-shadow:none;
+  padding:8px 0 16px;margin:0 0 14px;
+}
+#settingsSheet .settings-title-row>div{flex:1 1 auto;min-width:0;}
+#settingsSheet .settings-title-row h2{margin:0 0 5px;line-height:1.15;}
+#settingsSheet .settings-subtitle{max-width:none;margin:0;overflow-wrap:anywhere;}
+#settingsSheet #closeSettingsBtn{flex:0 0 42px;width:42px;height:42px;display:grid;place-items:center;align-self:flex-start;}
+#settingsSheet .settings-status{display:none!important;position:static!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;}
+#settingsSheet .settings-status:not(:empty){display:block!important;margin:12px 0 0!important;padding:10px 12px!important;border-radius:12px;background:rgba(135,155,185,.08)!important;}
+@media(max-width:679px){
+  #settingsSheet .settings-panel{
+    position:absolute;left:0;right:0;top:auto;bottom:0;transform:none;
+    width:100%;max-width:none;height:min(92dvh,900px);max-height:100dvh;
+    overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;touch-action:pan-y;
+    border-radius:25px 25px 0 0!important;
+    padding:14px 16px calc(28px + env(safe-area-inset-bottom));
+  }
+  #settingsSheet .settings-title-row{position:relative;top:auto;z-index:1;background:transparent!important;backdrop-filter:none;margin:0 0 14px;padding:6px 0 14px;}
+  #settingsSheet .settings-title-row>div{max-width:calc(100% - 54px)}
+}
+@media(min-width:680px){
+  #settingsSheet .settings-panel{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  #settingsSheet .settings-title-row{position:relative;top:auto;margin:0 0 14px;padding:4px 0 16px;}
+}
+
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1698,10 +1731,17 @@ function closeProfileMenu(){
 }
 function openSettings(){
   closeProfileMenu();
-  document.querySelector('#settingsSheet').classList.add('open');
-  document.querySelector('#settingsSheet').setAttribute('aria-hidden','false');
-  document.querySelector('#settingsStatus').textContent='';
+  const sheet=document.querySelector('#settingsSheet');
+  const panel=sheet.querySelector('.settings-panel');
+  sheet.classList.add('open');
+  sheet.setAttribute('aria-hidden','false');
+  const status=document.querySelector('#settingsStatus');
+  status.textContent='';
+  status.style.color='';
   syncProfileUI();
+  // Reset the scroll position each time; allow native touch scrolling on iOS.
+  panel.scrollTop=0;
+  requestAnimationFrame(()=>{panel.scrollTop=0;});
 }
 function closeSettings(){
   document.querySelector('#settingsSheet').classList.remove('open');
