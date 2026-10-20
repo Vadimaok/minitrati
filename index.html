@@ -1285,6 +1285,7 @@ function render(){
   $('#historyBox').innerHTML = hist.length ? `<h2 style="margin-top:16px">Архив месяцев</h2>`+hist.map(([k,arr])=>`<div class="row"><div class="label"><div><div class="name">${new Date(k+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div><div class="muted small">${arr.length} покупок</div></div></div><div class="amount">${fmt(sum(arr))}</div></div>`).join('') : '';
   $('#historyBox').classList.toggle('hidden',!recentExpanded);
   renderFinanceFeatures(items,total,cats);
+  if(typeof applyFeaturePreferences==='function')applyFeaturePreferences();
 }
 init();
 
