@@ -740,8 +740,8 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
 
 </style>
 <base target="_blank">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+<script src="./supabase-config.js?v=20261024"></script>
 </head>
 <body>
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
@@ -1765,7 +1765,21 @@ document.querySelector('#adminAccountDetail')?.addEventListener('click',e=>{
   else {const del=e.target.closest('[data-admin-delete-row]');if(del)adminDeleteExpense(Number(del.dataset.adminDeleteRow));}
 });
 
-initCloudAuth();
+async function bootCloudAuthWithFallback(){
+  if(!window.supabase?.createClient){
+    await new Promise(resolve=>{
+      const script=document.createElement('script');
+      script.src='https://unpkg.com/@supabase/supabase-js@2';
+      script.crossOrigin='anonymous';
+      script.onload=resolve;
+      script.onerror=resolve;
+      document.head.appendChild(script);
+      setTimeout(resolve,10000);
+    });
+  }
+  initCloudAuth();
+}
+bootCloudAuthWithFallback();
 
 const PROFILE_THEME_KEY='minitrati.theme.v1';
 const PROFILE_APPEARANCE_KEY='minitrati.appearance.v1';
