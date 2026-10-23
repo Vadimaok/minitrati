@@ -1,0 +1,15 @@
+{
+  "appId": "com.vadimaok.minitrati",
+  "appName": "Минитраты",
+  "webDir": "www",
+  "server": {
+    "url": "https://vadimaok.github.io/minitrati/",
+    "cleartext": false,
+    "allowNavigation": [
+      "vadimaok.github.io"
+    ]
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
