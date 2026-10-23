@@ -1534,27 +1534,46 @@ function deactivateCloudUser(){
   render();
 }
 async function signIn(){
-  if(!cloudClient){authMessage('Сначала настрой Supabase в supabase-config.js.',true);return;}
+  if(!cloudClient){authMessage('Не удалось подключиться к облаку. Обнови страницу и попробуй ещё раз.',true);return;}
   const email=document.querySelector('#authEmail').value.trim();
   const password=document.querySelector('#authPassword').value;
   if(!email || !password){authMessage('Введи почту и пароль.',true);return;}
   authBusy(true); authMessage('Выполняю вход…');
-  const {error}=await cloudClient.auth.signInWithPassword({email,password});
-  authBusy(false);
-  if(error) authMessage(error.message,true);
+  try{
+    const result=await Promise.race([
+      cloudClient.auth.signInWithPassword({email,password}),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Истекло время ожидания ответа сервера. Проверь доступность облака и попробуй ещё раз.')),20000))
+    ]);
+    if(result.error) authMessage(result.error.message,true);
+  }catch(error){
+    console.error('Sign-in failed:',error);
+    const message=String(error?.message||'');
+    authMessage(/fetch|network|load failed|failed to fetch|timeout|время ожидания/i.test(message)
+      ? 'Не удаётся связаться с сервером входа. Обнови страницу; если ошибка повторится, пришли текст этого сообщения.'
+      : (message||'Не удалось выполнить вход. Попробуй ещё раз.'),true);
+  }finally{authBusy(false);}
 }
 async function signUp(){
-  if(!cloudClient){authMessage('Сначала настрой Supabase в supabase-config.js.',true);return;}
+  if(!cloudClient){authMessage('Не удалось подключиться к облаку. Обнови страницу и попробуй ещё раз.',true);return;}
   const email=document.querySelector('#authEmail').value.trim();
   const password=document.querySelector('#authPassword').value;
   if(!email || !password){authMessage('Введи почту и пароль.',true);return;}
   if(password.length<6){authMessage('Пароль должен содержать минимум 6 символов.',true);return;}
   authBusy(true); authMessage('Создаю аккаунт…');
-  const {data,error}=await cloudClient.auth.signUp({email,password});
-  authBusy(false);
-  if(error){authMessage(error.message,true);return;}
-  if(!data.session) authMessage('Аккаунт создан. Проверь почту и подтверди адрес, затем войди.');
-  else authMessage('Аккаунт создан. Загружаю данные…');
+  try{
+    const {data,error}=await Promise.race([
+      cloudClient.auth.signUp({email,password}),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Истекло время ожидания ответа сервера. Попробуй ещё раз.')),20000))
+    ]);
+    if(error){authMessage(error.message,true);return;}
+    if(!data.session) authMessage('Аккаунт создан. Проверь почту и подтверди адрес, затем войди.');
+    else authMessage('Аккаунт создан. Загружаю данные…');
+  }catch(error){
+    console.error('Sign-up failed:',error);
+    authMessage(/fetch|network|load failed|failed to fetch|timeout|время ожидания/i.test(String(error?.message||''))
+      ? 'Не удаётся связаться с сервером входа. Попробуй ещё раз чуть позже.'
+      : (error?.message||'Не удалось создать аккаунт. Попробуй ещё раз.'),true);
+  }finally{authBusy(false);}
 }
 async function signOut(){
   if(!cloudClient) return;
@@ -1567,19 +1586,27 @@ async function initCloudAuth(){
   document.querySelector('#signupBtn').addEventListener('click',signUp);
   document.querySelector('#logoutBtn')?.addEventListener('click',signOut);
   if(!cloudConfigured() || !window.supabase || !window.supabase.createClient){
-    authMessage('Облако ещё не настроено. Следуй README.md: создай проект Supabase, выполни supabase/schema.sql и заполни supabase-config.js.',true);
+    authMessage('Не загрузились настройки или библиотека облака. Обнови страницу; если ошибка повторится, проверь подключение.',true);
     return;
   }
-  cloudClient=window.supabase.createClient(window.MINITRATI_SUPABASE_URL,window.MINITRATI_SUPABASE_ANON_KEY,{
-    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
-  });
-  cloudClient.auth.onAuthStateChange((_event,session)=>{
-    queueMicrotask(()=>{ if(session && session.user) activateCloudUser(session.user); else deactivateCloudUser(); });
-  });
-  const {data,error}=await cloudClient.auth.getSession();
-  if(error){authMessage(error.message,true);return;}
-  if(data.session) await activateCloudUser(data.session.user);
-  else authMessage('Войди или создай отдельный аккаунт для своих расходов.');
+  try{
+    cloudClient=window.supabase.createClient(window.MINITRATI_SUPABASE_URL,window.MINITRATI_SUPABASE_ANON_KEY,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+    });
+    cloudClient.auth.onAuthStateChange((_event,session)=>{
+      queueMicrotask(()=>{ if(session && session.user) activateCloudUser(session.user); else deactivateCloudUser(); });
+    });
+    const {data,error}=await Promise.race([
+      cloudClient.auth.getSession(),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Истекло время ожидания подключения к облаку.')),20000))
+    ]);
+    if(error){authMessage(error.message,true);return;}
+    if(data.session) await activateCloudUser(data.session.user);
+    else authMessage('Войди или создай отдельный аккаунт для своих расходов.');
+  }catch(error){
+    console.error('Cloud initialization failed:',error);
+    authMessage('Не удалось подключиться к облаку. Обнови страницу и попробуй снова.',true);
+  }
 }
 
 
