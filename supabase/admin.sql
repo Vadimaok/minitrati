@@ -390,3 +390,137 @@ as $$
 $$;
 revoke all on function public.user_get_my_role() from public, anon;
 grant execute on function public.user_get_my_role() to authenticated;
+
+
+-- Управление доступом к инструментам СТ.Смены и КНЗ.
+alter table public.admin_tasks add column if not exists completion_note text not null default '';
+alter table public.admin_tasks add column if not exists screenshot_data text;
+create table if not exists public.role_feature_flags (
+  role text primary key check (role in ('shift_senior','employee_knz')),
+  is_enabled boolean not null default true,
+  updated_by uuid references auth.users(id) on delete set null,
+  updated_at timestamptz not null default now()
+);
+alter table public.role_feature_flags enable row level security;
+revoke all on public.role_feature_flags from anon, authenticated;
+insert into public.role_feature_flags(role,is_enabled) values ('shift_senior',true),('employee_knz',true)
+on conflict(role) do nothing;
+
+create or replace function public.user_get_role_features()
+returns jsonb language sql stable security definer set search_path=''
+as $$
+ select jsonb_build_object(
+  'shift_senior',coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true),
+  'employee_knz',coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true)
+ );
+$$;
+revoke all on function public.user_get_role_features() from public,anon;
+grant execute on function public.user_get_role_features() to authenticated;
+
+create or replace function public.admin_set_role_feature(target_role text,is_enabled boolean)
+returns boolean language plpgsql security definer set search_path=''
+as $$
+begin
+ if not public.is_current_admin() then raise exception 'Доступ запрещён: нужны права администратора' using errcode='42501'; end if;
+ if target_role not in ('shift_senior','employee_knz') then raise exception 'Недопустимая роль'; end if;
+ insert into public.role_feature_flags(role,is_enabled,updated_by,updated_at)
+ values(target_role,admin_set_role_feature.is_enabled,(select auth.uid()),now())
+ on conflict(role) do update set is_enabled=excluded.is_enabled,updated_by=excluded.updated_by,updated_at=now();
+ return true;
+end; $$;
+revoke all on function public.admin_set_role_feature(text,boolean) from public,anon;
+grant execute on function public.admin_set_role_feature(text,boolean) to authenticated;
+
+create or replace function public.shift_list_knz_employees()
+returns jsonb language plpgsql stable security definer set search_path=''
+as $$
+declare result jsonb;
+begin
+ if (select auth.uid()) is null or coalesce((select r.role from public.user_roles r where r.user_id=(select auth.uid())),'employee') <> 'shift_senior' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true) then
+  raise exception 'Доступ запрещён' using errcode='42501';
+ end if;
+ select coalesce(jsonb_agg(jsonb_build_object('user_id',u.id,'email',u.email,'display_name',coalesce(u.raw_user_meta_data->>'display_name',u.raw_user_meta_data->>'username',u.email)) order by u.email),'[]'::jsonb)
+ into result from auth.users u join public.user_roles r on r.user_id=u.id and r.role='employee_knz';
+ return result;
+end; $$;
+revoke all on function public.shift_list_knz_employees() from public,anon;
+grant execute on function public.shift_list_knz_employees() to authenticated;
+
+create or replace function public.shift_list_tasks()
+returns jsonb language plpgsql stable security definer set search_path=''
+as $$
+declare result jsonb; uid uuid := (select auth.uid());
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'shift_senior' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true) then raise exception 'Доступ запрещён' using errcode='42501'; end if;
+ select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'assignee_id',t.assignee_id,'assignee_email',u.email,'assignee_name',coalesce(u.raw_user_meta_data->>'display_name',u.raw_user_meta_data->>'username',u.email),'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data) order by t.updated_at desc),'[]'::jsonb)
+ into result from public.admin_tasks t left join auth.users u on u.id=t.assignee_id where t.created_by=uid and t.assignee_id is not null;
+ return result;
+end; $$;
+revoke all on function public.shift_list_tasks() from public,anon;
+grant execute on function public.shift_list_tasks() to authenticated;
+
+create or replace function public.shift_upsert_task(task_id uuid,task_title text,task_description text,target_assignee uuid)
+returns uuid language plpgsql security definer set search_path=''
+as $$
+declare uid uuid := (select auth.uid()); saved uuid;
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'shift_senior' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true) then raise exception 'Доступ запрещён' using errcode='42501'; end if;
+ if length(trim(coalesce(task_title,''))) not between 1 and 100 then raise exception 'Название задачи должно быть от 1 до 100 символов'; end if;
+ if not exists(select 1 from public.user_roles r where r.user_id=target_assignee and r.role='employee_knz') then raise exception 'Назначать можно только сотрудникам КНЗ'; end if;
+ if task_id is null then
+  insert into public.admin_tasks(title,description,assignee_id,created_by,status) values(trim(task_title),coalesce(task_description,''),target_assignee,uid,'new') returning id into saved;
+ else
+  update public.admin_tasks set title=trim(task_title),description=coalesce(task_description,''),assignee_id=target_assignee,updated_at=now()
+   where id=task_id and created_by=uid and status<>'done' returning id into saved;
+  if saved is null then raise exception 'Задача не найдена или уже завершена'; end if;
+ end if;
+ insert into public.user_notifications(user_id,task_id,kind,title,body) values(target_assignee,saved,'new_task','Новая задача от СТ.Смены: '||trim(task_title),coalesce(nullif(trim(task_description),''),'Тебе назначили новую задачу.'));
+ return saved;
+end; $$;
+revoke all on function public.shift_upsert_task(uuid,text,text,uuid) from public,anon;
+grant execute on function public.shift_upsert_task(uuid,text,text,uuid) to authenticated;
+
+create or replace function public.user_list_my_knz_tasks()
+returns jsonb language plpgsql stable security definer set search_path=''
+as $$
+declare result jsonb; uid uuid := (select auth.uid());
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
+ select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data) order by t.created_at desc),'[]'::jsonb)
+ into result from public.admin_tasks t where t.assignee_id=uid and t.created_by in (select r.user_id from public.user_roles r where r.role='shift_senior');
+ return result;
+end; $$;
+revoke all on function public.user_list_my_knz_tasks() from public,anon;
+grant execute on function public.user_list_my_knz_tasks() to authenticated;
+
+create or replace function public.user_take_knz_task(task_id uuid)
+returns boolean language plpgsql security definer set search_path=''
+as $$
+declare uid uuid := (select auth.uid());
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
+ update public.admin_tasks set status='taken',taken_at=now(),updated_at=now() where id=task_id and assignee_id=uid and status='new';
+ if not found then raise exception 'Задача недоступна или уже взята в работу'; end if;
+ return true;
+end; $$;
+revoke all on function public.user_take_knz_task(uuid) from public,anon;
+grant execute on function public.user_take_knz_task(uuid) to authenticated;
+
+create or replace function public.user_submit_knz_task(task_id uuid,completion_note text,screenshot_data text)
+returns boolean language plpgsql security definer set search_path=''
+as $$
+declare uid uuid := (select auth.uid());
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
+ if length(coalesce(completion_note,''))>1000 then raise exception 'Комментарий слишком длинный'; end if;
+ if screenshot_data is not null and (length(screenshot_data)>1800000 or screenshot_data not like 'data:image/%;base64,%') then raise exception 'Некорректный или слишком большой скриншот'; end if;
+ update public.admin_tasks set status='done',completion_note=coalesce(completion_note,''),screenshot_data=coalesce(screenshot_data,public.admin_tasks.screenshot_data),updated_at=now()
+ where id=task_id and assignee_id=uid and status='taken';
+ if not found then raise exception 'Сначала возьми задачу в работу'; end if;
+ insert into public.user_notifications(user_id,task_id,kind,title,body)
+ select created_by,task_id,'task_done','Задача выполнена: '||title,coalesce(nullif(trim(completion_note),''),'Сотрудник КНЗ отправил результат.')
+ from public.admin_tasks where id=task_id;
+ return true;
+end; $$;
+revoke all on function public.user_submit_knz_task(uuid,text,text) from public,anon;
+grant execute on function public.user_submit_knz_task(uuid,text,text) to authenticated;
