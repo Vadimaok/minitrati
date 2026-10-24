@@ -39,6 +39,22 @@ jobs:
       - name: Sync Android project
         run: npx cap sync android
 
+      - name: Apply Provoda staff launcher icon
+        run: |
+          python -m pip install --quiet cairosvg pillow
+          python - <<'PY'
+          import cairosvg, os, glob, shutil
+          source = 'provoda-logo.svg'
+          output = '/tmp/provoda-icon.png'
+          cairosvg.svg2png(url=source, write_to=output, output_width=512, output_height=512)
+          for path in glob.glob('android/app/src/main/res/mipmap-*/*'):
+              if os.path.basename(path) in ('ic_launcher.png', 'ic_launcher_round.png'):
+                  shutil.copyfile(output, path)
+          for path in glob.glob('android/app/src/main/res/mipmap-anydpi-v26/ic_launcher*.xml'):
+              xml = '''<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@android:color/black"/><foreground android:drawable="@mipmap/ic_launcher"/></adaptive-icon>\n'''
+              open(path, 'w', encoding='utf-8').write(xml)
+          PY
+
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
