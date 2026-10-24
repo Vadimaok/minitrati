@@ -1,0 +1,41 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/build-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package.json
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm install
+
+      - name: Build portable EXE
+        working-directory: desktop
+        run: npm run dist
+
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Provoda-Staff-Windows
+          path: desktop/dist/Provoda-Staff-*.exe
+          if-no-files-found: error
+          retention-days: 30
