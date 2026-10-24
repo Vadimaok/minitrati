@@ -419,7 +419,7 @@ grant execute on function public.user_get_role_features() to authenticated;
 
 create or replace function public.admin_set_role_feature(target_role text,is_enabled boolean)
 returns boolean language plpgsql security definer set search_path=''
-as $$
+as $role_feature$
 declare enabled_value boolean := is_enabled;
 begin
  if not public.is_current_admin() then raise exception 'Доступ запрещён: нужны права администратора' using errcode='42501'; end if;
@@ -428,7 +428,7 @@ begin
  values(target_role,enabled_value,(select auth.uid()),now())
  on conflict(role) do update set is_enabled=excluded.is_enabled,updated_by=excluded.updated_by,updated_at=now();
  return true;
-end; $$;
+end; $role_feature$;
 revoke all on function public.admin_set_role_feature(text,boolean) from public,anon;
 grant execute on function public.admin_set_role_feature(text,boolean) to authenticated;
 
