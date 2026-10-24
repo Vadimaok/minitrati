@@ -6,7 +6,10 @@
 <meta name="theme-color" content="#0b0f14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Минитраты</title>
+<title>Provoda staff</title>
+<link rel="icon" type="image/svg+xml" href="./provoda-logo.svg?v=1">
+<link rel="shortcut icon" href="./provoda-logo.svg?v=1">
+<link rel="apple-touch-icon" href="./provoda-logo.svg?v=1">
 <style>
 :root{
   --bg:#0b0f14; --card:#121822; --card2:#171f2b; --text:#eef4ff; --muted:#8a96a8;
@@ -23,7 +26,7 @@ body{margin:0; min-height:100vh; color:var(--text); background:
 }
 .wrap{max-width:760px;margin:0 auto}
 .top{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:4px 0 14px}
-.brand{display:flex;flex-direction:column;gap:2px}.brand b{font-size:20px;letter-spacing:-.02em}.brand span{color:var(--muted);font-size:13px}
+.brand{display:flex;flex-direction:row;align-items:center;gap:10px}.brand b{font-size:20px;letter-spacing:-.02em}.brand span{color:var(--muted);font-size:13px}.brand-copy{display:flex;flex-direction:column;gap:2px}.brand-mark{width:42px;height:42px;object-fit:cover;border-radius:13px;border:1px solid var(--line);flex-shrink:0}.auth-mark{display:block;width:76px;height:76px;object-fit:cover;border-radius:20px;margin:0 auto 16px}.auth-card h1{text-align:center}
 .actions{display:flex;gap:8px}
 button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ghost{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:10px 12px;border-radius:999px;color:var(--text)}
@@ -746,7 +749,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
 <body>
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="auth-card">
-    <h1 id="authTitle">Минитраты</h1>
+    <img class="auth-mark" src="./provoda-logo.svg?v=1" alt="Provoda staff"><h1 id="authTitle">Provoda staff</h1>
     <p>Войди или создай аккаунт. Расходы будут храниться отдельно для каждого пользователя и синхронизироваться между устройствами.</p>
     <label class="field"><span>Электронная почта</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
     <label class="field"><span>Пароль (не менее 6 символов)</span><input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Пароль" required></label>
@@ -759,7 +762,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
 </div>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><b>Минитраты</b><span id="monthLabel">—</span></div>
+    <div class="brand"><img class="brand-mark" src="./provoda-logo.svg?v=1" alt=""><div class="brand-copy"><b>Provoda staff</b><span id="monthLabel">—</span></div></div>
     <div class="actions">
       <button class="icon" id="importBtn" title="Импортировать резервную копию JSON" aria-label="Импортировать резервную копию"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg></button>
       <button class="icon" id="exportBtn" title="Скачать резервную копию JSON" aria-label="Скачать резервную копию"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M5 16v4h14v-4"/></svg></button>
@@ -798,7 +801,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
       <div class="clear-action"><button id="clearBtn" type="button" title="Удалить все покупки текущего списка">Очистить текущий список</button></div>
     </section>
   </main>
-  <section class="feature-grid" aria-label="Инструменты Минитрат">
+  <section class="feature-grid" aria-label="Инструменты Provoda staff">
     <section class="card feature-card budget-card">
       <div class="feature-heading"><div><span class="feature-kicker">КОНТРОЛЬ РАСХОДОВ</span><h2>Бюджет на месяц</h2></div><span class="feature-icon">◉</span></div>
       <div class="budget-total"><strong id="budgetSpent">0 ₽</strong><span id="budgetRemaining">Лимит не задан</span></div>
@@ -1359,7 +1362,7 @@ function notifyPurchase(purchase){
   const spent=sum(state.current),budget=Number(state.budgetMonthly)||0,remaining=budget-spent;
   let body='Покупка: '+purchase.name+' — '+fmt(amount)+'. За месяц потрачено '+fmt(spent)+'. ';
   body+=budget>0?(remaining>=0?'Осталось в бюджете '+fmt(remaining)+'.':'Бюджет превышен на '+fmt(Math.abs(remaining))+'.'):'Месячный бюджет пока не задан.';
-  try{new Notification('Минитраты · расход записан',{body:body,tag:'minitrati-expense-'+purchase.id});}catch{}
+  try{new Notification('Provoda staff · расход записан',{body:body,tag:'minitrati-expense-'+purchase.id});}catch{}
 }
 
 function renderFinanceFeatures(items=state.current,total=sum(state.current),cats=Object.entries(byCat(state.current)).sort((a,b)=>b[1]-a[1])){
@@ -1418,9 +1421,9 @@ function restoreBackup(){
   reader.onload=()=>{try{
     const raw=JSON.parse(reader.result);
     if(!raw||!Array.isArray(raw.current)||!raw.history||typeof raw.history!=='object')throw new Error('bad format');
-    if(!confirm('Заменить текущие данные Минитрат данными из резервной копии?'))return;
+    if(!confirm('Заменить текущие данные Provoda staff данными из резервной копии?'))return;
     state=validState(raw);save();toast('Резервная копия восстановлена');
-  }catch{toast('Файл не похож на резервную копию Минитрат')}finally{$('#restoreBackupFile').value=''}};
+  }catch{toast('Файл не похож на резервную копию Provoda staff')}finally{$('#restoreBackupFile').value=''}};
   reader.readAsText(file);
 }
 async function enableNotifications(){
@@ -1431,7 +1434,7 @@ async function enableNotifications(){
     if(permission!=='granted'){if(status)status.textContent='Разрешение не выдано. Проверь настройки Safari.';return}
     state.notifications=true;save();
     if(status)status.textContent='Уведомления включены: после каждой покупки покажем сумму, траты за месяц и остаток бюджета.';
-    try{new Notification('Минитраты',{body:'Уведомления включены. После покупки покажем расход и остаток бюджета.'})}catch{}
+    try{new Notification('Provoda staff',{body:'Уведомления включены. После покупки покажем расход и остаток бюджета.'})}catch{}
   }catch{if(status)status.textContent='Не удалось включить уведомления в этом браузере.'}
 }
 function bindFinanceFeatures(){
