@@ -1683,6 +1683,30 @@ function authMessage(message, isError=false){
   const el = document.querySelector('#authStatus');
   if(el){ el.textContent=message; el.style.color=isError ? 'var(--bad)' : 'var(--muted)'; }
 }
+function showCloudRetry(user){
+  const status=document.querySelector('#authStatus');
+  if(!status)return;
+  document.querySelector('#cloudRetryBtn')?.remove();
+  const button=document.createElement('button');
+  button.id='cloudRetryBtn';
+  button.type='button';
+  button.textContent='Повторить подключение';
+  button.style.cssText='display:block;margin:12px auto 0;min-height:44px;padding:10px 18px;border:1px solid var(--border-color,rgba(127,127,127,.3));border-radius:12px;background:var(--card-bg,rgba(127,127,127,.08));color:var(--text-color,inherit);font:inherit;font-weight:600;cursor:pointer';
+  button.addEventListener('click',async()=>{
+    button.disabled=true;
+    button.textContent='Проверяю облако…';
+    button.style.opacity='.65';
+    try{await activateCloudUser(user);}
+    finally{
+      if(button.isConnected){
+        button.disabled=false;
+        button.textContent='Повторить подключение';
+        button.style.opacity='1';
+      }
+    }
+  });
+  status.insertAdjacentElement('afterend',button);
+}
 function authBusy(busy){
   ['#loginBtn','#signupBtn'].forEach(sel=>{ const el=document.querySelector(sel); if(el) el.disabled=busy; });
 }
@@ -1743,8 +1767,9 @@ async function activateCloudUser(user){
       authMessage(/timeout|не ответило|15 секунд/i.test(message)
         ? message
         : (/fetch|network|load failed|failed to fetch/i.test(message)
-          ? 'Не удалось связаться с облаком. Проверь интернет и попробуй ещё раз.'
+          ? 'Не удалось связаться с облаком. Интернет может работать, а адрес облачной базы — не отвечать.'
           : 'Не удалось загрузить расходы: '+message),true);
+      showCloudRetry(user);
       return;
     }
     const {data,error}=result||{};
@@ -1753,6 +1778,7 @@ async function activateCloudUser(user){
       authMessage('Не удалось прочитать базу. Проверь настройки доступа к данным (RLS) в Supabase.',true);
       return;
     }
+    document.querySelector('#cloudRetryBtn')?.remove();
     cloudUser=user;
     state=validState(data ? data.data : null);
     try{ localStorage.setItem(LS+'.'+user.id,JSON.stringify(state)); }catch{}
