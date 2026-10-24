@@ -1222,8 +1222,8 @@ function parseList(text, date){
   }
   return {items:out, unknown};
 }
-function openPaste(){ $('#pasteSheet').classList.add('open'); $('#pasteSheet').setAttribute('aria-hidden','false'); $('#pasteDate').value=today(); $('#pasteDate').max=today(); setTimeout(()=>$('#pasteText').focus(),80); }
-function closePaste(){ $('#pasteSheet').classList.remove('open'); $('#pasteSheet').setAttribute('aria-hidden','true'); }
+function openPaste(){ const sheet=$('#pasteSheet'); sheet.style.zIndex=document.querySelector('#dataToolsSheet')?.classList.contains('open')?'60':''; sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); $('#pasteDate').value=today(); $('#pasteDate').max=today(); setTimeout(()=>$('#pasteText').focus(),80); }
+function closePaste(){ const sheet=$('#pasteSheet'); sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); sheet.style.zIndex=''; }
 function savePaste(){
   const date=$('#pasteDate').value||today();
   const parsed=parseList($('#pasteText').value, date);
