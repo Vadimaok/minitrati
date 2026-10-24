@@ -798,6 +798,22 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
  #settingsSheet .settings-data-row button{max-width:44%;white-space:normal}
 }
 
+
+/* Provoda Staff live sync + strict report rejection notices */
+#toast,#toast2{max-width:min(440px,calc(100vw - 32px));width:max-content;min-width:220px;display:flex;align-items:center;gap:11px;padding:14px 17px;border:1px solid rgba(148,163,184,.34);border-radius:16px;background:linear-gradient(145deg,rgba(20,28,40,.97),rgba(10,15,24,.98));color:#f8fafc;box-shadow:0 18px 55px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.06);font-size:13px;font-weight:650;line-height:1.4;white-space:normal;text-align:left;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#toast.show,#toast2.show{animation:provoda-toast-in .24s ease-out}
+#toast::before,#toast2::before{content:"";flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:#5ee0a0;box-shadow:0 0 0 4px rgba(94,224,160,.13)}
+#toast2::before{background:#8bb8ff;box-shadow:0 0 0 4px rgba(139,184,255,.13)}
+@keyframes provoda-toast-in{from{opacity:0;transform:translateX(-50%) translateY(12px) scale(.98)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+#knzRejectedBanner{position:relative;display:flex;flex-direction:column;gap:7px;width:min(100% - 32px,1100px);box-sizing:border-box;margin:18px auto 20px;padding:17px 19px 17px 22px;border:1px solid rgba(225,75,75,.55);border-left:4px solid #d84b55;border-radius:14px;background:linear-gradient(120deg,rgba(145,35,45,.13),rgba(127,29,29,.045));color:var(--text-color,#e5e7eb);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+#knzRejectedBanner.hidden{display:none!important}
+#knzRejectedBanner strong{font-size:13px;letter-spacing:.055em;text-transform:uppercase;color:#e16a72}
+#knzRejectedBanner span{font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+.knz-rejected-inline{padding:13px 15px;margin-bottom:13px;border:1px solid rgba(225,75,75,.48);border-left:3px solid #d84b55;border-radius:11px;background:linear-gradient(120deg,rgba(145,35,45,.12),rgba(127,29,29,.035))}
+.knz-rejected-inline strong{display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#e16a72}
+.knz-rejected-inline p{margin:7px 0 0;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text-color,#e5e7eb)}
+.knz-task-rejected{border-color:rgba(225,75,75,.32)!important}
+@media(max-width:600px){#toast,#toast2{bottom:calc(22px + env(safe-area-inset-bottom));min-width:0;width:calc(100vw - 32px);border-radius:14px}#knzRejectedBanner{width:calc(100% - 24px);margin:12px auto 16px;padding:15px 14px 15px 17px}}
 </style>
 <base target="_blank">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
@@ -1139,6 +1155,11 @@ let cloudUser = null;
 let cloudClient = null;
 let cloudSaveChain = Promise.resolve();
 let activationInProgress = null;
+let cloudLastUpdatedAt = null;
+let cloudLastDataSignature = null;
+let cloudSyncTimer = null;
+let cloudSyncChannel = null;
+let cloudSyncInFlight = false;
 
 function validState(data){
   if(!data || !Array.isArray(data.current) || !data.history || typeof data.history!=='object') {
@@ -1161,21 +1182,25 @@ function save(){
   render();
   if(!cloudUser || !cloudClient) return;
   const snapshot = JSON.parse(JSON.stringify(state));
-  try { localStorage.setItem(LS + '.' + cloudUser.id, JSON.stringify(snapshot)); } catch {}
+  const snapshotSignature=JSON.stringify(snapshot);
+  try { localStorage.setItem(LS + '.' + cloudUser.id, snapshotSignature); } catch {}
   const userId = cloudUser.id;
   cloudSaveChain = cloudSaveChain.then(async () => {
     if(!cloudClient || !cloudUser || cloudUser.id !== userId) return;
+    const writeTime=new Date().toISOString();
     const {error} = await cloudClient.from('user_data').upsert({
-      user_id:userId, data:snapshot, updated_at:new Date().toISOString()
+      user_id:userId, data:snapshot, updated_at:writeTime
     }, {onConflict:'user_id'});
     if(error) throw error;
+    cloudLastUpdatedAt=writeTime;
+    cloudLastDataSignature=snapshotSignature;
   }).catch(error => {
     console.error('Cloud save failed:', error);
     toast('Не удалось синхронизировать. Проверь интернет');
     authMessage('Ошибка сохранения в облако. Данные останутся в этом браузере до восстановления связи.', true);
   });
 }
-function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1600); }
+function toast(t){ const el=$('#toast'); if(!el)return; el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),3200); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function sum(a){ return a.reduce((s,x)=>s+x.price*x.qty,0); }
 function byCat(a){ const m={}; for(const x of a){ m[x.category]= (m[x.category]||0)+x.price*x.qty } return m; }
@@ -1480,7 +1505,7 @@ async function shiftSaveTask(){const id=document.querySelector('#shiftTaskEditId
 function shiftResetTaskForm(){['#shiftTaskEditId','#shiftTaskTitle','#shiftTaskDescription'].forEach(s=>document.querySelector(s).value='');document.querySelector('#shiftTaskAssignee').value='';}
 function shiftEditTask(id){const t=(window.shiftTaskData||[]).find(x=>x.id===id);if(!t)return;document.querySelector('#shiftTaskEditId').value=t.id;document.querySelector('#shiftTaskTitle').value=t.title||'';document.querySelector('#shiftTaskDescription').value=t.description||'';document.querySelector('#shiftTaskAssignee').value=t.assignee_id||'';}
 function knzProofMarkup(t){if(!t.screenshot_data)return '';const src=String(t.screenshot_data);return '<section class="knz-proof"><div class="knz-proof-title">Фото результата</div><details class="knz-proof-details"><summary>Показать фото на сайте</summary><img class="knz-proof-image" src="'+escapeHtml(src)+'" alt="Фото результата задачи" loading="lazy"></details><div class="knz-proof-actions"><a class="task-proof-link" href="'+escapeHtml(src)+'" target="_blank" rel="noopener">Открыть отдельно</a><a class="task-proof-link" href="'+escapeHtml(src)+'" download="rezultat-zadachi.jpg">Скачать фото</a></div></section>';}
-async function knzLoadTasks(){const box=document.querySelector('#knzTaskList');box.innerHTML='<div class="admin-empty">Загружаю задачи…</div>';try{const {data,error}=await cloudClient.rpc('user_list_my_knz_tasks');if(error)throw error;const tasks=Array.isArray(data)?data:[];const rejected=tasks.filter(t=>t.status==='rejected');const banner=document.querySelector('#knzRejectedBanner');if(banner){banner.classList.toggle('hidden',!rejected.length);const txt=document.querySelector('#knzRejectedBannerText');if(txt)txt.textContent=rejected.length===1?'Задача «'+rejected[0].title+'» не засчитана.':'Не засчитаны задачи: '+rejected.map(t=>t.title).join(', '); }box.innerHTML=tasks.length?tasks.map(t=>'<article class="admin-task knz-task-card '+(t.status==='rejected'?'knz-task-rejected':'')+'">'+(t.status==='rejected'?'<div class="knz-rejected-inline"><strong>Задача не засчитана</strong>'+(t.rejection_reason?'<p>'+escapeHtml(t.rejection_reason)+'</p>':'<p>Старший КНЗ отклонил результат без указания причины.</p>')+'</div>':'')+'<div class="admin-task-head"><strong>'+escapeHtml(t.title)+'</strong><span class="recent-count">'+escapeHtml(({new:'Новая',taken:'В работе',done:'На проверке',rejected:'Не засчитана'})[t.status]||t.status)+'</span></div>'+(t.description?'<p>'+escapeHtml(t.description)+'</p>':'')+(t.completion_note?'<div class="knz-result-note"><strong>Комментарий к результату</strong><p>'+escapeHtml(t.completion_note)+'</p></div>':'')+knzProofMarkup(t)+(t.status==='new'?'<button class="admin-primary" type="button" data-knz-take="'+escapeHtml(t.id)+'">Взять в работу</button>':'')+((t.status==='taken'||t.status==='rejected')?'<label class="admin-role-field">Комментарий<textarea data-knz-note="'+escapeHtml(t.id)+'" maxlength="1000" placeholder="Что сделано?"></textarea></label><label class="admin-role-field">Фото результата (необязательно)<input type="file" accept="image/*" data-knz-shot="'+escapeHtml(t.id)+'"></label><button class="admin-primary knz-submit-button" type="button" data-knz-submit="'+escapeHtml(t.id)+'">Отправить результат повторно</button><div class="knz-submit-status" data-knz-status="'+escapeHtml(t.id)+'" aria-live="polite"></div>':'')+'</article>').join(''):'<div class="admin-empty">Назначенных задач пока нет.</div>';}catch(e){box.innerHTML='<div class="admin-empty">Не удалось загрузить задачи: '+escapeHtml(e?.message||'Проверь подключение и обновление admin.sql.')+'</div>';}}
+async function knzLoadTasks(){const box=document.querySelector('#knzTaskList');box.innerHTML='<div class="admin-empty">Загружаю задачи…</div>';try{const {data,error}=await cloudClient.rpc('user_list_my_knz_tasks');if(error)throw error;const tasks=Array.isArray(data)?data:[];const rejected=tasks.filter(t=>t.status==='rejected');if(rejected.length&&rejected.some(t=>!lastRejectedTaskIds.has(String(t.id)))){const fresh=rejected.filter(t=>!lastRejectedTaskIds.has(String(t.id)));toast('Отчёт отклонён: '+fresh.map(t=>t.title).join(', '));}lastRejectedTaskIds=new Set(rejected.map(t=>String(t.id)));const banner=document.querySelector('#knzRejectedBanner');if(banner){banner.classList.toggle('hidden',!rejected.length);const txt=document.querySelector('#knzRejectedBannerText');if(txt)txt.textContent=rejected.length===1?'Задача «'+rejected[0].title+'» не засчитана.':'Не засчитаны задачи: '+rejected.map(t=>t.title).join(', '); }box.innerHTML=tasks.length?tasks.map(t=>'<article class="admin-task knz-task-card '+(t.status==='rejected'?'knz-task-rejected':'')+'">'+(t.status==='rejected'?'<div class="knz-rejected-inline"><strong>Задача не засчитана</strong>'+(t.rejection_reason?'<p>'+escapeHtml(t.rejection_reason)+'</p>':'<p>Старший КНЗ отклонил результат без указания причины.</p>')+'</div>':'')+'<div class="admin-task-head"><strong>'+escapeHtml(t.title)+'</strong><span class="recent-count">'+escapeHtml(({new:'Новая',taken:'В работе',done:'На проверке',rejected:'Не засчитана'})[t.status]||t.status)+'</span></div>'+(t.description?'<p>'+escapeHtml(t.description)+'</p>':'')+(t.completion_note?'<div class="knz-result-note"><strong>Комментарий к результату</strong><p>'+escapeHtml(t.completion_note)+'</p></div>':'')+knzProofMarkup(t)+(t.status==='new'?'<button class="admin-primary" type="button" data-knz-take="'+escapeHtml(t.id)+'">Взять в работу</button>':'')+((t.status==='taken'||t.status==='rejected')?'<label class="admin-role-field">Комментарий<textarea data-knz-note="'+escapeHtml(t.id)+'" maxlength="1000" placeholder="Что сделано?"></textarea></label><label class="admin-role-field">Фото результата (необязательно)<input type="file" accept="image/*" data-knz-shot="'+escapeHtml(t.id)+'"></label><button class="admin-primary knz-submit-button" type="button" data-knz-submit="'+escapeHtml(t.id)+'">Отправить результат повторно</button><div class="knz-submit-status" data-knz-status="'+escapeHtml(t.id)+'" aria-live="polite"></div>':'')+'</article>').join(''):'<div class="admin-empty">Назначенных задач пока нет.</div>';}catch(e){box.innerHTML='<div class="admin-empty">Не удалось загрузить задачи: '+escapeHtml(e?.message||'Проверь подключение и обновление admin.sql.')+'</div>';}}
 async function knzTakeTask(id){const {error}=await cloudClient.rpc('user_take_knz_task',{task_id:id});if(error){toast(error.message||'Ошибка');return;}await knzLoadTasks();toast('Задача взята в работу');}
 async function knzCompressImage(file){if(!file)return null;if(!file.type.startsWith('image/'))throw new Error('Выбери файл изображения.');if(file.size>15000000)throw new Error('Фото слишком большое (лимит исходного файла 15 МБ).');const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(new Error('Не удалось прочитать фото'));r.readAsDataURL(file);});const img=await new Promise((resolve,reject)=>{const el=new Image();el.onload=()=>resolve(el);el.onerror=()=>reject(new Error('Формат фото не удалось прочитать'));el.src=data;});const scale=Math.min(1,1400/Math.max(img.naturalWidth,img.naturalHeight)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Браузер не смог обработать фото');ctx.drawImage(img,0,0,canvas.width,canvas.height);let quality=.82,result=await new Promise(resolve=>canvas.toBlob(b=>resolve(b),'image/jpeg',quality));while(result&&result.size>900000&&quality>.45){quality-=.1;result=await new Promise(resolve=>canvas.toBlob(b=>resolve(b),'image/jpeg',quality));}if(!result)throw new Error('Не удалось подготовить фото');if(result.size>1250000)throw new Error('Фото не удалось сжать до допустимого размера. Выбери другое фото.');return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(new Error('Не удалось подготовить фото к отправке'));r.readAsDataURL(result);});}
 async function knzSubmitTask(id){const btn=document.querySelector('[data-knz-submit="'+CSS.escape(id)+'"]'),status=document.querySelector('[data-knz-status="'+CSS.escape(id)+'"]'),note=document.querySelector('[data-knz-note="'+CSS.escape(id)+'"]')?.value.trim()||'',file=document.querySelector('[data-knz-shot="'+CSS.escape(id)+'"]')?.files?.[0];if(btn){btn.disabled=true;btn.textContent='Отправляю…';}if(status)status.textContent='Подготавливаю результат…';try{const shot=await knzCompressImage(file);if(status)status.textContent='Сохраняю результат…';const {error}=await cloudClient.rpc('user_submit_knz_task',{task_id:id,completion_note:note,screenshot_data:shot});if(error)throw error;toast('Результат отправлен Старший КНЗ');await knzLoadTasks();}catch(e){const message=e?.message||'Не удалось отправить результат';if(status)status.textContent='Не отправлено: '+message;toast('Ошибка отправки: '+message);}finally{const current=document.querySelector('[data-knz-submit="'+CSS.escape(id)+'"]');if(current){current.disabled=false;current.textContent='Отправить результат';}}}
@@ -1716,6 +1741,45 @@ function cloudConfigured(){
   return /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(url) &&
     key.length>20 && !key.includes('PASTE_');
 }
+async function syncLatestCloudData(){
+  if(!cloudClient||!cloudUser||cloudSyncInFlight||document.visibilityState==='hidden')return;
+  cloudSyncInFlight=true;
+  const userId=cloudUser.id;
+  try{
+    const {data,error}=await cloudClient.from('user_data').select('data,updated_at').eq('user_id',userId).maybeSingle();
+    if(error)throw error;
+    if(!cloudUser||cloudUser.id!==userId||!data)return;
+    const incoming=validState(data.data);
+    const signature=JSON.stringify(incoming);
+    const updated=String(data.updated_at||'');
+    if(signature===cloudLastDataSignature){cloudLastUpdatedAt=updated||cloudLastUpdatedAt;return;}
+    if(cloudLastUpdatedAt&&updated&&updated<=cloudLastUpdatedAt)return;
+    cloudLastUpdatedAt=updated||new Date().toISOString();
+    cloudLastDataSignature=signature;
+    state=incoming;
+    try{localStorage.setItem(LS+'.'+userId,signature);}catch{}
+    render();
+    toast2('Данные обновлены с другого устройства');
+  }catch(error){console.info('Cloud refresh deferred:',error?.message||error);}
+  finally{cloudSyncInFlight=false;}
+}
+function startCloudLiveSync(){
+  stopCloudLiveSync();
+  if(!cloudClient||!cloudUser)return;
+  syncLatestCloudData();
+  cloudSyncTimer=setInterval(syncLatestCloudData,4500);
+  try{
+    cloudSyncChannel=cloudClient.channel('user-data-sync-'+cloudUser.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'user_data',filter:'user_id=eq.'+cloudUser.id},()=>syncLatestCloudData())
+      .subscribe();
+  }catch(error){console.info('Realtime unavailable; polling remains active.',error?.message||error);}
+}
+function stopCloudLiveSync(){
+  if(cloudSyncTimer)clearInterval(cloudSyncTimer);
+  cloudSyncTimer=null;
+  if(cloudSyncChannel&&cloudClient){try{cloudClient.removeChannel(cloudSyncChannel);}catch{}}
+  cloudSyncChannel=null;
+}
 async function pollTaskNotifications(){
   if(!cloudClient||!cloudUser)return;
   try{
@@ -1739,7 +1803,7 @@ function startTaskNotificationPolling(){
   if(adminNotificationTimer)clearInterval(adminNotificationTimer);
   lastSeenTaskNotificationIds=new Set();
   pollTaskNotifications();
-  adminNotificationTimer=setInterval(pollTaskNotifications,20000);
+  adminNotificationTimer=setInterval(pollTaskNotifications,5000);
 }
 function stopTaskNotificationPolling(){
   if(adminNotificationTimer)clearInterval(adminNotificationTimer);
@@ -1781,6 +1845,8 @@ async function activateCloudUser(user){
     document.querySelector('#cloudRetryBtn')?.remove();
     cloudUser=user;
     state=validState(data ? data.data : null);
+    cloudLastUpdatedAt=null;
+    cloudLastDataSignature=JSON.stringify(state);
     try{ localStorage.setItem(LS+'.'+user.id,JSON.stringify(state)); }catch{}
     document.querySelector('#accountEmail').textContent=user.email || 'Аккаунт';
     document.querySelector('#authGate').classList.add('hidden');
@@ -1788,6 +1854,7 @@ async function activateCloudUser(user){
     refreshAdminAccess();
     refreshCurrentUserRole();
     startTaskNotificationPolling();
+    startCloudLiveSync();
     authMessage('Вход выполнен.');
     render();
   })().catch(error=>{
@@ -1798,6 +1865,8 @@ async function activateCloudUser(user){
 }
 function deactivateCloudUser(){
   stopTaskNotificationPolling();
+  stopCloudLiveSync();
+  cloudLastUpdatedAt=null;cloudLastDataSignature=null;
   currentUserRole='employee';applyRoleUI();
   adminSetVisible(false); closeAdminPanel();closeShiftPanel();closeDataTools();closePurchaseHistory(); adminAccounts=[]; adminSelectedId=null; adminSelectedState=null;
   cloudUser=null;
@@ -1924,6 +1993,7 @@ let adminDevData={notebook:'',tasks:[]};
 let adminTaskFilter='all';
 let adminNotificationTimer=null;
 let lastSeenTaskNotificationIds=new Set();
+let lastRejectedTaskIds=new Set();
 function adminDevMessage(msg,error=false){const e=document.querySelector('#adminDevStatus');if(e){e.textContent=msg;e.style.color=error?'var(--bad)':'var(--muted)';}}
 async function adminLoadDevData(){
   if(!cloudClient||!adminAllowed)return;
