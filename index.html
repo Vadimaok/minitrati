@@ -401,7 +401,27 @@ body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-sty
 .admin-table-wrap{overflow:auto;max-height:55vh;border:1px solid var(--line);border-radius:14px}
 .admin-expense-table{width:100%;border-collapse:collapse;min-width:650px;font-size:12px}.admin-expense-table th{position:sticky;top:0;z-index:1;text-align:left;color:var(--muted);font-weight:650;background:var(--card2);padding:10px}.admin-expense-table td{padding:7px;border-top:1px solid var(--line);vertical-align:middle}.admin-expense-table input{padding:8px;border-radius:9px;font-size:12px;min-width:72px}.admin-expense-table .admin-name-input{min-width:135px}.admin-expense-table .admin-category-input{min-width:100px}.admin-expense-table .admin-date-input{min-width:125px}.admin-expense-table .admin-number-input{min-width:72px}
 .admin-inline-actions{display:flex;gap:8px;flex-wrap:wrap}.admin-inline-actions button{padding:10px 12px;border-radius:12px;font-size:12px;font-weight:750}.admin-primary{background:linear-gradient(135deg,var(--accent),var(--accent-strong,#4f46e5));color:white}.admin-danger{background:rgba(251,113,133,.1);color:#fda4af;border:1px solid rgba(251,113,133,.22)}
-.admin-status{min-height:20px;margin-top:10px;font-size:12px;color:var(--muted)}.admin-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:13px}.admin-section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 7px}
+.admin-status{min-height:20px;margin-top:10px;font-size:12px;color:var(--muted)}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.admin-tab{padding:10px 14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.025);color:var(--muted);font-size:13px;font-weight:750}
+.admin-tab.active{background:rgba(var(--accent-rgb),.13);border-color:rgba(var(--accent-rgb),.45);color:var(--text)}
+.admin-dev-layout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;align-items:start}
+.admin-dev-form{display:flex;flex-direction:column;gap:10px}
+.admin-dev-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.admin-dev-form input,.admin-dev-form select,.admin-dev-form textarea{font-size:14px;padding:12px}
+.admin-dev-form textarea{min-height:150px;resize:vertical}
+.admin-task-list{display:flex;flex-direction:column;gap:9px}
+.admin-task{padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}
+.admin-task-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.admin-task-head strong{font-size:14px;overflow-wrap:anywhere}
+.admin-task p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);font-size:13px;margin:9px 0}
+.admin-task-meta{display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:var(--muted)}
+.admin-task-meta span{padding:4px 7px;border-radius:99px;background:rgba(148,163,184,.09)}
+.admin-task-actions{display:flex;gap:7px;margin-top:11px}
+.admin-task-actions button{padding:7px 10px;border-radius:10px;font-size:12px}
+.admin-note-save{margin-top:10px}
+@media(max-width:760px){.admin-dev-layout{grid-template-columns:1fr}}
+.admin-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:13px}.admin-section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 7px}
 body.light-theme #adminPanelSheet{background:rgba(31,41,55,.3)}body.light-theme .admin-stat,body.light-theme .admin-card{background:rgba(255,255,255,.68)}body.light-theme .admin-account{background:rgba(255,255,255,.6)}
 @media(max-width:760px){.admin-layout{grid-template-columns:1fr}.admin-account-list{max-height:250px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.admin-stats{grid-template-columns:1fr}.admin-stat{padding:13px}.admin-shell{border-radius:20px}.admin-detail-head{flex-direction:column}.admin-table-wrap{max-height:48vh}}
 @media(max-width:430px){.admin-account-list{grid-template-columns:1fr}.admin-top{align-items:center}.admin-top h2{font-size:23px}}
@@ -897,6 +917,11 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
       <div><h2 id="adminPanelTitle">Админ-панель</h2><p>Управление аккаунтами и расходами · защищённый доступ</p></div>
       <button class="icon" id="closeAdminPanelBtn" type="button" aria-label="Закрыть админ-панель">×</button>
     </header>
+    <nav class="admin-tabs" aria-label="Разделы админ-панели">
+      <button class="admin-tab active" type="button" data-admin-tab="accounts">Аккаунты</button>
+      <button class="admin-tab" type="button" data-admin-tab="development">Разрабатывается</button>
+    </nav>
+    <div id="adminAccountsView">
     <section class="admin-stats">
       <div class="admin-stat"><span>Всего аккаунтов</span><strong id="adminUsersCount">—</strong></div>
       <div class="admin-stat"><span>Общие расходы</span><strong id="adminGlobalTotal">—</strong></div>
@@ -913,6 +938,31 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
         <div id="adminStatus" class="admin-status" role="status" aria-live="polite"></div>
       </section>
     </div>
+    </div>
+    <section id="adminDevelopmentView" class="hidden">
+      <div class="admin-dev-layout">
+        <div class="admin-card">
+          <h3 id="adminTaskFormTitle">Блокнот администратора</h3>
+          <p class="settings-hint">Личные заметки и задачи для команды. Назначай задачу конкретному аккаунту и отмечай, когда её взяли в работу.</p>
+          <div class="admin-dev-form">
+            <label>Заметки / блокнот<textarea id="adminNotebook" placeholder="Черновики, идеи, важные заметки…"></textarea></label>
+            <button type="button" class="admin-primary admin-note-save" id="adminSaveNotebookBtn">Сохранить заметки</button>
+            <div class="admin-section-label">Задача</div>
+            <input type="hidden" id="adminTaskEditId">
+            <label>Название задачи<input id="adminTaskTitle" maxlength="100" placeholder="Например, обновить карточки товаров"></label>
+            <label>Описание<textarea id="adminTaskDescription" maxlength="2000" placeholder="Что нужно сделать и какой результат ожидается?"></textarea></label>
+            <label>Ответственный<select id="adminTaskAssignee"><option value="">Не назначено</option></select></label>
+            <label>Статус<select id="adminTaskStatus"><option value="new">Новая</option><option value="taken">Взята в работу</option><option value="done">Готово</option></select></label>
+            <div class="admin-inline-actions"><button type="button" class="admin-primary" id="adminSaveTaskBtn">Добавить задачу</button><button type="button" class="ghost" id="adminCancelTaskEditBtn">Очистить</button></div>
+          </div>
+          <p class="settings-hint" id="adminDevStatus" role="status" aria-live="polite"></p>
+        </div>
+        <div class="admin-card">
+          <div class="admin-detail-head"><div><h3 style="margin:0">Задачи команды</h3><p class="settings-hint">Время в работе показывается как «взял N мин назад» до 59 минут, затем — дата и время.</p></div></div>
+          <div id="adminTaskList" class="admin-task-list"><div class="admin-empty">Задач пока нет.</div></div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -1656,7 +1706,88 @@ async function refreshAdminAccess(){
   }catch(e){adminSetVisible(false);console.info('Admin access is not configured yet.');return false;}
 }
 function adminFormatDate(value){if(!value)return '—';try{return new Date(value).toLocaleDateString('ru-RU',{day:'2-digit',month:'short',year:'numeric'});}catch{return '—';}}
-function adminAccountName(u){return u?.display_name||u?.user_metadata?.username||u?.user_metadata?.name||'Без имени';}
+
+function adminAccountName(u){return String(u?.user_metadata?.display_name||u?.display_name||u?.user_metadata?.username||u?.user_metadata?.name||'').trim()||'Без имени';}
+const ADMIN_DEV_KEY='provoda.admin.development.v1';
+let adminDevData={notebook:'',tasks:[]};
+function adminLoadDevData(){
+  try{const x=JSON.parse(localStorage.getItem(ADMIN_DEV_KEY)||'{}');adminDevData={notebook:String(x.notebook||''),tasks:Array.isArray(x.tasks)?x.tasks:[]};}catch{adminDevData={notebook:'',tasks:[]};}
+  const n=document.querySelector('#adminNotebook');if(n)n.value=adminDevData.notebook;
+  adminPopulateAssignees();adminRenderTasks();
+}
+function adminSaveDevData(){try{localStorage.setItem(ADMIN_DEV_KEY,JSON.stringify(adminDevData));return true;}catch{adminDevMessage('Не удалось сохранить: хранилище браузера недоступно.',true);return false;}}
+function adminDevMessage(msg,error=false){const e=document.querySelector('#adminDevStatus');if(e){e.textContent=msg;e.style.color=error?'var(--bad)':'var(--muted)';}}
+function adminPopulateAssignees(){
+  const sel=document.querySelector('#adminTaskAssignee');if(!sel)return;
+  const chosen=sel.value;
+  sel.innerHTML='<option value="">Не назначено</option>'+adminAccounts.map(u=>'<option value="'+escapeHtml(u.user_id)+'">'+escapeHtml(adminAccountName(u))+' · '+escapeHtml(u.email||'без почты')+'</option>').join('');
+  if([...sel.options].some(o=>o.value===chosen))sel.value=chosen;
+}
+function adminRelativeTaken(task){
+  if(!task.takenAt)return '';
+  const mins=Math.max(0,Math.floor((Date.now()-Number(task.takenAt))/60000));
+  if(mins<60)return 'Взял '+mins+' мин назад';
+  return 'В работе с '+new Date(Number(task.takenAt)).toLocaleString('ru-RU',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+function adminRenderTasks(){
+  const box=document.querySelector('#adminTaskList');if(!box)return;
+  const statusNames={new:'Новая',taken:'Взята в работу',done:'Готово'};
+  box.innerHTML=adminDevData.tasks.length?adminDevData.tasks.slice().sort((a,b)=>Number(b.updatedAt||b.createdAt)-Number(a.updatedAt||a.createdAt)).map(t=>{
+    const u=adminAccounts.find(x=>x.user_id===t.assigneeId);
+    const assigned=u?(adminAccountName(u)+' · '+(u.email||'')):'Не назначено';
+    const taken=adminRelativeTaken(t);
+    return '<article class="admin-task"><div class="admin-task-head"><strong>'+escapeHtml(t.title||'Без названия')+'</strong><span class="recent-count">'+escapeHtml(statusNames[t.status]||statusNames.new)+'</span></div>'+
+      (t.description?'<p>'+escapeHtml(t.description)+'</p>':'')+
+      '<div class="admin-task-meta"><span>Ответственный: '+escapeHtml(assigned)+'</span><span>Создана '+escapeHtml(new Date(Number(t.createdAt||Date.now())).toLocaleString('ru-RU',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}))+'</span>'+(taken?'<span>'+escapeHtml(taken)+'</span>':'')+'</div>'+
+      '<div class="admin-task-actions"><button class="ghost" type="button" data-edit-task="'+escapeHtml(t.id)+'">Редактировать</button><button class="ghost" type="button" data-take-task="'+escapeHtml(t.id)+'">'+(t.status==='taken'?'Обновить время':'Взять в работу')+'</button><button class="admin-danger" type="button" data-delete-task="'+escapeHtml(t.id)+'">Удалить</button></div></article>';
+  }).join(''):'<div class="admin-empty">Задач пока нет. Создай первую слева.</div>';
+}
+function adminResetTaskForm(){
+  ['#adminTaskEditId','#adminTaskTitle','#adminTaskDescription'].forEach(sel=>document.querySelector(sel).value='');
+  document.querySelector('#adminTaskAssignee').value='';
+  document.querySelector('#adminTaskStatus').value='new';
+  document.querySelector('#adminSaveTaskBtn').textContent='Добавить задачу';
+  document.querySelector('#adminTaskFormTitle').textContent='Блокнот администратора';
+}
+function adminSaveTask(){
+  const title=document.querySelector('#adminTaskTitle').value.trim();
+  if(!title){adminDevMessage('Добавь название задачи.',true);return;}
+  const id=document.querySelector('#adminTaskEditId').value;
+  const previous=adminDevData.tasks.find(t=>t.id===id);
+  const status=document.querySelector('#adminTaskStatus').value;
+  const assigneeId=document.querySelector('#adminTaskAssignee').value||null;
+  const task={id:id||('task-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),title,description:document.querySelector('#adminTaskDescription').value.trim(),assigneeId,status,createdAt:previous?.createdAt||Date.now(),updatedAt:Date.now(),takenAt:status==='taken'?(previous?.status==='taken'&&previous?.assigneeId===assigneeId?previous.takenAt:Date.now()):null};
+  if(previous)adminDevData.tasks=adminDevData.tasks.map(t=>t.id===id?task:t);else adminDevData.tasks.unshift(task);
+  if(!adminSaveDevData())return;
+  adminRenderTasks();adminResetTaskForm();adminDevMessage(previous?'Задача обновлена.':'Задача добавлена.');
+}
+function adminEditTask(id){
+  const t=adminDevData.tasks.find(x=>x.id===id);if(!t)return;
+  document.querySelector('#adminTaskEditId').value=t.id;document.querySelector('#adminTaskTitle').value=t.title||'';
+  document.querySelector('#adminTaskDescription').value=t.description||'';
+  document.querySelector('#adminTaskAssignee').value=t.assigneeId||'';
+  document.querySelector('#adminTaskStatus').value=t.status||'new';
+  document.querySelector('#adminSaveTaskBtn').textContent='Сохранить задачу';
+  document.querySelector('#adminTaskFormTitle').textContent='Редактирование задачи';
+  document.querySelector('#adminDevelopmentView').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function adminTakeTask(id){
+  adminDevData.tasks=adminDevData.tasks.map(t=>t.id===id?{...t,status:'taken',takenAt:Date.now(),updatedAt:Date.now()}:t);
+  if(adminSaveDevData()){adminRenderTasks();adminDevMessage('Задача отмечена как взятая в работу.');}
+}
+function adminDeleteTask(id){
+  if(!confirm('Удалить эту задачу?'))return;
+  adminDevData.tasks=adminDevData.tasks.filter(t=>t.id!==id);
+  if(adminSaveDevData()){adminRenderTasks();adminDevMessage('Задача удалена.');}
+}
+function adminSwitchTab(tab){
+  const dev=tab==='development';
+  document.querySelector('#adminAccountsView').classList.toggle('hidden',dev);
+  document.querySelector('#adminDevelopmentView').classList.toggle('hidden',!dev);
+  document.querySelectorAll('[data-admin-tab]').forEach(b=>{const active=b.dataset.adminTab===tab;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});
+  if(dev)adminLoadDevData();
+}
+
 function adminTotalForAccount(u){return Number(u?.total_spent||0);}
 function adminRenderAccounts(){
   const q=(document.querySelector('#adminUserSearch')?.value||'').trim().toLowerCase();
@@ -1675,13 +1806,14 @@ async function openAdminPanel(){
   document.querySelector('#adminAccountsList').innerHTML='<div class="admin-empty">Проверяю права и загружаю аккаунты…</div>';
   document.querySelector('#adminAccountDetail').innerHTML='<div class="admin-empty">Выбери аккаунт слева, чтобы посмотреть и изменить его расходы.</div>';
   adminStatus('');
+  adminSwitchTab('accounts');
   const allowed=await refreshAdminAccess();
   if(!allowed){closeAdminPanel();toast('У этого аккаунта нет прав администратора');return;}
   try{
     const {data,error}=await cloudClient.rpc('admin_list_accounts');
     if(error)throw error;
     adminAccounts=Array.isArray(data)?data:(data?.accounts||[]);
-    adminRenderAccounts();
+    adminRenderAccounts();adminPopulateAssignees();
     if(adminSelectedId&&adminAccounts.some(u=>u.user_id===adminSelectedId))await adminSelectAccount(adminSelectedId);
   }catch(e){document.querySelector('#adminAccountsList').innerHTML='<div class="admin-empty">Не удалось загрузить аккаунты. Проверь, что выполнил supabase/admin.sql.</div>';adminStatus(e.message||'Ошибка загрузки',true);}
 }
@@ -1783,6 +1915,11 @@ function adminDeleteExpense(index){
   if(!confirm('Удалить запись «'+String(row.name||'без названия')+'»?'))return;
   adminCaptureRows();adminEditRows.splice(index,1);adminRenderExpenseRows();
 }
+document.querySelectorAll('[data-admin-tab]').forEach(b=>b.addEventListener('click',()=>adminSwitchTab(b.dataset.adminTab)));
+document.querySelector('#adminSaveNotebookBtn')?.addEventListener('click',()=>{adminDevData.notebook=document.querySelector('#adminNotebook').value;if(adminSaveDevData())adminDevMessage('Заметки сохранены в этом браузере.');});
+document.querySelector('#adminSaveTaskBtn')?.addEventListener('click',adminSaveTask);
+document.querySelector('#adminCancelTaskEditBtn')?.addEventListener('click',()=>{adminResetTaskForm();adminDevMessage('Форма очищена.');});
+document.querySelector('#adminTaskList')?.addEventListener('click',e=>{const edit=e.target.closest('[data-edit-task]');const take=e.target.closest('[data-take-task]');const del=e.target.closest('[data-delete-task]');if(edit)adminEditTask(edit.dataset.editTask);else if(take)adminTakeTask(take.dataset.takeTask);else if(del)adminDeleteTask(del.dataset.deleteTask);});
 document.querySelector('#openAdminPanelBtn')?.addEventListener('click',openAdminPanel);
 document.querySelector('#closeAdminPanelBtn')?.addEventListener('click',closeAdminPanel);
 document.querySelector('#adminPanelSheet')?.addEventListener('click',e=>{if(e.target.id==='adminPanelSheet')closeAdminPanel();});
