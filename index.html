@@ -2078,7 +2078,7 @@ function adminRelativeTaken(task){
 }
 function adminRenderTasks(){
   const box=document.querySelector('#adminTaskList');if(!box)return;
-  const statusNames={new:'Новая',taken:'Взята в работу',done:'Готово'};
+  const statusNames={new:'Новая',taken:'Взята в работу',done:'На проверке',rejected:'Не засчитана',approved:'Одобрена'};
   const filtered=adminDevData.tasks.filter(t=>adminTaskFilter==='all'||t.status===adminTaskFilter);
   document.querySelectorAll('[data-task-filter]').forEach(b=>{const active=b.dataset.taskFilter===adminTaskFilter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   box.innerHTML=filtered.length?filtered.slice().sort((a,b)=>Number(b.updatedAt||b.createdAt)-Number(a.updatedAt||a.createdAt)).map(t=>{
@@ -2416,9 +2416,11 @@ function setAvatarImage(data){
   const remove=document.querySelector('#removeAvatarBtn'); if(remove) remove.classList.toggle('hidden',!data);
 }
 let currentUserRole='employee';
+let requestedTeamViewHandled=false;
 async function openRequestedTeamView(){
   const view=new URLSearchParams(window.location.search).get('view');
-  if(!view||!cloudUser)return;
+  if(!view||!cloudUser||requestedTeamViewHandled)return;
+  requestedTeamViewHandled=true;
   if(view==='tasks'){
     if(currentUserRole==='shift_senior')await openShiftPanel();
     else if(currentUserRole==='employee_knz')await openKnzTasks();
