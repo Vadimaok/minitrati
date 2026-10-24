@@ -395,6 +395,9 @@ grant execute on function public.user_get_my_role() to authenticated;
 -- Управление доступом к инструментам СТ.Смены и КНЗ.
 alter table public.admin_tasks add column if not exists completion_note text not null default '';
 alter table public.admin_tasks add column if not exists screenshot_data text;
+alter table public.admin_tasks add column if not exists rejection_reason text not null default '';
+alter table public.admin_tasks drop constraint if exists admin_tasks_status_check;
+alter table public.admin_tasks add constraint admin_tasks_status_check check (status in ('new','taken','done','rejected'));
 create table if not exists public.role_feature_flags (
   role text primary key check (role in ('shift_senior','employee_knz')),
   is_enabled boolean not null default true,
@@ -453,7 +456,7 @@ as $$
 declare result jsonb; uid uuid := (select auth.uid());
 begin
  if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'shift_senior' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true) then raise exception 'Доступ запрещён' using errcode='42501'; end if;
- select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'assignee_id',t.assignee_id,'assignee_email',u.email,'assignee_name',coalesce(u.raw_user_meta_data->>'display_name',u.raw_user_meta_data->>'username',u.email),'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data) order by t.updated_at desc),'[]'::jsonb)
+ select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'assignee_id',t.assignee_id,'assignee_email',u.email,'assignee_name',coalesce(u.raw_user_meta_data->>'display_name',u.raw_user_meta_data->>'username',u.email),'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data,'rejection_reason',t.rejection_reason) order by t.updated_at desc),'[]'::jsonb)
  into result from public.admin_tasks t left join auth.users u on u.id=t.assignee_id where t.created_by=uid and t.assignee_id is not null;
  return result;
 end; $$;
@@ -481,13 +484,33 @@ end; $$;
 revoke all on function public.shift_upsert_task(uuid,text,text,uuid) from public,anon;
 grant execute on function public.shift_upsert_task(uuid,text,text,uuid) to authenticated;
 
+
+
+-- Старший КНЗ отклоняет отправленный результат и уведомляет сотрудника.
+create or replace function public.shift_reject_knz_task(task_id uuid,rejection_reason text default '')
+returns boolean language plpgsql security definer set search_path=''
+as $reject_knz$
+#variable_conflict use_variable
+declare uid uuid := (select auth.uid()); target_user uuid; task_title text; reason_value text := left(trim(coalesce(rejection_reason,'')),1000);
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'shift_senior' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true) then raise exception 'Доступ запрещён' using errcode='42501'; end if;
+ update public.admin_tasks t set status='rejected',rejection_reason=reason_value,updated_at=now()
+ where t.id=task_id and t.created_by=uid and t.status='done'
+ returning t.assignee_id,t.title into target_user,task_title;
+ if target_user is null then raise exception 'Задача не найдена или результат ещё не отправлен'; end if;
+ insert into public.user_notifications(user_id,task_id,kind,title,body)
+ values(target_user,task_id,'task_rejected','Задача не засчитана: '||task_title,case when reason_value='' then 'Старший КНЗ отклонил результат без указания причины. Исправь результат и отправь повторно.' else 'Причина: '||reason_value||'. Исправь результат и отправь повторно.' end);
+ return true;
+end; $reject_knz$;
+revoke all on function public.shift_reject_knz_task(uuid,text) from public,anon;
+grant execute on function public.shift_reject_knz_task(uuid,text) to authenticated;
 create or replace function public.user_list_my_knz_tasks()
 returns jsonb language plpgsql stable security definer set search_path=''
 as $$
 declare result jsonb; uid uuid := (select auth.uid());
 begin
  if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
- select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data) order by t.created_at desc),'[]'::jsonb)
+ select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data,'rejection_reason',t.rejection_reason) order by t.created_at desc),'[]'::jsonb)
  into result from public.admin_tasks t where t.assignee_id=uid;
  return result;
 end; $$;
