@@ -1,0 +1,36 @@
+{
+  "name": "provoda-staff-desktop",
+  "version": "1.0.0",
+  "description": "Provoda Staff desktop app for Windows",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.knz.provodastaff",
+    "productName": "Provoda Staff",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "artifactName": "Provoda-Staff-${version}.${ext}"
+  }
+}
