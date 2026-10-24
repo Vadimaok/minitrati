@@ -440,6 +440,12 @@ body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-sty
 .shift-coming-icon{display:grid;place-items:center;width:62px;height:62px;margin:auto;border-radius:20px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-size:30px}
 .shift-status-pill{display:inline-flex;padding:6px 11px;border-radius:99px;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:11px;font-weight:800}
 .feature-grid>.feature-card:last-child{display:none!important}
+/* Backup import/export is available from the dedicated data tools panel only. */
+.top .actions #importBtn,.top .actions #exportBtn{display:none!important}
+.profile-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.profile-role-badge.hidden{display:none!important}
+#purchaseHistorySheet .history-modal-panel,#dataToolsSheet .history-modal-panel{padding-bottom:max(18px,env(safe-area-inset-bottom))}
+
 .admin-note-save{margin-top:10px}
 @media(max-width:760px){.admin-dev-layout{grid-template-columns:1fr}}
 .admin-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:13px}.admin-section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 7px}
