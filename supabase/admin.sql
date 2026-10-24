@@ -488,7 +488,7 @@ declare result jsonb; uid uuid := (select auth.uid());
 begin
  if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
  select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'title',t.title,'description',t.description,'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,'taken_at',t.taken_at,'completion_note',t.completion_note,'screenshot_data',t.screenshot_data) order by t.created_at desc),'[]'::jsonb)
- into result from public.admin_tasks t where t.assignee_id=uid and t.created_by in (select r.user_id from public.user_roles r where r.role='shift_senior');
+ into result from public.admin_tasks t where t.assignee_id=uid;
  return result;
 end; $$;
 revoke all on function public.user_list_my_knz_tasks() from public,anon;
