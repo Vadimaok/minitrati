@@ -419,6 +419,9 @@ body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-sty
 .admin-task-meta span{padding:4px 7px;border-radius:99px;background:rgba(148,163,184,.09)}
 .admin-task-actions{display:flex;gap:7px;margin-top:11px}
 .admin-task-actions button{padding:7px 10px;border-radius:10px;font-size:12px}
+.admin-role-field{display:flex;flex-direction:column;gap:7px;margin:14px 0;color:var(--muted);font-size:12px;font-weight:700}
+.admin-task-tabs{margin:14px 0 10px;padding-bottom:10px}
+.admin-task-tabs .admin-tab{padding:8px 11px;font-size:12px}
 .admin-note-save{margin-top:10px}
 @media(max-width:760px){.admin-dev-layout{grid-template-columns:1fr}}
 .admin-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:13px}.admin-section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 7px}
@@ -920,6 +923,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
     <nav class="admin-tabs" aria-label="Разделы админ-панели">
       <button class="admin-tab active" type="button" data-admin-tab="accounts">Аккаунты</button>
       <button class="admin-tab" type="button" data-admin-tab="development">Разрабатывается</button>
+      <button class="admin-tab" type="button" data-admin-tab="roles">Роли</button>
     </nav>
     <div id="adminAccountsView">
     <section class="admin-stats">
@@ -959,8 +963,24 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
         </div>
         <div class="admin-card">
           <div class="admin-detail-head"><div><h3 style="margin:0">Задачи команды</h3><p class="settings-hint">Время в работе показывается как «взял N мин назад» до 59 минут, затем — дата и время.</p></div></div>
-          <div id="adminTaskList" class="admin-task-list"><div class="admin-empty">Задач пока нет.</div></div>
+          <nav class="admin-tabs admin-task-tabs" aria-label="Фильтр задач">
+            <button class="admin-tab active" type="button" data-task-filter="all">Все</button>
+            <button class="admin-tab" type="button" data-task-filter="new">Новые</button>
+            <button class="admin-tab" type="button" data-task-filter="taken">В работе</button>
+            <button class="admin-tab" type="button" data-task-filter="done">Готово</button>
+          </nav>
+          <div id="adminTaskList" class="admin-task-list"><div class="admin-empty">Задачи загружаются…</div></div>
         </div>
+      </div>
+    </section>
+    <section id="adminRolesView" class="hidden">
+      <div class="admin-card">
+        <h3>Роли сотрудников</h3>
+        <p class="settings-hint">Выбери пользователя и назначь ему роль. Изменения применяются сразу после сохранения.</p>
+        <label class="admin-role-field">Сотрудник<select id="adminRoleUser"><option value="">Выбери аккаунт</option></select></label>
+        <label class="admin-role-field">Роль<select id="adminRoleSelect"><option value="employee">Сотрудник</option><option value="shift_senior">СТ.Смены</option></select></label>
+        <div class="admin-inline-actions"><button class="admin-primary" id="adminSaveRoleBtn" type="button">Сохранить роль</button></div>
+        <p id="adminRoleStatus" class="admin-status" role="status" aria-live="polite"></p>
       </div>
     </section>
   </div>
@@ -1710,13 +1730,27 @@ function adminFormatDate(value){if(!value)return '—';try{return new Date(value
 function adminAccountName(u){return String(u?.user_metadata?.display_name||u?.display_name||u?.user_metadata?.username||u?.user_metadata?.name||'').trim()||'Без имени';}
 const ADMIN_DEV_KEY='provoda.admin.development.v1';
 let adminDevData={notebook:'',tasks:[]};
-function adminLoadDevData(){
-  try{const x=JSON.parse(localStorage.getItem(ADMIN_DEV_KEY)||'{}');adminDevData={notebook:String(x.notebook||''),tasks:Array.isArray(x.tasks)?x.tasks:[]};}catch{adminDevData={notebook:'',tasks:[]};}
-  const n=document.querySelector('#adminNotebook');if(n)n.value=adminDevData.notebook;
-  adminPopulateAssignees();adminRenderTasks();
-}
-function adminSaveDevData(){try{localStorage.setItem(ADMIN_DEV_KEY,JSON.stringify(adminDevData));return true;}catch{adminDevMessage('Не удалось сохранить: хранилище браузера недоступно.',true);return false;}}
+let adminTaskFilter='all';
+let adminNotificationTimer=null;
+let lastSeenTaskNotificationIds=new Set();
 function adminDevMessage(msg,error=false){const e=document.querySelector('#adminDevStatus');if(e){e.textContent=msg;e.style.color=error?'var(--bad)':'var(--muted)';}}
+async function adminLoadDevData(){
+  if(!cloudClient||!adminAllowed)return;
+  try{
+    const [{data:tasks,error:taskError},{data:notes,error:noteError}]=await Promise.all([
+      cloudClient.rpc('admin_list_tasks'),
+      cloudClient.rpc('admin_get_notebook')
+    ]);
+    if(taskError)throw taskError;
+    if(noteError)throw noteError;
+    adminDevData.tasks=(Array.isArray(tasks)?tasks:[]).map(t=>({...t,createdAt:new Date(t.created_at).getTime(),updatedAt:new Date(t.updated_at).getTime(),takenAt:t.taken_at?new Date(t.taken_at).getTime():null,assigneeId:t.assignee_id||null}));
+    adminDevData.notebook=String(notes||'');
+    const n=document.querySelector('#adminNotebook');if(n&&document.activeElement!==n)n.value=adminDevData.notebook;
+    adminPopulateAssignees();adminRenderTasks();
+    adminDevMessage('Задачи и заметки синхронизированы с облаком.');
+  }catch(e){adminDevMessage('Не удалось загрузить задачи. Выполни обновлённый supabase/admin.sql. '+(e.message||''),true);}
+}
+async function adminSaveDevData(){return true;}
 function adminPopulateAssignees(){
   const sel=document.querySelector('#adminTaskAssignee');if(!sel)return;
   const chosen=sel.value;
@@ -1732,15 +1766,17 @@ function adminRelativeTaken(task){
 function adminRenderTasks(){
   const box=document.querySelector('#adminTaskList');if(!box)return;
   const statusNames={new:'Новая',taken:'Взята в работу',done:'Готово'};
-  box.innerHTML=adminDevData.tasks.length?adminDevData.tasks.slice().sort((a,b)=>Number(b.updatedAt||b.createdAt)-Number(a.updatedAt||a.createdAt)).map(t=>{
-    const u=adminAccounts.find(x=>x.user_id===t.assigneeId);
+  const filtered=adminDevData.tasks.filter(t=>adminTaskFilter==='all'||t.status===adminTaskFilter);
+  document.querySelectorAll('[data-task-filter]').forEach(b=>{const active=b.dataset.taskFilter===adminTaskFilter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+  box.innerHTML=filtered.length?filtered.slice().sort((a,b)=>Number(b.updatedAt||b.createdAt)-Number(a.updatedAt||a.createdAt)).map(t=>{
+    const u=adminAccounts.find(x=>x.user_id===(t.assigneeId||t.assignee_id));
     const assigned=u?(adminAccountName(u)+' · '+(u.email||'')):'Не назначено';
     const taken=adminRelativeTaken(t);
     return '<article class="admin-task"><div class="admin-task-head"><strong>'+escapeHtml(t.title||'Без названия')+'</strong><span class="recent-count">'+escapeHtml(statusNames[t.status]||statusNames.new)+'</span></div>'+
       (t.description?'<p>'+escapeHtml(t.description)+'</p>':'')+
       '<div class="admin-task-meta"><span>Ответственный: '+escapeHtml(assigned)+'</span><span>Создана '+escapeHtml(new Date(Number(t.createdAt||Date.now())).toLocaleString('ru-RU',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}))+'</span>'+(taken?'<span>'+escapeHtml(taken)+'</span>':'')+'</div>'+
       '<div class="admin-task-actions"><button class="ghost" type="button" data-edit-task="'+escapeHtml(t.id)+'">Редактировать</button><button class="ghost" type="button" data-take-task="'+escapeHtml(t.id)+'">'+(t.status==='taken'?'Обновить время':'Взять в работу')+'</button><button class="admin-danger" type="button" data-delete-task="'+escapeHtml(t.id)+'">Удалить</button></div></article>';
-  }).join(''):'<div class="admin-empty">Задач пока нет. Создай первую слева.</div>';
+  }).join(''):'<div class="admin-empty">'+(adminTaskFilter==='all'?'Задач пока нет. Создай первую слева.':'В этой категории задач пока нет.')+'</div>';
 }
 function adminResetTaskForm(){
   ['#adminTaskEditId','#adminTaskTitle','#adminTaskDescription'].forEach(sel=>document.querySelector(sel).value='');
@@ -1749,43 +1785,80 @@ function adminResetTaskForm(){
   document.querySelector('#adminSaveTaskBtn').textContent='Добавить задачу';
   document.querySelector('#adminTaskFormTitle').textContent='Блокнот администратора';
 }
-function adminSaveTask(){
+async function adminSaveTask(){
+  if(!adminAllowed)return;
   const title=document.querySelector('#adminTaskTitle').value.trim();
   if(!title){adminDevMessage('Добавь название задачи.',true);return;}
-  const id=document.querySelector('#adminTaskEditId').value;
-  const previous=adminDevData.tasks.find(t=>t.id===id);
+  const id=document.querySelector('#adminTaskEditId').value||null;
   const status=document.querySelector('#adminTaskStatus').value;
   const assigneeId=document.querySelector('#adminTaskAssignee').value||null;
-  const task={id:id||('task-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),title,description:document.querySelector('#adminTaskDescription').value.trim(),assigneeId,status,createdAt:previous?.createdAt||Date.now(),updatedAt:Date.now(),takenAt:status==='taken'?(previous?.status==='taken'&&previous?.assigneeId===assigneeId?previous.takenAt:Date.now()):null};
-  if(previous)adminDevData.tasks=adminDevData.tasks.map(t=>t.id===id?task:t);else adminDevData.tasks.unshift(task);
-  if(!adminSaveDevData())return;
-  adminRenderTasks();adminResetTaskForm();adminDevMessage(previous?'Задача обновлена.':'Задача добавлена.');
+  const payload={task_id:id,title,description:document.querySelector('#adminTaskDescription').value.trim(),assignee_id:assigneeId,status};
+  const btn=document.querySelector('#adminSaveTaskBtn');btn.disabled=true;
+  try{
+    const {error}=await cloudClient.rpc('admin_upsert_task',payload);
+    if(error)throw error;
+    await adminLoadDevData();adminResetTaskForm();
+    adminDevMessage(id?'Задача обновлена и синхронизирована.':(assigneeId?'Задача создана, сотруднику отправлено уведомление.':'Задача создана.'));
+  }catch(e){adminDevMessage('Не удалось сохранить задачу: '+(e.message||'ошибка'),true);}
+  finally{btn.disabled=false;}
 }
 function adminEditTask(id){
-  const t=adminDevData.tasks.find(x=>x.id===id);if(!t)return;
+  const t=adminDevData.tasks.find(x=>String(x.id)===String(id));if(!t)return;
   document.querySelector('#adminTaskEditId').value=t.id;document.querySelector('#adminTaskTitle').value=t.title||'';
   document.querySelector('#adminTaskDescription').value=t.description||'';
-  document.querySelector('#adminTaskAssignee').value=t.assigneeId||'';
+  document.querySelector('#adminTaskAssignee').value=t.assigneeId||t.assignee_id||'';
   document.querySelector('#adminTaskStatus').value=t.status||'new';
   document.querySelector('#adminSaveTaskBtn').textContent='Сохранить задачу';
   document.querySelector('#adminTaskFormTitle').textContent='Редактирование задачи';
   document.querySelector('#adminDevelopmentView').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function adminTakeTask(id){
-  adminDevData.tasks=adminDevData.tasks.map(t=>t.id===id?{...t,status:'taken',takenAt:Date.now(),updatedAt:Date.now()}:t);
-  if(adminSaveDevData()){adminRenderTasks();adminDevMessage('Задача отмечена как взятая в работу.');}
+async function adminTakeTask(id){
+  const t=adminDevData.tasks.find(x=>String(x.id)===String(id));if(!t)return;
+  const {error}=await cloudClient.rpc('admin_upsert_task',{task_id:t.id,title:t.title,description:t.description||'',assignee_id:t.assigneeId||t.assignee_id||null,status:'taken'});
+  if(error){adminDevMessage(error.message||'Не удалось обновить задачу.',true);return;}
+  await adminLoadDevData();adminDevMessage('Задача отмечена как взятая в работу.');
 }
-function adminDeleteTask(id){
+async function adminDeleteTask(id){
   if(!confirm('Удалить эту задачу?'))return;
-  adminDevData.tasks=adminDevData.tasks.filter(t=>t.id!==id);
-  if(adminSaveDevData()){adminRenderTasks();adminDevMessage('Задача удалена.');}
+  const {error}=await cloudClient.rpc('admin_delete_task',{task_id:id});
+  if(error){adminDevMessage(error.message||'Не удалось удалить задачу.',true);return;}
+  await adminLoadDevData();adminDevMessage('Задача удалена.');
+}
+async function adminSaveNotebook(){
+  if(!adminAllowed)return;
+  const notebook=document.querySelector('#adminNotebook').value;
+  const {error}=await cloudClient.rpc('admin_save_notebook',{new_notebook:notebook});
+  if(error){adminDevMessage(error.message||'Не удалось сохранить заметки.',true);return;}
+  adminDevData.notebook=notebook;adminDevMessage('Заметки сохранены в облаке.');
+}
+async function adminLoadRoles(){
+  const userSel=document.querySelector('#adminRoleUser');if(!userSel)return;
+  const chosen=userSel.value;
+  userSel.innerHTML='<option value="">Выбери аккаунт</option>'+adminAccounts.map(u=>'<option value="'+escapeHtml(u.user_id)+'">'+escapeHtml(adminAccountName(u))+' · '+escapeHtml(u.email||'без почты')+'</option>').join('');
+  if([...userSel.options].some(o=>o.value===chosen))userSel.value=chosen;
+  const selected=adminAccounts.find(u=>u.user_id===userSel.value);
+  document.querySelector('#adminRoleSelect').value=selected?.role==='shift_senior'?'shift_senior':'employee';
+}
+async function adminSaveRole(){
+  const userId=document.querySelector('#adminRoleUser').value;
+  const role=document.querySelector('#adminRoleSelect').value;
+  if(!userId){document.querySelector('#adminRoleStatus').textContent='Сначала выбери сотрудника.';return;}
+  const btn=document.querySelector('#adminSaveRoleBtn');btn.disabled=true;
+  try{
+    const {error}=await cloudClient.rpc('admin_set_user_role',{target_user_id:userId,new_role:role});
+    if(error)throw error;
+    const u=adminAccounts.find(x=>x.user_id===userId);if(u)u.role=role;
+    adminRenderAccounts();document.querySelector('#adminRoleStatus').textContent='Роль сохранена: '+(role==='shift_senior'?'СТ.Смены':'Сотрудник')+'.';
+  }catch(e){document.querySelector('#adminRoleStatus').textContent=e.message||'Не удалось сохранить роль.';}
+  finally{btn.disabled=false;}
 }
 function adminSwitchTab(tab){
-  const dev=tab==='development';
-  document.querySelector('#adminAccountsView').classList.toggle('hidden',dev);
+  const dev=tab==='development',roles=tab==='roles';
+  document.querySelector('#adminAccountsView').classList.toggle('hidden',dev||roles);
   document.querySelector('#adminDevelopmentView').classList.toggle('hidden',!dev);
+  document.querySelector('#adminRolesView').classList.toggle('hidden',!roles);
   document.querySelectorAll('[data-admin-tab]').forEach(b=>{const active=b.dataset.adminTab===tab;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});
-  if(dev)adminLoadDevData();
+  if(dev)adminLoadDevData();if(roles)adminLoadRoles();
 }
 
 function adminTotalForAccount(u){return Number(u?.total_spent||0);}
@@ -1793,7 +1866,7 @@ function adminRenderAccounts(){
   const q=(document.querySelector('#adminUserSearch')?.value||'').trim().toLowerCase();
   const visible=adminAccounts.filter(u=>String(u.email||'').toLowerCase().includes(q)||adminAccountName(u).toLowerCase().includes(q)||String(u.user_id||'').toLowerCase().includes(q));
   const list=document.querySelector('#adminAccountsList');
-  list.innerHTML=visible.length?visible.map(u=>'<button type="button" class="admin-account '+(u.user_id===adminSelectedId?'active':'')+'" data-admin-user="'+escapeHtml(u.user_id)+'"><strong>'+escapeHtml(u.email||'Без почты')+'</strong><span>'+escapeHtml(adminAccountName(u))+' · создан '+escapeHtml(adminFormatDate(u.created_at))+'</span><span class="admin-account-total">'+fmt(adminTotalForAccount(u))+' · '+Number(u.expense_count||0)+' записей</span></button>').join(''):'<div class="admin-empty">Пользователи не найдены.</div>';
+  list.innerHTML=visible.length?visible.map(u=>'<button type="button" class="admin-account '+(u.user_id===adminSelectedId?'active':'')+'" data-admin-user="'+escapeHtml(u.user_id)+'"><strong>'+escapeHtml(u.email||'Без почты')+'</strong><span>'+escapeHtml(adminAccountName(u))+' · '+escapeHtml(u.role==='shift_senior'?'СТ.Смены':'Сотрудник')+' · создан '+escapeHtml(adminFormatDate(u.created_at))+'</span><span class="admin-account-total">'+fmt(adminTotalForAccount(u))+' · '+Number(u.expense_count||0)+' записей</span></button>').join(''):'<div class="admin-empty">Пользователи не найдены.</div>';
   document.querySelector('#adminUsersCount').textContent=String(adminAccounts.length);
   document.querySelector('#adminGlobalTotal').textContent=fmt(adminAccounts.reduce((a,u)=>a+adminTotalForAccount(u),0));
   document.querySelector('#adminGlobalCount').textContent=String(adminAccounts.reduce((a,u)=>a+Number(u.expense_count||0),0));
@@ -1813,7 +1886,7 @@ async function openAdminPanel(){
     const {data,error}=await cloudClient.rpc('admin_list_accounts');
     if(error)throw error;
     adminAccounts=Array.isArray(data)?data:(data?.accounts||[]);
-    adminRenderAccounts();adminPopulateAssignees();
+    adminRenderAccounts();adminPopulateAssignees();adminLoadRoles();
     if(adminSelectedId&&adminAccounts.some(u=>u.user_id===adminSelectedId))await adminSelectAccount(adminSelectedId);
   }catch(e){document.querySelector('#adminAccountsList').innerHTML='<div class="admin-empty">Не удалось загрузить аккаунты. Проверь, что выполнил supabase/admin.sql.</div>';adminStatus(e.message||'Ошибка загрузки',true);}
 }
@@ -1844,6 +1917,7 @@ function adminRenderSelected(user){
   const detail=document.querySelector('#adminAccountDetail');
   detail.innerHTML='<div class="admin-detail-head"><div><strong>'+escapeHtml(user.email||'Без почты')+'</strong><div class="muted">'+escapeHtml(user.user_id)+'<br>Создан '+escapeHtml(adminFormatDate(user.created_at))+' · последний вход '+escapeHtml(adminFormatDate(user.last_sign_in_at))+'</div></div><div><strong>'+fmt(total)+'</strong><div class="muted">'+rows.length+' записей в истории</div></div></div>'+
     '<div class="admin-tools"><input id="adminDisplayName" maxlength="32" value="'+escapeHtml(adminAccountName(user)==='Без имени'?'':adminAccountName(user))+'" placeholder="Имя пользователя" aria-label="Имя пользователя"><button class="ghost" id="adminSaveProfileBtn" type="button">Сохранить профиль</button></div>'+
+    '<div class="admin-tools"><select id="adminInlineRole" aria-label="Роль пользователя"><option value="employee" '+(user.role==='shift_senior'?'':'selected')+'>Сотрудник</option><option value="shift_senior" '+(user.role==='shift_senior'?'selected':'')+'>СТ.Смены</option></select><button class="ghost" id="adminSaveInlineRoleBtn" type="button">Сохранить роль</button></div>'+
     '<div class="admin-tools"><input id="adminExpenseSearch" type="search" placeholder="Найти покупку или категорию" aria-label="Поиск расхода"><button class="ghost" id="adminAddExpenseBtn" type="button">+ Запись</button></div>'+
     '<div class="admin-table-wrap"><table class="admin-expense-table"><thead><tr><th>Название</th><th>Категория</th><th>Дата</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr></thead><tbody id="adminExpenseRows"></tbody></table></div>'+
     '<div class="admin-inline-actions" style="margin-top:14px"><button class="admin-primary" id="adminSaveAccountBtn" type="button">Сохранить изменения</button><button class="ghost" id="adminReloadAccountBtn" type="button">Отменить правки</button></div>'+
@@ -1916,8 +1990,12 @@ function adminDeleteExpense(index){
   adminCaptureRows();adminEditRows.splice(index,1);adminRenderExpenseRows();
 }
 document.querySelectorAll('[data-admin-tab]').forEach(b=>b.addEventListener('click',()=>adminSwitchTab(b.dataset.adminTab)));
-document.querySelector('#adminSaveNotebookBtn')?.addEventListener('click',()=>{adminDevData.notebook=document.querySelector('#adminNotebook').value;if(adminSaveDevData())adminDevMessage('Заметки сохранены в этом браузере.');});
+document.querySelectorAll('[data-task-filter]').forEach(b=>b.addEventListener('click',()=>{adminTaskFilter=b.dataset.taskFilter;adminRenderTasks();}));
+document.querySelector('#adminSaveNotebookBtn')?.addEventListener('click',adminSaveNotebook);
 document.querySelector('#adminSaveTaskBtn')?.addEventListener('click',adminSaveTask);
+document.querySelector('#adminRoleUser')?.addEventListener('change',adminLoadRoles);
+document.querySelector('#adminSaveRoleBtn')?.addEventListener('click',adminSaveRole);
+document.querySelector('#adminAccountDetail')?.addEventListener('click',e=>{if(e.target.id==='adminSaveInlineRoleBtn'){const role=document.querySelector('#adminInlineRole')?.value;const userId=adminSelectedId;if(userId&&role)cloudClient.rpc('admin_set_user_role',{target_user_id:userId,new_role:role}).then(({error})=>{if(error){adminStatus(error.message,true);return;}const u=adminAccounts.find(x=>x.user_id===userId);if(u)u.role=role;adminRenderAccounts();adminRenderSelected(u);adminStatus('Роль сохранена.');}).catch(err=>adminStatus(err.message||'Ошибка роли.',true));}});
 document.querySelector('#adminCancelTaskEditBtn')?.addEventListener('click',()=>{adminResetTaskForm();adminDevMessage('Форма очищена.');});
 document.querySelector('#adminTaskList')?.addEventListener('click',e=>{const edit=e.target.closest('[data-edit-task]');const take=e.target.closest('[data-take-task]');const del=e.target.closest('[data-delete-task]');if(edit)adminEditTask(edit.dataset.editTask);else if(take)adminTakeTask(take.dataset.takeTask);else if(del)adminDeleteTask(del.dataset.deleteTask);});
 document.querySelector('#openAdminPanelBtn')?.addEventListener('click',openAdminPanel);
