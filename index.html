@@ -1788,7 +1788,14 @@ async function pollRejectedReports(){
     const rejected=(Array.isArray(data)?data:[]).filter(t=>t.status==='rejected');
     const ids=new Set(rejected.map(t=>String(t.id)));
     const fresh=rejected.filter(t=>!lastRejectedTaskIds.has(String(t.id)));
-    if(rejectedPollReady&&fresh.length)toast('Отчёт отклонён: '+fresh.map(t=>t.title).join(', '));
+    if(rejectedPollReady&&fresh.length){
+      const title=fresh.length===1?'Отчёт отклонён':'Отклонены отчёты';
+      const body=fresh.map(t=>t.title).join(', ');
+      toast(title+': '+body);
+      if('Notification' in window&&Notification.permission==='granted'){
+        try{new Notification('Provoda Staff · Отчёт отклонён',{body,tag:'report-rejected-'+fresh.map(t=>t.id).join('-')});}catch{}
+      }
+    }
     lastRejectedTaskIds=ids;
     rejectedPollReady=true;
     const banner=document.querySelector('#knzRejectedBanner');
