@@ -1723,21 +1723,37 @@ function stopTaskNotificationPolling(){
 }
 async function activateCloudUser(user){
   if(!user || !cloudClient) return;
-  if(cloudUser && cloudUser.id===user.id){ document.querySelector('#authGate').classList.add('hidden'); startTaskNotificationPolling(); return; }
+  if(cloudUser && cloudUser.id===user.id){
+    document.querySelector('#authGate').classList.add('hidden');
+    startTaskNotificationPolling();
+    return;
+  }
   if(activationInProgress) return activationInProgress;
   activationInProgress=(async()=>{
     authMessage('Загружаю твои расходы из облака…');
-    const {data,error}=await Promise.race([
-      cloudClient.from('user_data').select('data').eq('user_id',user.id).maybeSingle(),
-      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Облако не ответило за 15 секунд. Проверь подключение и попробуй обновить страницу.')),15000))
-    ]);
+    let result;
+    try{
+      result=await Promise.race([
+        cloudClient.from('user_data').select('data').eq('user_id',user.id).maybeSingle(),
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error('Облако не ответило за 15 секунд. Проверь подключение и попробуй обновить страницу.')),15000))
+      ]);
+    }catch(error){
+      console.error('Cloud data load failed:',error);
+      const message=String(error?.message||'');
+      authMessage(/timeout|не ответило|15 секунд/i.test(message)
+        ? message
+        : (/fetch|network|load failed|failed to fetch/i.test(message)
+          ? 'Не удалось связаться с облаком. Проверь интернет и попробуй ещё раз.'
+          : 'Не удалось загрузить расходы: '+message),true);
+      return;
+    }
+    const {data,error}=result||{};
     if(error){
-      console.error(error);
-      authMessage('Не удалось прочитать базу. Проверь, что выполнил supabase/schema.sql и включил политики доступа.',true);
+      console.error('Cloud data query failed:',error);
+      authMessage('Не удалось прочитать базу. Проверь настройки доступа к данным (RLS) в Supabase.',true);
       return;
     }
     cloudUser=user;
-    // Never reuse another account's local data. Cloud data is the source of truth.
     state=validState(data ? data.data : null);
     try{ localStorage.setItem(LS+'.'+user.id,JSON.stringify(state)); }catch{}
     document.querySelector('#accountEmail').textContent=user.email || 'Аккаунт';
@@ -1748,7 +1764,10 @@ async function activateCloudUser(user){
     startTaskNotificationPolling();
     authMessage('Вход выполнен.');
     render();
-  })().finally(()=>{activationInProgress=null;});
+  })().catch(error=>{
+    console.error('Account activation failed:',error);
+    authMessage('Не удалось завершить загрузку аккаунта. Обнови страницу и попробуй ещё раз.',true);
+  }).finally(()=>{activationInProgress=null;});
   return activationInProgress;
 }
 function deactivateCloudUser(){
