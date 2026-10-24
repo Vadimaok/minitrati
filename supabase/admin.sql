@@ -509,7 +509,8 @@ grant execute on function public.user_take_knz_task(uuid) to authenticated;
 
 create or replace function public.user_submit_knz_task(task_id uuid,completion_note text,screenshot_data text)
 returns boolean language plpgsql security definer set search_path=''
-as $$
+as $submit_knz$
+#variable_conflict use_variable
 declare uid uuid := (select auth.uid());
 begin
  if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
@@ -522,6 +523,6 @@ begin
  select created_by,task_id,'task_done','Задача выполнена: '||title,coalesce(nullif(trim(completion_note),''),'Сотрудник КНЗ отправил результат.')
  from public.admin_tasks where id=task_id;
  return true;
-end; $$;
+end; $submit_knz$;
 revoke all on function public.user_submit_knz_task(uuid,text,text) from public,anon;
 grant execute on function public.user_submit_knz_task(uuid,text,text) to authenticated;
