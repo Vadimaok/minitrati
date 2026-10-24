@@ -539,8 +539,8 @@ begin
  if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'employee_knz' or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='employee_knz'),true) then raise exception 'Доступ запрещён или функция отключена' using errcode='42501'; end if;
  if length(coalesce(completion_note,''))>1000 then raise exception 'Комментарий слишком длинный'; end if;
  if screenshot_data is not null and (length(screenshot_data)>1800000 or screenshot_data not like 'data:image/%;base64,%') then raise exception 'Некорректный или слишком большой скриншот'; end if;
- update public.admin_tasks set status='done',completion_note=coalesce(completion_note,''),screenshot_data=coalesce(screenshot_data,public.admin_tasks.screenshot_data),updated_at=now()
- where id=task_id and assignee_id=uid and status='taken';
+ update public.admin_tasks set status='done',completion_note=coalesce(completion_note,''),screenshot_data=coalesce(screenshot_data,public.admin_tasks.screenshot_data),rejection_reason='',updated_at=now()
+ where id=task_id and assignee_id=uid and status in ('taken','rejected');
  if not found then raise exception 'Сначала возьми задачу в работу'; end if;
  insert into public.user_notifications(user_id,task_id,kind,title,body)
  select created_by,task_id,'task_done','Задача выполнена: '||title,coalesce(nullif(trim(completion_note),''),'Сотрудник КНЗ отправил результат.')
