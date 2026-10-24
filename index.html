@@ -1582,9 +1582,38 @@ function cloudConfigured(){
   return /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(url) &&
     key.length>20 && !key.includes('PASTE_');
 }
+async function pollTaskNotifications(){
+  if(!cloudClient||!cloudUser)return;
+  try{
+    const {data,error}=await cloudClient.rpc('user_get_task_notifications');
+    if(error)throw error;
+    const notifications=Array.isArray(data)?data:[];
+    for(const n of notifications){
+      if(!n?.id||lastSeenTaskNotificationIds.has(n.id))continue;
+      lastSeenTaskNotificationIds.add(n.id);
+      const title=String(n.title||'Новая задача');
+      const body=String(n.body||'Тебе назначили новую задачу.');
+      toast(title);
+      if('Notification' in window&&Notification.permission==='granted'){
+        try{new Notification('Provoda staff',{body:title+(body?': '+body:''),tag:'task-'+n.id});}catch{}
+      }
+    }
+    if(lastSeenTaskNotificationIds.size>200)lastSeenTaskNotificationIds=new Set([...lastSeenTaskNotificationIds].slice(-100));
+  }catch(e){console.info('Task notification check failed:',e?.message||e);}
+}
+function startTaskNotificationPolling(){
+  if(adminNotificationTimer)clearInterval(adminNotificationTimer);
+  lastSeenTaskNotificationIds=new Set();
+  pollTaskNotifications();
+  adminNotificationTimer=setInterval(pollTaskNotifications,20000);
+}
+function stopTaskNotificationPolling(){
+  if(adminNotificationTimer)clearInterval(adminNotificationTimer);
+  adminNotificationTimer=null;lastSeenTaskNotificationIds=new Set();
+}
 async function activateCloudUser(user){
   if(!user || !cloudClient) return;
-  if(cloudUser && cloudUser.id===user.id){ document.querySelector('#authGate').classList.add('hidden'); return; }
+  if(cloudUser && cloudUser.id===user.id){ document.querySelector('#authGate').classList.add('hidden'); startTaskNotificationPolling(); return; }
   if(activationInProgress) return activationInProgress;
   activationInProgress=(async()=>{
     authMessage('Загружаю твои расходы из облака…');
@@ -1602,12 +1631,14 @@ async function activateCloudUser(user){
     document.querySelector('#authGate').classList.add('hidden');
     if(typeof syncProfileUI==='function')syncProfileUI();
     refreshAdminAccess();
+    startTaskNotificationPolling();
     authMessage('Вход выполнен.');
     render();
   })().finally(()=>{activationInProgress=null;});
   return activationInProgress;
 }
 function deactivateCloudUser(){
+  stopTaskNotificationPolling();
   adminSetVisible(false); closeAdminPanel(); adminAccounts=[]; adminSelectedId=null; adminSelectedState=null;
   cloudUser=null;
   state={current:[],history:{}};
