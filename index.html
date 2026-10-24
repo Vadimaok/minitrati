@@ -2416,12 +2416,26 @@ function setAvatarImage(data){
   const remove=document.querySelector('#removeAvatarBtn'); if(remove) remove.classList.toggle('hidden',!data);
 }
 let currentUserRole='employee';
+async function openRequestedTeamView(){
+  const view=new URLSearchParams(window.location.search).get('view');
+  if(!view||!cloudUser)return;
+  if(view==='tasks'){
+    if(currentUserRole==='shift_senior')await openShiftPanel();
+    else if(currentUserRole==='employee_knz')await openKnzTasks();
+    else if(await refreshAdminAccess()){await openAdminPanel();adminSwitchTab('reports');}
+    else toast('Задачи доступны только сотрудникам КНЗ, СТ. и администраторам');
+  }else if(view==='admin-reports'){
+    await openAdminPanel();
+    if(adminAllowed)adminSwitchTab('reports');
+  }
+}
 async function refreshCurrentUserRole(){
   if(!cloudClient||!cloudUser){currentUserRole='employee';applyRoleUI();return;}
   try{const {data,error}=await cloudClient.rpc('user_get_my_role');if(error)throw error;currentUserRole=['employee','employee_knz','shift_senior'].includes(data)?data:'employee';}
   catch(e){console.info('Role could not be loaded:',e?.message||e);}
   applyRoleUI();
   if(currentUserRole==='employee_knz')refreshKnzRejectedBanner();
+  openRequestedTeamView();
 }
 async function refreshKnzRejectedBanner(){
   const banner=document.querySelector('#knzRejectedBanner');if(!banner||!cloudClient||!cloudUser||currentUserRole!=='employee_knz')return;
