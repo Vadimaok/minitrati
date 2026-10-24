@@ -397,7 +397,7 @@ alter table public.admin_tasks add column if not exists completion_note text not
 alter table public.admin_tasks add column if not exists screenshot_data text;
 alter table public.admin_tasks add column if not exists rejection_reason text not null default '';
 alter table public.admin_tasks drop constraint if exists admin_tasks_status_check;
-alter table public.admin_tasks add constraint admin_tasks_status_check check (status in ('new','taken','done','rejected'));
+alter table public.admin_tasks add constraint admin_tasks_status_check check (status in ('new','taken','done','rejected','approved'));
 create table if not exists public.role_feature_flags (
   role text primary key check (role in ('shift_senior','employee_knz')),
   is_enabled boolean not null default true,
@@ -549,3 +549,69 @@ begin
 end; $submit_knz$;
 revoke all on function public.user_submit_knz_task(uuid,text,text) from public,anon;
 grant execute on function public.user_submit_knz_task(uuid,text,text) to authenticated;
+
+
+-- Одобрение результата старшим КНЗ.
+create or replace function public.shift_approve_knz_task(task_id uuid)
+returns boolean language plpgsql security definer set search_path=''
+as $approve_knz$
+#variable_conflict use_variable
+declare uid uuid := (select auth.uid()); target_user uuid; task_title text;
+begin
+ if uid is null or coalesce((select r.role from public.user_roles r where r.user_id=uid),'employee') <> 'shift_senior'
+    or not coalesce((select f.is_enabled from public.role_feature_flags f where f.role='shift_senior'),true) then
+   raise exception 'Доступ запрещён' using errcode='42501';
+ end if;
+ update public.admin_tasks t set status='approved',rejection_reason='',updated_at=now()
+ where t.id=task_id and t.created_by=uid and t.status='done'
+ returning t.assignee_id,t.title into target_user,task_title;
+ if target_user is null then raise exception 'Задача не найдена или результат ещё не отправлен'; end if;
+ insert into public.user_notifications(user_id,task_id,kind,title,body)
+ values(target_user,task_id,'task_approved','Отчёт одобрен: '||task_title,'Старший КНЗ проверил и одобрил твой результат.');
+ return true;
+end; $approve_knz$;
+revoke all on function public.shift_approve_knz_task(uuid) from public,anon;
+grant execute on function public.shift_approve_knz_task(uuid) to authenticated;
+
+-- Администратор может просматривать отчёты КНЗ и одобрять их отдельно от роли СТ.
+create or replace function public.admin_list_knz_reports()
+returns jsonb language plpgsql stable security definer set search_path=''
+as $admin_reports$
+declare result jsonb;
+begin
+ if not public.is_current_admin() then
+   raise exception 'Доступ запрещён: нужны права администратора' using errcode='42501';
+ end if;
+ select coalesce(jsonb_agg(jsonb_build_object(
+   'id',t.id,'title',t.title,'description',t.description,'assignee_id',t.assignee_id,
+   'assignee_email',u.email,'assignee_name',coalesce(u.raw_user_meta_data->>'display_name',u.raw_user_meta_data->>'username',u.email),
+   'status',t.status,'created_at',t.created_at,'updated_at',t.updated_at,
+   'completion_note',t.completion_note,'screenshot_data',t.screenshot_data,
+   'rejection_reason',t.rejection_reason,'created_by',t.created_by
+ ) order by t.updated_at desc),'[]'::jsonb)
+ into result from public.admin_tasks t left join auth.users u on u.id=t.assignee_id
+ where t.assignee_id is not null and t.status in ('done','rejected','approved');
+ return result;
+end; $admin_reports$;
+revoke all on function public.admin_list_knz_reports() from public,anon;
+grant execute on function public.admin_list_knz_reports() to authenticated;
+
+create or replace function public.admin_approve_knz_task(task_id uuid)
+returns boolean language plpgsql security definer set search_path=''
+as $admin_approve_knz$
+#variable_conflict use_variable
+declare target_user uuid; task_title text;
+begin
+ if not public.is_current_admin() then
+   raise exception 'Доступ запрещён: нужны права администратора' using errcode='42501';
+ end if;
+ update public.admin_tasks t set status='approved',rejection_reason='',updated_at=now()
+ where t.id=task_id and t.status='done'
+ returning t.assignee_id,t.title into target_user,task_title;
+ if target_user is null then raise exception 'Отчёт не найден или уже обработан'; end if;
+ insert into public.user_notifications(user_id,task_id,kind,title,body)
+ values(target_user,task_id,'task_approved','Отчёт одобрен: '||task_title,'Администратор проверил и одобрил твой результат.');
+ return true;
+end; $admin_approve_knz$;
+revoke all on function public.admin_approve_knz_task(uuid) from public,anon;
+grant execute on function public.admin_approve_knz_task(uuid) to authenticated;
