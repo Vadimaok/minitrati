@@ -11,10 +11,12 @@ create table if not exists public.admin_users (
 alter table public.admin_users enable row level security;
 create table if not exists public.user_roles (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  role text not null default 'employee' check (role in ('employee','shift_senior')),
+  role text not null default 'employee' check (role in ('employee','employee_knz','shift_senior')),
   updated_by uuid references auth.users(id) on delete set null,
   updated_at timestamptz not null default now()
 );
+alter table public.user_roles drop constraint if exists user_roles_role_check;
+alter table public.user_roles add constraint user_roles_role_check check (role in ('employee','employee_knz','shift_senior'));
 alter table public.user_roles enable row level security;
 revoke all on public.user_roles from anon, authenticated;
 
@@ -212,7 +214,7 @@ begin
   if not public.is_current_admin() then
     raise exception 'Доступ запрещён: нужны права администратора' using errcode = '42501';
   end if;
-  if new_role not in ('employee','shift_senior') then
+  if new_role not in ('employee','employee_knz','shift_senior') then
     raise exception 'Недопустимая роль';
   end if;
   if not exists(select 1 from auth.users where id=target_user_id) then
@@ -374,3 +376,17 @@ end;
 $$;
 revoke all on function public.user_get_task_notifications() from public, anon;
 grant execute on function public.user_get_task_notifications() to authenticated;
+
+
+-- Роль текущего пользователя для компактного бейджа в профиле.
+create or replace function public.user_get_my_role()
+returns text
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce((select r.role from public.user_roles r where r.user_id=(select auth.uid())), 'employee');
+$$;
+revoke all on function public.user_get_my_role() from public, anon;
+grant execute on function public.user_get_my_role() to authenticated;
