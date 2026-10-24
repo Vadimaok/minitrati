@@ -2226,6 +2226,11 @@ async function refreshCurrentUserRole(){
   try{const {data,error}=await cloudClient.rpc('user_get_my_role');if(error)throw error;currentUserRole=['employee','employee_knz','shift_senior'].includes(data)?data:'employee';}
   catch(e){console.info('Role could not be loaded:',e?.message||e);}
   applyRoleUI();
+  if(currentUserRole==='employee_knz')refreshKnzRejectedBanner();
+}
+async function refreshKnzRejectedBanner(){
+  const banner=document.querySelector('#knzRejectedBanner');if(!banner||!cloudClient||!cloudUser||currentUserRole!=='employee_knz')return;
+  try{const {data,error}=await cloudClient.rpc('user_list_my_knz_tasks');if(error)throw error;const rejected=(Array.isArray(data)?data:[]).filter(t=>t.status==='rejected');banner.classList.toggle('hidden',!rejected.length);const txt=document.querySelector('#knzRejectedBannerText');if(txt)txt.textContent=rejected.length===1?'Задача «'+rejected[0].title+'» не засчитана.':'Не засчитаны задачи: '+rejected.map(t=>t.title).join(', ');}catch(e){console.info('Не удалось проверить отклонённые задачи:',e?.message||e);}
 }
 function applyRoleUI(){
   const labels={employee:'Сотрудник',employee_knz:'Сотрудник КНЗ',shift_senior:'Старший КНЗ'};
