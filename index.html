@@ -422,6 +422,24 @@ body.light-theme[data-button-style="soft"] .fab,body.light-theme[data-button-sty
 .admin-role-field{display:flex;flex-direction:column;gap:7px;margin:14px 0;color:var(--muted);font-size:12px;font-weight:700}
 .admin-task-tabs{margin:14px 0 10px;padding-bottom:10px}
 .admin-task-tabs .admin-tab{padding:8px 11px;font-size:12px}
+.profile-role-badge{display:inline-flex;align-items:center;width:max-content;max-width:100%;margin-top:5px;padding:3px 7px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:10px;line-height:1.2;font-weight:800;letter-spacing:.02em}
+.history-modal-panel{width:min(860px,100%);max-height:min(88dvh,900px);overflow:auto}
+.history-modal-panel .sheet-heading{position:sticky;top:0;z-index:3;background:var(--card);padding:8px 0 14px}
+.purchase-history-content{display:grid;gap:14px}
+.purchase-history-month{border:1px solid var(--line);border-radius:16px;padding:14px;background:color-mix(in srgb,var(--card) 90%,var(--bg))}
+.purchase-history-month h3{margin:0 0 10px;font-size:15px}
+.purchase-history-month .muted{margin-bottom:10px}
+.data-tools-content .feature-card{width:100%;margin:0}
+#dataToolsSheet .feature-heading{margin-bottom:14px}
+#shiftPanelSheet{position:fixed;inset:0;z-index:510;display:none;background:rgba(5,8,13,.72);backdrop-filter:blur(12px);padding:clamp(10px,3vw,28px);overflow:auto}
+#shiftPanelSheet.open{display:block}
+.shift-shell{max-width:900px}
+.shift-coming-soon{text-align:center;padding:clamp(28px,6vw,64px)!important}
+.shift-coming-soon h3{font-size:22px;margin:12px 0 8px}
+.shift-coming-soon p{max-width:480px;margin:0 auto 16px;color:var(--muted);line-height:1.6}
+.shift-coming-icon{display:grid;place-items:center;width:62px;height:62px;margin:auto;border-radius:20px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-size:30px}
+.shift-status-pill{display:inline-flex;padding:6px 11px;border-radius:99px;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:11px;font-weight:800}
+.feature-grid>.feature-card:last-child{display:none!important}
 .admin-note-save{margin-top:10px}
 @media(max-width:760px){.admin-dev-layout{grid-template-columns:1fr}}
 .admin-empty{padding:26px 12px;text-align:center;color:var(--muted);font-size:13px}.admin-section-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 7px}
@@ -805,11 +823,13 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
     </div>
   </header>
   <div class="accountbar profilebar">
-    <div class="profile-summary"><button class="profile-avatar" id="profileAvatarBtn" type="button" aria-label="Открыть профиль" aria-expanded="false"><span id="profileAvatarText"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.5 3.1-5.2 7-5.2s6.3 1.7 7 5.2"/></svg></span></button><div class="profile-copy"><strong id="profileName">Мой профиль</strong><span id="accountEmail">Аккаунт не выбран</span></div></div>
+    <div class="profile-summary"><button class="profile-avatar" id="profileAvatarBtn" type="button" aria-label="Открыть профиль" aria-expanded="false"><span id="profileAvatarText"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.5 3.1-5.2 7-5.2s6.3 1.7 7 5.2"/></svg></span></button><div class="profile-copy"><strong id="profileName">Мой профиль</strong><span id="accountEmail">Аккаунт не выбран</span><span id="profileRoleBadge" class="profile-role-badge hidden"></span></div></div>
     <button class="ghost profile-menu-trigger" id="profileMenuBtn" type="button" aria-label="Меню профиля" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="profile-menu hidden" id="profileMenu">
       <div class="profile-menu-head"><strong id="menuProfileName">Мой профиль</strong><span id="menuProfileEmail">Аккаунт не выбран</span></div>
       <button type="button" id="openAdminPanelBtn" class="profile-menu-action admin-menu-entry" aria-label="Открыть панель администратора"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h3m-3 4h8M15 12h1"/></svg><span>Панель администратора</span></button>
+      <button type="button" id="openShiftPanelBtn" class="profile-menu-action admin-menu-entry" aria-label="Открыть панель управления старшего смены"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7"/></svg><span>Панель управления СТ.</span></button>
+      <button type="button" id="openDataPanelBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><rect x="4" y="4" width="16" height="16" rx="4"/></svg><span>Экспорт и уведомления</span></button>
       <button type="button" id="openSettingsBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.6a8 8 0 0 1-1.8 1l-.2 1.5h-2.5l-.2-1.5a8 8 0 0 1-1.8-1l-1.4.6-1.2-2.1 1.2-.9a7 7 0 0 1 0-2l-1.2-.9 1.2-2.1 1.4.6a8 8 0 0 1 1.8-1l.2-1.5h2.5l.2 1.5a8 8 0 0 1 1.8 1l1.4-.6 1.2 2.1-1.2.9a7 7 0 0 1 0 2Z" transform="translate(-1 -1) scale(.96)"/></svg><span>Настройки</span></button>
       <button type="button" id="menuLogoutBtn" class="profile-logout profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg><span>Выйти из аккаунта</span></button>
     </div>
@@ -914,6 +934,28 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
 </div>
 <div class="sheet confirm-sheet" id="deleteConfirmSheet" aria-hidden="true"><div class="scrim" data-cancel-delete></div><div class="panel confirm-panel" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle"><div class="confirm-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></div><h2 id="deleteConfirmTitle">Удалить покупку?</h2><p id="deleteConfirmText">Вы уверены, что хотите удалить эту позицию? Это действие нельзя отменить.</p><div class="confirm-actions"><button class="ghost" id="cancelDeleteBtn" type="button">Отмена</button><button class="confirm-delete-btn" id="confirmDeleteBtn" type="button">Да, удалить</button></div></div></div>
 
+<div class="sheet" id="purchaseHistorySheet" aria-hidden="true">
+  <div class="scrim" data-close-history></div>
+  <div class="panel history-modal-panel" role="dialog" aria-modal="true" aria-label="История покупок">
+    <div class="grab"></div>
+    <div class="sheet-heading"><div><h2>История покупок</h2><p class="settings-subtitle">Все покупки и архив по месяцам</p></div><button class="icon" id="closePurchaseHistoryBtn" type="button" aria-label="Закрыть историю">×</button></div>
+    <div id="purchaseHistoryContent" class="purchase-history-content"></div>
+  </div>
+</div>
+<div class="sheet" id="dataToolsSheet" aria-hidden="true">
+  <div class="scrim" data-close-data-tools></div>
+  <div class="panel history-modal-panel" role="dialog" aria-modal="true" aria-label="Экспорт и уведомления">
+    <div class="grab"></div>
+    <div class="sheet-heading"><h2>Экспорт и уведомления</h2><button class="icon" id="closeDataToolsBtn" type="button" aria-label="Закрыть">×</button></div>
+    <div id="dataToolsContent" class="data-tools-content"></div>
+  </div>
+</div>
+<div id="shiftPanelSheet" aria-hidden="true">
+  <div class="admin-shell shift-shell" role="dialog" aria-modal="true" aria-labelledby="shiftPanelTitle">
+    <header class="admin-top"><div><h2 id="shiftPanelTitle">Панель управления СТ.</h2><p>Разрабатывается · инструменты старшего смены</p></div><button class="icon" id="closeShiftPanelBtn" type="button" aria-label="Закрыть панель">×</button></header>
+    <div class="admin-card shift-coming-soon"><span class="shift-coming-icon">◷</span><h3>Панель в разработке</h3><p>Здесь появятся инструменты старшего смены для управления рабочими задачами и процессами команды.</p><span class="shift-status-pill">Скоро</span></div>
+  </div>
+</div>
 <div id="adminPanelSheet" aria-hidden="true">
   <div class="admin-shell" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
     <header class="admin-top">
@@ -978,7 +1020,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
         <h3>Роли сотрудников</h3>
         <p class="settings-hint">Выбери пользователя и назначь ему роль. Изменения применяются сразу после сохранения.</p>
         <label class="admin-role-field">Сотрудник<select id="adminRoleUser"><option value="">Выбери аккаунт</option></select></label>
-        <label class="admin-role-field">Роль<select id="adminRoleSelect"><option value="employee">Сотрудник</option><option value="shift_senior">СТ.Смены</option></select></label>
+        <label class="admin-role-field">Роль<select id="adminRoleSelect"><option value="employee">Сотрудник</option><option value="employee_knz">Сотрудник КНЗ</option><option value="shift_senior">СТ.Смены</option></select></label>
         <div class="admin-inline-actions"><button class="admin-primary" id="adminSaveRoleBtn" type="button">Сохранить роль</button></div>
         <p id="adminRoleStatus" class="admin-status" role="status" aria-live="polite"></p>
       </div>
@@ -1214,6 +1256,14 @@ function init(){
   $('#addBtn').onclick=openSheet; $('#saveBtn').onclick=saveEntry;
   bindFinanceFeatures();
   $('#toggleRecentBtn').onclick=toggleRecentHistory;
+  $('#closePurchaseHistoryBtn').onclick=closePurchaseHistory;
+  document.querySelectorAll('[data-close-history]').forEach(el=>el.onclick=closePurchaseHistory);
+  $('#purchaseHistoryContent').addEventListener('click',e=>{const b=e.target.closest('[data-delete-id]');if(b)del(b.dataset.deleteId)});
+  $('#openDataPanelBtn').onclick=openDataTools;
+  $('#closeDataToolsBtn').onclick=closeDataTools;
+  document.querySelectorAll('[data-close-data-tools]').forEach(el=>el.onclick=closeDataTools);
+  $('#closeShiftPanelBtn').onclick=closeShiftPanel;
+  $('#openShiftPanelBtn').onclick=openShiftPanel;
   $('#confirmDeleteBtn').onclick=confirmDelete;$('#cancelDeleteBtn').onclick=closeDeleteConfirm;document.querySelectorAll('[data-cancel-delete]').forEach(el=>el.onclick=closeDeleteConfirm);
   $('#closeCategoryBtn').onclick=closeCategory;document.querySelectorAll('[data-close-category]').forEach(el=>el.onclick=closeCategory);
   $('#categoryItems').addEventListener('click',e=>{const b=e.target.closest('[data-delete-id]');if(b)del(b.dataset.deleteId)});$('#recent').addEventListener('click',e=>{const b=e.target.closest('[data-delete-id]');if(b)del(b.dataset.deleteId)});
@@ -1374,7 +1424,36 @@ function closeDeleteConfirm(){$('#deleteConfirmSheet').classList.remove('open');
 function confirmDelete(){if(pendingDeleteId===null)return;state.current=state.current.filter(x=>String(x.id)!==String(pendingDeleteId));closeDeleteConfirm();save();toast('Покупка удалена');}
 function renderPurchaseRows(items){return items.map(x=>'<div class="item">'+productAvatar(x.name,x.category)+'<div class="item-name"><div>'+escapeHtml(x.name)+'</div><div class="meta">'+escapeHtml(x.category)+' · '+x.qty+' шт · '+new Date(x.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</div></div><div class="price">'+fmt(x.price*x.qty)+'<br><button class="del" type="button" data-favorite-toggle="'+escapeHtml(x.name).replace(/"/g,'&quot;')+'" aria-label="Добавить в избранное" title="Добавить в избранное">'+(state.favorites.some(f=>normLine(f)===normLine(x.name))?'★':'☆')+'</button><button class="del" type="button" data-delete-id="'+escapeHtml(String(x.id))+'" aria-label="Удалить '+escapeHtml(x.name)+'" title="Удалить покупку"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14M10 10v6m4-6v6"/></svg></button></div></div>').join('');}
 let recentExpanded=false;
-function toggleRecentHistory(){recentExpanded=!recentExpanded;render();}
+function toggleRecentHistory(){openPurchaseHistory();}
+function openPurchaseHistory(){
+  closeDataTools();
+  renderPurchaseHistory();
+  const sheet=document.querySelector('#purchaseHistorySheet');sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');
+  const panel=sheet.querySelector('.history-modal-panel');panel.scrollTop=0;
+}
+function closePurchaseHistory(){const sheet=document.querySelector('#purchaseHistorySheet');sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');}
+function renderPurchaseHistory(){
+  const box=document.querySelector('#purchaseHistoryContent');if(!box)return;
+  const current=[...state.current].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
+  const archived=Object.entries(state.history||{}).sort((a,b)=>b[0].localeCompare(a[0]));
+  const currentHtml='<section class="purchase-history-month"><h3>Текущий список · '+current.length+' покупок</h3><div class="muted">Сумма: '+fmt(sum(current))+'</div>'+ (current.length?renderPurchaseRows(current):'<div class="muted">Покупок пока нет.</div>')+'</section>';
+  const archiveHtml=archived.map(([key,arr])=>'<section class="purchase-history-month"><h3>'+escapeHtml(new Date(key+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'}))+' · '+arr.length+' покупок</h3><div class="muted">Сумма: '+fmt(sum(arr))+'</div>'+(arr.length?renderPurchaseRows(arr):'<div class="muted">Нет записей</div>')+'</section>').join('');
+  box.innerHTML=currentHtml+(archiveHtml||'<div class="muted">Архив прошлых месяцев появится здесь.</div>');
+}
+function openDataTools(){
+  closeProfileMenu();
+  const card=document.querySelector('.feature-grid .feature-card:last-child');
+  const target=document.querySelector('#dataToolsContent');
+  if(card&&target&&card.parentElement!==target)target.appendChild(card);
+  document.querySelector('#dataToolsSheet').classList.add('open');document.querySelector('#dataToolsSheet').setAttribute('aria-hidden','false');
+}
+function closeDataTools(){const sheet=document.querySelector('#dataToolsSheet');sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');}
+function openShiftPanel(){
+  closeProfileMenu();closeSettings();
+  if(currentUserRole!=='shift_senior'){toast('Эта панель доступна только роли СТ.Смены');return;}
+  const panel=document.querySelector('#shiftPanelSheet');panel.classList.add('open');panel.setAttribute('aria-hidden','false');
+}
+function closeShiftPanel(){const panel=document.querySelector('#shiftPanelSheet');panel.classList.remove('open');panel.setAttribute('aria-hidden','true');}
 function openCategory(category){const items=[...state.current].filter(x=>(x.category||'другое')===category).sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);$('#categorySheetTitle').textContent=category;$('#categorySheetSubtitle').textContent=items.length+' покупок · всего '+fmt(sum(items));$('#categoryItems').innerHTML=items.length?renderPurchaseRows(items):'<div class="muted">В этой категории пока нет покупок.</div>';$('#categorySheet').classList.add('open');$('#categorySheet').setAttribute('aria-hidden','false');}
 function closeCategory(){$('#categorySheet').classList.remove('open');$('#categorySheet').setAttribute('aria-hidden','true');}
 function itemEmoji(name, category){
@@ -1563,8 +1642,9 @@ function render(){
   $('#toggleRecentBtn').innerHTML=(recentExpanded?'Скрыть историю покупок':'Посмотреть историю покупок')+' <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   const hist=Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
   $('#historyBox').innerHTML = hist.length ? `<h2 style="margin-top:16px">Архив месяцев</h2>`+hist.map(([k,arr])=>`<div class="row"><div class="label"><div><div class="name">${new Date(k+'-01T12:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div><div class="muted small">${arr.length} покупок</div></div></div><div class="amount">${fmt(sum(arr))}</div></div>`).join('') : '';
-  $('#historyBox').classList.toggle('hidden',!recentExpanded);
+  $('#historyBox').classList.add('hidden');
   renderFinanceFeatures(items,total,cats);
+  renderPurchaseHistory();
   if(typeof applyFeaturePreferences==='function')applyFeaturePreferences();
 }
 init();
@@ -1631,6 +1711,7 @@ async function activateCloudUser(user){
     document.querySelector('#authGate').classList.add('hidden');
     if(typeof syncProfileUI==='function')syncProfileUI();
     refreshAdminAccess();
+    refreshCurrentUserRole();
     startTaskNotificationPolling();
     authMessage('Вход выполнен.');
     render();
@@ -1639,7 +1720,8 @@ async function activateCloudUser(user){
 }
 function deactivateCloudUser(){
   stopTaskNotificationPolling();
-  adminSetVisible(false); closeAdminPanel(); adminAccounts=[]; adminSelectedId=null; adminSelectedState=null;
+  currentUserRole='employee';applyRoleUI();
+  adminSetVisible(false); closeAdminPanel();closeShiftPanel();closeDataTools();closePurchaseHistory(); adminAccounts=[]; adminSelectedId=null; adminSelectedState=null;
   cloudUser=null;
   state={current:[],history:{}};
   document.querySelector('#accountEmail').textContent='Аккаунт не выбран';
@@ -1868,7 +1950,7 @@ async function adminLoadRoles(){
   userSel.innerHTML='<option value="">Выбери аккаунт</option>'+adminAccounts.map(u=>'<option value="'+escapeHtml(u.user_id)+'">'+escapeHtml(adminAccountName(u))+' · '+escapeHtml(u.email||'без почты')+'</option>').join('');
   if([...userSel.options].some(o=>o.value===chosen))userSel.value=chosen;
   const selected=adminAccounts.find(u=>u.user_id===userSel.value);
-  document.querySelector('#adminRoleSelect').value=selected?.role==='shift_senior'?'shift_senior':'employee';
+  document.querySelector('#adminRoleSelect').value=['employee','employee_knz','shift_senior'].includes(selected?.role)?selected.role:'employee';
 }
 async function adminSaveRole(){
   const userId=document.querySelector('#adminRoleUser').value;
@@ -1879,7 +1961,8 @@ async function adminSaveRole(){
     const {error}=await cloudClient.rpc('admin_set_user_role',{target_user_id:userId,new_role:role});
     if(error)throw error;
     const u=adminAccounts.find(x=>x.user_id===userId);if(u)u.role=role;
-    adminRenderAccounts();document.querySelector('#adminRoleStatus').textContent='Роль сохранена: '+(role==='shift_senior'?'СТ.Смены':'Сотрудник')+'.';
+    if(userId===cloudUser?.id){currentUserRole=role;applyRoleUI();}
+    adminRenderAccounts();document.querySelector('#adminRoleStatus').textContent='Роль сохранена: '+(({employee:'Сотрудник',employee_knz:'Сотрудник КНЗ',shift_senior:'СТ.Смены'})[role]||'Сотрудник')+'.';
   }catch(e){document.querySelector('#adminRoleStatus').textContent=e.message||'Не удалось сохранить роль.';}
   finally{btn.disabled=false;}
 }
@@ -1897,7 +1980,7 @@ function adminRenderAccounts(){
   const q=(document.querySelector('#adminUserSearch')?.value||'').trim().toLowerCase();
   const visible=adminAccounts.filter(u=>String(u.email||'').toLowerCase().includes(q)||adminAccountName(u).toLowerCase().includes(q)||String(u.user_id||'').toLowerCase().includes(q));
   const list=document.querySelector('#adminAccountsList');
-  list.innerHTML=visible.length?visible.map(u=>'<button type="button" class="admin-account '+(u.user_id===adminSelectedId?'active':'')+'" data-admin-user="'+escapeHtml(u.user_id)+'"><strong>'+escapeHtml(u.email||'Без почты')+'</strong><span>'+escapeHtml(adminAccountName(u))+' · '+escapeHtml(u.role==='shift_senior'?'СТ.Смены':'Сотрудник')+' · создан '+escapeHtml(adminFormatDate(u.created_at))+'</span><span class="admin-account-total">'+fmt(adminTotalForAccount(u))+' · '+Number(u.expense_count||0)+' записей</span></button>').join(''):'<div class="admin-empty">Пользователи не найдены.</div>';
+  list.innerHTML=visible.length?visible.map(u=>'<button type="button" class="admin-account '+(u.user_id===adminSelectedId?'active':'')+'" data-admin-user="'+escapeHtml(u.user_id)+'"><strong>'+escapeHtml(u.email||'Без почты')+'</strong><span>'+escapeHtml(adminAccountName(u))+' · '+escapeHtml(({employee:'Сотрудник',employee_knz:'Сотрудник КНЗ',shift_senior:'СТ.Смены'})[u.role]||'Сотрудник')+' · создан '+escapeHtml(adminFormatDate(u.created_at))+'</span><span class="admin-account-total">'+fmt(adminTotalForAccount(u))+' · '+Number(u.expense_count||0)+' записей</span></button>').join(''):'<div class="admin-empty">Пользователи не найдены.</div>';
   document.querySelector('#adminUsersCount').textContent=String(adminAccounts.length);
   document.querySelector('#adminGlobalTotal').textContent=fmt(adminAccounts.reduce((a,u)=>a+adminTotalForAccount(u),0));
   document.querySelector('#adminGlobalCount').textContent=String(adminAccounts.reduce((a,u)=>a+Number(u.expense_count||0),0));
@@ -1948,7 +2031,7 @@ function adminRenderSelected(user){
   const detail=document.querySelector('#adminAccountDetail');
   detail.innerHTML='<div class="admin-detail-head"><div><strong>'+escapeHtml(user.email||'Без почты')+'</strong><div class="muted">'+escapeHtml(user.user_id)+'<br>Создан '+escapeHtml(adminFormatDate(user.created_at))+' · последний вход '+escapeHtml(adminFormatDate(user.last_sign_in_at))+'</div></div><div><strong>'+fmt(total)+'</strong><div class="muted">'+rows.length+' записей в истории</div></div></div>'+
     '<div class="admin-tools"><input id="adminDisplayName" maxlength="32" value="'+escapeHtml(adminAccountName(user)==='Без имени'?'':adminAccountName(user))+'" placeholder="Имя пользователя" aria-label="Имя пользователя"><button class="ghost" id="adminSaveProfileBtn" type="button">Сохранить профиль</button></div>'+
-    '<div class="admin-tools"><select id="adminInlineRole" aria-label="Роль пользователя"><option value="employee" '+(user.role==='shift_senior'?'':'selected')+'>Сотрудник</option><option value="shift_senior" '+(user.role==='shift_senior'?'selected':'')+'>СТ.Смены</option></select><button class="ghost" id="adminSaveInlineRoleBtn" type="button">Сохранить роль</button></div>'+
+    '<div class="admin-tools"><select id="adminInlineRole" aria-label="Роль пользователя"><option value="employee" '+((user.role||'employee')==='employee'?'selected':'')+'>Сотрудник</option><option value="employee_knz" '+(user.role==='employee_knz'?'selected':'')+'>Сотрудник КНЗ</option><option value="shift_senior" '+(user.role==='shift_senior'?'selected':'')+'>СТ.Смены</option></select><button class="ghost" id="adminSaveInlineRoleBtn" type="button">Сохранить роль</button></div>'+
     '<div class="admin-tools"><input id="adminExpenseSearch" type="search" placeholder="Найти покупку или категорию" aria-label="Поиск расхода"><button class="ghost" id="adminAddExpenseBtn" type="button">+ Запись</button></div>'+
     '<div class="admin-table-wrap"><table class="admin-expense-table"><thead><tr><th>Название</th><th>Категория</th><th>Дата</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr></thead><tbody id="adminExpenseRows"></tbody></table></div>'+
     '<div class="admin-inline-actions" style="margin-top:14px"><button class="admin-primary" id="adminSaveAccountBtn" type="button">Сохранить изменения</button><button class="ghost" id="adminReloadAccountBtn" type="button">Отменить правки</button></div>'+
@@ -2026,7 +2109,7 @@ document.querySelector('#adminSaveNotebookBtn')?.addEventListener('click',adminS
 document.querySelector('#adminSaveTaskBtn')?.addEventListener('click',adminSaveTask);
 document.querySelector('#adminRoleUser')?.addEventListener('change',adminLoadRoles);
 document.querySelector('#adminSaveRoleBtn')?.addEventListener('click',adminSaveRole);
-document.querySelector('#adminAccountDetail')?.addEventListener('click',e=>{if(e.target.id==='adminSaveInlineRoleBtn'){const role=document.querySelector('#adminInlineRole')?.value;const userId=adminSelectedId;if(userId&&role)cloudClient.rpc('admin_set_user_role',{target_user_id:userId,new_role:role}).then(({error})=>{if(error){adminStatus(error.message,true);return;}const u=adminAccounts.find(x=>x.user_id===userId);if(u)u.role=role;adminRenderAccounts();adminRenderSelected(u);adminStatus('Роль сохранена.');}).catch(err=>adminStatus(err.message||'Ошибка роли.',true));}});
+document.querySelector('#adminAccountDetail')?.addEventListener('click',e=>{if(e.target.id==='adminSaveInlineRoleBtn'){const role=document.querySelector('#adminInlineRole')?.value;const userId=adminSelectedId;if(userId&&role)cloudClient.rpc('admin_set_user_role',{target_user_id:userId,new_role:role}).then(({error})=>{if(error){adminStatus(error.message,true);return;}const u=adminAccounts.find(x=>x.user_id===userId);if(u)u.role=role;adminRenderAccounts();adminRenderSelected(u);if(userId===cloudUser?.id){currentUserRole=role;applyRoleUI();}adminStatus('Роль сохранена.');}).catch(err=>adminStatus(err.message||'Ошибка роли.',true));}});
 document.querySelector('#adminCancelTaskEditBtn')?.addEventListener('click',()=>{adminResetTaskForm();adminDevMessage('Форма очищена.');});
 document.querySelector('#adminTaskList')?.addEventListener('click',e=>{const edit=e.target.closest('[data-edit-task]');const take=e.target.closest('[data-take-task]');const del=e.target.closest('[data-delete-task]');if(edit)adminEditTask(edit.dataset.editTask);else if(take)adminTakeTask(take.dataset.takeTask);else if(del)adminDeleteTask(del.dataset.deleteTask);});
 document.querySelector('#openAdminPanelBtn')?.addEventListener('click',openAdminPanel);
@@ -2113,6 +2196,18 @@ function setAvatarImage(data){
   });
   const remove=document.querySelector('#removeAvatarBtn'); if(remove) remove.classList.toggle('hidden',!data);
 }
+let currentUserRole='employee';
+async function refreshCurrentUserRole(){
+  if(!cloudClient||!cloudUser){currentUserRole='employee';applyRoleUI();return;}
+  try{const {data,error}=await cloudClient.rpc('user_get_my_role');if(error)throw error;currentUserRole=['employee','employee_knz','shift_senior'].includes(data)?data:'employee';}
+  catch(e){console.info('Role could not be loaded:',e?.message||e);}
+  applyRoleUI();
+}
+function applyRoleUI(){
+  const labels={employee:'Сотрудник',employee_knz:'Сотрудник КНЗ',shift_senior:'СТ.Смены'};
+  const badge=document.querySelector('#profileRoleBadge');if(badge){badge.textContent=labels[currentUserRole]||labels.employee;badge.classList.toggle('hidden',!cloudUser);}
+  const shift=document.querySelector('#openShiftPanelBtn');if(shift)shift.classList.toggle('admin-visible',!!cloudUser&&currentUserRole==='shift_senior');
+}
 function syncProfileUI(){
   const user=cloudUser;
   const email=user?.email||'Аккаунт не выбран';
@@ -2124,6 +2219,7 @@ function syncProfileUI(){
   ['#profileName','#menuProfileName','#settingsProfileName'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.textContent=name});
   ['#accountEmail','#menuProfileEmail'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.textContent=email});
   setAvatarImage(meta.avatar_data||'');
+  applyRoleUI();
   const se=document.querySelector('#settingsEmail'); if(se && !se.value)se.value=user?.email||'';
   loadTheme();
 }
