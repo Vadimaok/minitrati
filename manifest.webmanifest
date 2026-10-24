@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "Provoda staff",
+  "short_name": "Provoda",
+  "description": "Provoda staff",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1d202b",
+  "theme_color": "#1d202b",
+  "icons": [
+    {
+      "src": "./provoda-logo.svg?v=2",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./provoda-logo.svg?v=2",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
