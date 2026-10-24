@@ -888,7 +888,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
       <div id="favoritesList" class="feature-list"><p class="muted">Добавляй товары в избранное значком ☆ рядом с покупкой.</p></div>
     </section>
     <section class="card feature-card">
-      <div class="feature-heading"><div><span class="feature-kicker">ТВОИ ДАННЫЕ</span><h2>Экспорт и уведомления</h2></div><span class="feature-icon">↗</span></div>
+      <div class="feature-heading"><div><span class="feature-kicker">ТВОИ ДАННЫЕ</span><h2>Экспорт, копии и уведомления</h2></div><span class="feature-icon">↗</span></div>
       <div class="feature-actions"><button class="ghost" id="exportCsvBtn" type="button">Скачать CSV</button><button class="ghost" id="exportBackupBtn" type="button">Резервная копия JSON</button><button class="ghost" id="restoreBackupBtn" type="button">Восстановить копию</button></div>
       <input id="restoreBackupFile" type="file" accept="application/json,.json" class="hidden">
       <div class="notification-box"><div><strong>Напоминания</strong><p class="feature-note">Разрешение на уведомления браузера. Сайт не отправляет уведомления, когда полностью закрыт.</p></div><button class="ghost" id="notificationsBtn" type="button">Включить</button></div>
@@ -1456,7 +1456,7 @@ function renderPurchaseHistory(){
 }
 function openDataTools(){
   closeProfileMenu();
-  const card=document.querySelector('.feature-grid .feature-card:last-child');
+  const card=[...document.querySelectorAll('.feature-grid .feature-card')].find(el=>el.querySelector('.feature-heading h2')?.textContent.trim()==='Экспорт, копии и уведомления');
   const exportSlot=document.querySelector('#dataToolExportSlot'),listSlot=document.querySelector('#dataToolListAction'),monthSlot=document.querySelector('#dataToolMonthAction');
   const listButton=document.querySelector('#pasteBtn'),monthButton=document.querySelector('#newMonthBtn');
   if(card&&exportSlot&&card.parentElement!==exportSlot)exportSlot.appendChild(card);
