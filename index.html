@@ -55,6 +55,15 @@ body.light-theme .category-row:hover,body.light-theme .category-row:focus-visibl
 /* Cloud accounts */
 #authGate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:#0b0f14;overflow:auto}
 #authGate.hidden{display:none!important}
+#authGate,#authGate *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#authGate input{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#authGate img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+.auth-password-wrap{position:relative}
+.auth-password-wrap input{padding-right:52px}
+.auth-password-toggle{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:transparent;color:var(--muted);padding:0}
+.auth-password-toggle:hover,.auth-password-toggle:focus-visible{background:rgba(124,92,255,.12);color:var(--text);outline:0}
+.auth-password-toggle:focus-visible{box-shadow:0 0 0 3px rgba(124,92,255,.22)}
+
 .auth-card{width:min(100%,440px);padding:24px;border:1px solid var(--line);border-radius:24px;background:var(--card);box-shadow:var(--shadow)}
 .auth-card h1{margin:0 0 6px;font-size:26px}.auth-card p{color:var(--muted);margin:0 0 16px}.auth-credit{display:flex;align-items:center;justify-content:center;gap:6px;width:max-content;max-width:100%;margin:0 auto 22px;padding:5px 10px;border:1px solid rgba(148,163,184,.14);border-radius:999px;color:var(--muted);font-size:10px;letter-spacing:.09em;text-transform:uppercase;opacity:.78}.auth-credit strong{font-size:10px;font-weight:650;letter-spacing:.12em;color:var(--text);opacity:.9}.auth-credit-dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.6;flex-shrink:0}
 .auth-card .save{margin-top:10px}.auth-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -753,7 +762,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
     <img class="auth-mark" src="./provoda-logo.svg?v=1" alt="Provoda staff"><h1 id="authTitle">Provoda staff</h1>
     <div class="auth-credit" aria-label="Проект Provoda staff от KNZ"><span>Проект</span><span class="auth-credit-dot" aria-hidden="true"></span><strong>by KNZ</strong></div>
     <label class="field"><span>Электронная почта</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
-    <label class="field"><span>Пароль (не менее 6 символов)</span><input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Пароль" required></label>
+    <label class="field"><span>Пароль (не менее 6 символов)</span><div class="auth-password-wrap"><input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Пароль" required><button class="auth-password-toggle" id="toggleAuthPassword" type="button" aria-label="Показать пароль" aria-pressed="false" title="Показать пароль"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>
     <div class="auth-buttons">
       <button class="save" id="loginBtn">Войти</button>
       <button class="ghost" id="signupBtn">Создать аккаунт</button>
@@ -1588,6 +1597,25 @@ async function signOut(){
 async function initCloudAuth(){
   document.querySelector('#loginBtn').addEventListener('click',signIn);
   document.querySelector('#signupBtn').addEventListener('click',signUp);
+  const passwordInput=document.querySelector('#authPassword');
+  const passwordToggle=document.querySelector('#toggleAuthPassword');
+  passwordToggle?.addEventListener('click',()=>{
+    const reveal=passwordInput.type==='password';
+    passwordInput.type=reveal?'text':'password';
+    passwordToggle.setAttribute('aria-label',reveal?'Скрыть пароль':'Показать пароль');
+    passwordToggle.setAttribute('title',reveal?'Скрыть пароль':'Показать пароль');
+    passwordToggle.setAttribute('aria-pressed',String(reveal));
+    passwordToggle.innerHTML=reveal
+      ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a16 16 0 0 1-3.1 3.8"/><path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  });
+  document.querySelector('#authGate').addEventListener('copy',e=>{
+    if(!['authEmail','authPassword'].includes(e.target?.id))e.preventDefault();
+  });
+  document.querySelector('#authGate').addEventListener('cut',e=>{
+    if(!['authEmail','authPassword'].includes(e.target?.id))e.preventDefault();
+  });
+  document.querySelectorAll('#authGate img').forEach(img=>img.setAttribute('draggable','false'));
   document.querySelector('#logoutBtn')?.addEventListener('click',signOut);
   if(!cloudConfigured() || !window.supabase || !window.supabase.createClient){
     authMessage('Не загрузились настройки или библиотека облака. Обнови страницу; если ошибка повторится, проверь подключение.',true);
