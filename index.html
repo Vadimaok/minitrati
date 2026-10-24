@@ -806,6 +806,10 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
 <style id="knz-task-polish">
 .knz-task-card{display:flex;flex-direction:column;gap:12px;padding:18px!important;border:1px solid var(--border-color,rgba(127,127,127,.22));border-radius:18px;background:var(--card-bg,rgba(127,127,127,.045));box-shadow:0 8px 26px rgba(0,0,0,.06)}.knz-task-card .admin-task-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.knz-task-card .admin-role-field{display:flex;flex-direction:column;gap:8px}.knz-task-card textarea{width:100%;min-height:86px;box-sizing:border-box;border-radius:12px;padding:12px}.knz-task-card input[type=file]{max-width:100%;padding:10px;border:1px dashed rgba(127,127,127,.4);border-radius:12px}.knz-submit-button{width:100%;min-height:46px}.knz-submit-button:disabled{opacity:.65;cursor:wait}.knz-submit-status{font-size:13px;overflow-wrap:anywhere;opacity:.85}.knz-result-note{padding:12px 14px;border-radius:12px;background:rgba(127,127,127,.08)}.knz-result-note p{margin:6px 0 0;white-space:pre-wrap}.knz-proof{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:14px;background:rgba(127,127,127,.07)}.knz-proof-title{font-size:13px;font-weight:700;opacity:.8}.knz-proof-details summary{cursor:pointer;padding:10px 12px;border-radius:10px;background:rgba(127,127,127,.1);font-weight:600}.knz-proof-details[open] summary{margin-bottom:10px}.knz-proof-details[open] .knz-proof-image{max-height:none}.knz-proof-image-link{display:block;overflow:hidden;border-radius:12px;max-width:100%;background:rgba(127,127,127,.1)}.knz-proof-image{display:block;width:100%;max-height:420px;object-fit:contain}.knz-proof-actions{display:flex;gap:10px;flex-wrap:wrap}.knz-proof-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 13px;border-radius:10px;text-decoration:none;border:1px solid rgba(127,127,127,.25)}@media(max-width:520px){.knz-task-card{padding:14px!important}.knz-proof-image{max-height:300px}.knz-proof-actions a{flex:1}}
 </style>
+
+<style id="data-tools-redesign">
+.top .actions #pasteBtn,.top .actions #newMonthBtn{display:none!important}.data-tools-panel{width:min(100%,760px);max-width:760px}.data-tools-panel>.sheet-heading{align-items:flex-start;gap:14px}.data-tools-content{display:block}.data-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch}.data-tool-card{min-width:0;padding:19px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.018));box-shadow:0 10px 28px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:flex-start;gap:10px}.data-tool-card h3{font-size:17px;line-height:1.25;margin:0}.data-tool-card p{font-size:13px;line-height:1.55;color:var(--muted);margin:0;flex:1}.data-tool-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:15px;background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent);font-size:24px;font-weight:700}.data-tool-action-slot{width:100%;margin-top:5px}.data-tool-action-slot button{display:flex!important;width:100%;justify-content:center;align-items:center;min-height:44px;padding:10px 14px;border-radius:13px;font-weight:700}.data-tool-export-slot{grid-column:1/-1;min-width:0}.data-tool-export-slot>.feature-card{display:block!important;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.015));box-shadow:0 10px 28px rgba(0,0,0,.07)}.data-tool-export-slot .feature-heading{padding:19px 19px 10px}.data-tool-export-slot .feature-heading h2{font-size:18px}.data-tool-export-slot .feature-card-body{padding:0 19px 18px}.data-tool-export-slot .feature-actions{display:flex;flex-wrap:wrap;gap:9px}.data-tool-export-slot .feature-actions button{min-height:42px;border-radius:12px}.data-tool-export-slot .notification-box{align-items:center}.data-tool-export-slot .feature-note{line-height:1.5}@media(max-width:540px){.data-tools-grid{grid-template-columns:1fr;gap:11px}.data-tool-card{padding:16px;border-radius:17px}.data-tool-export-slot{grid-column:auto}.data-tools-panel{padding-left:14px;padding-right:14px}.data-tool-export-slot .feature-actions{display:grid;grid-template-columns:1fr}.data-tool-export-slot .feature-actions button{width:100%}}
+</style>
 </head>
 <body>
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
@@ -828,8 +832,8 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
       <button class="icon" id="importBtn" title="Импортировать резервную копию JSON" aria-label="Импортировать резервную копию"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg></button>
       <button class="icon" id="exportBtn" title="Скачать резервную копию JSON" aria-label="Скачать резервную копию"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M5 16v4h14v-4"/></svg></button>
       <input type="file" id="importFile" accept="application/json,.json" class="hidden">
-      <button class="ghost" id="pasteBtn">Список</button>
-      <button class="ghost" id="newMonthBtn">Новый месяц</button>
+      <button class="ghost data-tool-action" id="pasteBtn">Добавить списком</button>
+      <button class="ghost data-tool-action" id="newMonthBtn">Начать новый месяц</button>
     </div>
   </header>
   <div class="accountbar profilebar">
@@ -839,7 +843,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
       <div class="profile-menu-head"><strong id="menuProfileName">Мой профиль</strong><span id="menuProfileEmail">Аккаунт не выбран</span></div>
       <button type="button" id="openAdminPanelBtn" class="profile-menu-action admin-menu-entry" aria-label="Открыть панель администратора"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 8h8M8 12h3m-3 4h8M15 12h1"/></svg><span>Панель администратора</span></button>
       <button type="button" id="openShiftPanelBtn" class="profile-menu-action admin-menu-entry" aria-label="Открыть панель управления старшего смены"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7"/></svg><span>Панель управления СТ.</span></button><button type="button" id="openKnzTasksBtn" class="profile-menu-action admin-menu-entry"><span>✓</span><span>Мои задачи КНЗ</span></button>
-      <button type="button" id="openDataPanelBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><rect x="4" y="4" width="16" height="16" rx="4"/></svg><span>Экспорт и уведомления</span></button>
+      <button type="button" id="openDataPanelBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><rect x="4" y="4" width="16" height="16" rx="4"/></svg><span>Данные и инструменты</span></button>
       <button type="button" id="openSettingsBtn" class="profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.6a8 8 0 0 1-1.8 1l-.2 1.5h-2.5l-.2-1.5a8 8 0 0 1-1.8-1l-1.4.6-1.2-2.1 1.2-.9a7 7 0 0 1 0-2l-1.2-.9 1.2-2.1 1.4.6a8 8 0 0 1 1.8-1l.2-1.5h2.5l.2 1.5a8 8 0 0 1 1.8 1l1.4-.6 1.2 2.1-1.2.9a7 7 0 0 1 0 2Z" transform="translate(-1 -1) scale(.96)"/></svg><span>Настройки</span></button>
       <button type="button" id="menuLogoutBtn" class="profile-logout profile-menu-action"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg><span>Выйти из аккаунта</span></button>
     </div>
@@ -954,10 +958,10 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
 </div>
 <div class="sheet" id="dataToolsSheet" aria-hidden="true">
   <div class="scrim" data-close-data-tools></div>
-  <div class="panel history-modal-panel" role="dialog" aria-modal="true" aria-label="Экспорт и уведомления">
+  <div class="panel history-modal-panel data-tools-panel" role="dialog" aria-modal="true" aria-label="Данные и инструменты">
     <div class="grab"></div>
-    <div class="sheet-heading"><h2>Экспорт и уведомления</h2><button class="icon" id="closeDataToolsBtn" type="button" aria-label="Закрыть">×</button></div>
-    <div id="dataToolsContent" class="data-tools-content"></div>
+    <div class="sheet-heading"><div><h2>Данные и инструменты</h2><p class="settings-subtitle">Список покупок, новый месяц, экспорт и уведомления — всё в одном месте.</p></div><button class="icon" id="closeDataToolsBtn" type="button" aria-label="Закрыть">×</button></div>
+    <div id="dataToolsContent" class="data-tools-content"><div class="data-tools-grid"><article class="data-tool-card"><div class="data-tool-icon">☷</div><h3>Добавить списком</h3><p>Вставь сразу несколько покупок из переписки — товары автоматически разберутся по строкам.</p><div id="dataToolListAction" class="data-tool-action-slot"></div></article><article class="data-tool-card"><div class="data-tool-icon">↻</div><h3>Новый месяц</h3><p>Закрой текущий период: покупки сохранятся в архиве, а текущий список очистится для нового месяца.</p><div id="dataToolMonthAction" class="data-tool-action-slot"></div></article><div id="dataToolExportSlot" class="data-tool-export-slot"></div></div></div>
   </div>
 </div>
 <div id="shiftPanelSheet" aria-hidden="true">
@@ -1095,7 +1099,7 @@ body.density-spacious #settingsSheet .settings-subsection{padding-top:17px;margi
           <label><input type="checkbox" data-feature-visible="budget"><span><strong>Бюджет на месяц</strong><small>Лимит, потрачено и остаток</small></span></label>
           <label><input type="checkbox" data-feature-visible="analytics"><span><strong>Аналитика расходов</strong><small>Категории и суммы</small></span></label>
           <label><input type="checkbox" data-feature-visible="favorites" checked><span><strong>Избранные товары</strong><small>Быстрое добавление покупок</small></span></label>
-          <label><input type="checkbox" data-feature-visible="export" checked><span><strong>Экспорт и уведомления</strong><small>CSV, резервная копия и уведомления о тратах</small></span></label>
+          <label><input type="checkbox" data-feature-visible="export" checked><span><strong>Данные и инструменты</strong><small>Экспорт, архив, новый месяц и уведомления</small></span></label>
         </div>
         <div class="settings-notifications"><div><strong>Уведомления о расходах</strong><p>Показывать сумму покупки и остаток бюджета.</p><span id="settingsNotificationsStatus">Настройка браузера</span></div><button class="ghost" id="settingsNotificationsBtn" type="button">Настроить</button></div>
       </section>
@@ -1453,8 +1457,11 @@ function renderPurchaseHistory(){
 function openDataTools(){
   closeProfileMenu();
   const card=document.querySelector('.feature-grid .feature-card:last-child');
-  const target=document.querySelector('#dataToolsContent');
-  if(card&&target&&card.parentElement!==target)target.appendChild(card);
+  const exportSlot=document.querySelector('#dataToolExportSlot'),listSlot=document.querySelector('#dataToolListAction'),monthSlot=document.querySelector('#dataToolMonthAction');
+  const listButton=document.querySelector('#pasteBtn'),monthButton=document.querySelector('#newMonthBtn');
+  if(card&&exportSlot&&card.parentElement!==exportSlot)exportSlot.appendChild(card);
+  if(listButton&&listSlot&&listButton.parentElement!==listSlot)listSlot.appendChild(listButton);
+  if(monthButton&&monthSlot&&monthButton.parentElement!==monthSlot)monthSlot.appendChild(monthButton);
   document.querySelector('#dataToolsSheet').classList.add('open');document.querySelector('#dataToolsSheet').setAttribute('aria-hidden','false');
 }
 function closeDataTools(){const sheet=document.querySelector('#dataToolsSheet');sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');}
